@@ -142,7 +142,9 @@ void create_player(ecs_world_t *world)
     ecs_set(world, player, GridVelocity, { .x = 0, .y = 0 });
     ecs_set(world, player, GridComponent, { .grid = &grid_worldspace, .tile = NULL });
     ecs_set(world, player, Glyph, { .source_tile_x = 0, .source_tile_y = 4, .tileset = &tileset }); 
-
+    ecs_add(world, player, TurnComponent);  
+    TurnComponent *tc = ecs_get(world, player, TurnComponent);
+    turncomponent_initialize(tc, &turnmanager, 0);
 	printf("Player creation finished.\n");
 
 }

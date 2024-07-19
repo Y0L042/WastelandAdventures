@@ -5,6 +5,7 @@
 #include "flecs.h"
 #include "grid.h"
 #include "glyph.h"
+#include "turnbasedsystem.h"
 
 typedef Vector2 Position;
 extern ECS_COMPONENT_DECLARE(Position);
@@ -32,6 +33,8 @@ typedef struct CameraComponent{
 	ecs_entity_t previous_target_entity;
 } CameraComponent;
 extern ECS_COMPONENT_DECLARE(CameraComponent);
+
+extern ECS_COMPONENT_DECLARE(TurnComponent);
 
 extern ecs_entity_t TAG_Player;
 

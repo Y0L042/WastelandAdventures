@@ -7,6 +7,7 @@ ECS_COMPONENT_DECLARE(GridVelocity);
 ECS_COMPONENT_DECLARE(GridComponent);
 ECS_COMPONENT_DECLARE(Glyph);
 ECS_COMPONENT_DECLARE(CameraComponent);
+ECS_COMPONENT_DECLARE(TurnComponent);
 
 ecs_entity_t TAG_Player;
 
@@ -19,6 +20,7 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, GridComponent);
 	ECS_COMPONENT_DEFINE(world, Glyph);
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
+    ECS_COMPONENT_DEFINE(world, TurnComponent);
 
 
 
