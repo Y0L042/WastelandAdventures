@@ -1,0 +1,15 @@
+*.swp
+*.swo
+*.swn
+*.vs
+*-workspace
+
+asm/*
+bin-int/*
+bin/*
+vendor/*
+.vs/*
+
+!vendor/raylib5/*
+!vendor/STC/include/*
+!vendor/STC/LICENSE
