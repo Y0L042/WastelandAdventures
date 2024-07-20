@@ -99,6 +99,11 @@ void ready()
 
 	create_player(g_world);
 	create_camera(g_world);
+
+    TurnComponent *tc = ecs_get(g_world, player, TurnComponent);
+    turncomponent_start_turn(tc);
+    printf("\n\n DEBUG 2 \n\n");
+
 }
 
 void handle_input()
@@ -112,9 +117,9 @@ void update(double delta)
 void physics_update(double delta)
 {
 	ecs_run(g_world, player_input_sys, delta, NULL);
+    printf("\n\n DEBUG 3 \n\n");
 	ecs_run(g_world, grid_move_sys, delta, NULL);
 	ecs_run(g_world, camera_move_sys, delta, NULL);
-	turnmanager_execute_turn_statemachine(&turnmanager, delta);
 }
 
 void draw(double delta)
@@ -136,6 +141,7 @@ void create_player(ecs_world_t *world)
 
 	player = ecs_new_id(world);
 
+    ecs_add(world, player, TAG_Player);
     ecs_set(world, player, Position, { .x = 0, .y = 0 });
     ecs_set(world, player, Velocity, { .x = 0, .y = 0 });
     ecs_set(world, player, GridPosition, { .x = 0, .y = 0 });
@@ -144,7 +150,8 @@ void create_player(ecs_world_t *world)
     ecs_set(world, player, Glyph, { .source_tile_x = 0, .source_tile_y = 4, .tileset = &tileset }); 
     ecs_add(world, player, TurnComponent);  
     TurnComponent *tc = ecs_get(world, player, TurnComponent);
-    turncomponent_initialize(tc, &turnmanager, 0);
+    turncomponent_initialize(tc, &turnmanager, player, world, 0);
+
 	printf("Player creation finished.\n");
 
 }

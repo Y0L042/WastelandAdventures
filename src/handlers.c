@@ -18,6 +18,7 @@ void create_handlers(ecs_world_t* world)
 
     grid_move_sys = ecs_system_init(world, &(ecs_system_desc_t) {
         .query.filter.terms = {
+            //{ .id = ecs_id(TAG_TurnActive) },
             { .id = ecs_id(GridComponent) },
             { .id = ecs_id(GridPosition) },
             { .id = ecs_id(GridVelocity) },
@@ -29,6 +30,7 @@ void create_handlers(ecs_world_t* world)
 
     player_input_sys = ecs_system_init(world, &(ecs_system_desc_t) {
         .query.filter.terms = {
+            { .id = ecs_id(TAG_TurnActive) },
             { .id = ecs_id(GridVelocity) },
             { 0 }  // Zero-terminate the array
         },

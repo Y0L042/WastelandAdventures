@@ -9,7 +9,9 @@ ECS_COMPONENT_DECLARE(Glyph);
 ECS_COMPONENT_DECLARE(CameraComponent);
 ECS_COMPONENT_DECLARE(TurnComponent);
 
-ecs_entity_t TAG_Player;
+ECS_ENTITY_DECLARE(TAG_Player);
+ECS_ENTITY_DECLARE(TAG_TurnActive);
+ECS_ENTITY_DECLARE(TAG_TurnIdle);
 
 void create_components(ecs_world_t *world)
 {
@@ -22,9 +24,10 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
     ECS_COMPONENT_DEFINE(world, TurnComponent);
 
+    ECS_ENTITY_DEFINE(world, TAG_Player);
+    ECS_ENTITY_DEFINE(world, TAG_TurnActive);
+    ECS_ENTITY_DEFINE(world, TAG_TurnIdle);
 
 
-	TAG_Player = ecs_new_id(world);
 }
-
 

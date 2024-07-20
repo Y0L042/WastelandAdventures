@@ -36,9 +36,14 @@ extern ECS_COMPONENT_DECLARE(CameraComponent);
 
 extern ECS_COMPONENT_DECLARE(TurnComponent);
 
-extern ecs_entity_t TAG_Player;
+struct TAG_Player{ int empty; };
+extern ECS_ENTITY_DECLARE(TAG_Player);
 
+struct TAG_TurnActive{ int empty; };
+extern ECS_ENTITY_DECLARE(TAG_TurnActive);
 
+struct TAG_TurnIdle{ int empty; };
+extern ECS_ENTITY_DECLARE(TAG_TurnIdle);
 
 void create_components(ecs_world_t *world);
 
