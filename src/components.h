@@ -2,6 +2,7 @@
 #define COMPONENTS_H
 
 #include <raylib.h>
+#include <raymath.h>
 #include "flecs.h"
 #include "grid.h"
 #include "glyph.h"
@@ -50,7 +51,9 @@ void create_components(ecs_world_t *world);
 
 void create_queries(ecs_world_t *world);
 
-void handler_draw_glyph(ecs_world_t *world);
-
+void handler_glyph_draw(ecs_world_t *world);
+void handler_camera_move(ecs_world_t *world);
+void handler_grid_move(ecs_world_t *world);
+void handler_player_input(ecs_world_t *world);
 
 #endif // COMPONENTS_H

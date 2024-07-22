@@ -43,15 +43,15 @@ void create_queries(ecs_world_t *world)
     //}); 
 }
 
-void handler_draw_glyph(ecs_world_t *world)
+void handler_glyph_draw(ecs_world_t *world)
 {
-    ecs_query_t *query_draw_glyph = ecs_query(world, {
+    ecs_query_t *query_glyph_draw = ecs_query(world, {
         .filter.terms = {
             {ecs_id(Glyph) },
             {ecs_id(Position) }
         }
     }); 
-    ecs_iter_t it = ecs_query_iter(world, query_draw_glyph);
+    ecs_iter_t it = ecs_query_iter(world, query_glyph_draw);
     while (ecs_query_next(&it))
     {
         Glyph *g = ecs_field(&it, Glyph, 1);
@@ -63,6 +63,120 @@ void handler_draw_glyph(ecs_world_t *world)
             glyph_draw(&glyph, p[i].x, p[i].y, RAYWHITE);
         }
     }
-
-    ecs_query_fini(query_draw_glyph);
 }
+
+
+void handler_camera_move(ecs_world_t *world)
+{
+    ecs_query_t *query_camera_move = ecs_query(world, {
+        .filter.terms = {
+            {ecs_id(CameraComponent) }
+        }
+    }); 
+    ecs_iter_t it = ecs_query_iter(world, query_camera_move);
+	while (ecs_query_next(&it))
+	{
+		CameraComponent *cc = ecs_field(&it, CameraComponent, 1);
+		float lerp_factor = 0.1f;
+
+		for (int i = 0; i < it.count; i++)
+		{
+			const Position *target_pos = ecs_get(world, cc[i].target_entity, Position);
+			if (target_pos)
+			{
+				Vector2 current_target = cc[i].camera.target;
+				Vector2 desired_target = (Vector2){ target_pos->x, target_pos->y };
+				cc[i].camera.target = Vector2Lerp(current_target, desired_target, lerp_factor);
+			}
+			else
+			{
+				printf("No target_pos found\n");
+			}
+		}	
+	}
+}
+
+void handler_grid_move(ecs_world_t *world)
+{
+    ecs_query_t *query_grid_move = ecs_query(world, {
+        .filter.terms = {
+			{ ecs_id(GridComponent) },
+            { ecs_id(GridPosition) },
+            { ecs_id(GridVelocity) },
+            { ecs_id(Position) }
+        }
+    }); 
+    ecs_iter_t it = ecs_query_iter(world, query_grid_move);
+	while (ecs_query_next(&it))
+	{
+		GridComponent *gc = ecs_field(&it, GridComponent, 1);
+		GridPosition *gp = ecs_field(&it, GridPosition, 2);
+		GridVelocity *gv = ecs_field(&it, GridVelocity, 3);
+		Position *p = ecs_field(&it, Position, 4);
+
+		for (int i = 0; i < it.count; i++)
+		{
+			if (gv[i].x == 0 && gv[i].y == 0) { continue; }
+
+			gp[i].x += gv[i].x;
+			gp[i].y += gv[i].y;
+
+			if (gc[i].grid) 
+			{
+				p[i].x = gp[i].x * gc[i].grid->tile_width;
+				p[i].y = gp[i].y * gc[i].grid->tile_height;
+			}
+
+			int x = gp[i].x;
+			int y = gp[i].y;
+			int px = p[i].x;
+			int py = p[i].y;
+			printf("GP { %d, %d }\n", x, y);
+			printf("P { %d, %d }\n", px, py);
+			gv[i].x = 0;
+			gv[i].y = 0;
+		}
+	}
+}
+
+void handler_player_input(ecs_world_t *world)
+{
+    ecs_query_t *query_player_input = ecs_query(world, {
+        .filter.terms = {
+            { ecs_id(GridVelocity) }
+        }
+    }); 
+    ecs_iter_t it = ecs_query_iter(world, query_player_input);
+	while (ecs_query_next(&it))
+	{
+		GridVelocity *gv = ecs_field(&it, GridVelocity, 1);
+		int mult = 1;
+		for (int i = 0; i < it.count; i++)
+		{
+			gv[i].x = 0;
+			gv[i].y = 0;
+
+			if (IsKeyDown(KEY_LEFT_SHIFT))
+			{
+				mult = 2;
+			}
+			if (IsKeyPressed(KEY_KP_7) || IsKeyPressed(KEY_KP_8) || IsKeyPressed(KEY_KP_9))
+			{
+				gv[i].y -= 1 * mult; // UP
+			}
+			if (IsKeyPressed(KEY_KP_1) || IsKeyPressed(KEY_KP_2) || IsKeyPressed(KEY_KP_3))
+			{
+				gv[i].y += 1 * mult; // DOWN
+			}
+			if (IsKeyPressed(KEY_KP_1) || IsKeyPressed(KEY_KP_4) || IsKeyPressed(KEY_KP_7))
+			{
+				gv[i].x -= 1 * mult; // LEFT
+			}
+			if (IsKeyPressed(KEY_KP_3) || IsKeyPressed(KEY_KP_6) || IsKeyPressed(KEY_KP_9))
+			{
+				gv[i].x += 1 * mult; // RIGHT
+			}
+		}
+	}
+}
+

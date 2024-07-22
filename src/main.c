@@ -114,13 +114,15 @@ void update(double delta)
 
 void physics_update(double delta)
 {
-    //handler_player_input(g_world);
+    handler_player_input(g_world);
+	handler_grid_move(g_world);
+	handler_camera_move(g_world);
 }
 
 void draw(double delta)
 {
 	grid_draw(&grid_worldspace);
-    handler_draw_glyph(g_world);
+    handler_glyph_draw(g_world);
 }
 
 void quit()
@@ -141,8 +143,15 @@ void create_player(ecs_world_t *world)
     ecs_set(world, player, Velocity, { .x = 0, .y = 0 });
     ecs_set(world, player, GridPosition, { .x = 0, .y = 0 });
     ecs_set(world, player, GridVelocity, { .x = 0, .y = 0 });
-    ecs_set(world, player, GridComponent, { .grid = &grid_worldspace, .tile = NULL });
-    ecs_set(world, player, Glyph, { .source_tile_x = 0, .source_tile_y = 4, .tileset = &tileset }); 
+    ecs_set(world, player, GridComponent, { 
+			.grid = &grid_worldspace, 
+			.tile = NULL 
+		});
+    ecs_set(world, player, Glyph, { 
+			.source_tile_x = 0, 
+			.source_tile_y = 4,
+			.tileset = &tileset 
+		}); 
     ecs_add(world, player, TurnComponent);  
     TurnComponent *tc = ecs_get(world, player, TurnComponent);
     turncomponent_initialize(tc, &turnmanager, player, world, 0);
@@ -167,4 +176,3 @@ void create_camera(ecs_world_t *world)
 			.previous_target_entity = 0	
 		});
 }
-
