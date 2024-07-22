@@ -7,7 +7,6 @@
 #include "flecs.h"
 
 #include "components.h"
-#include "handlers.h"
 
 #include "grid.h"
 #include "glyph.h"
@@ -94,15 +93,14 @@ void ready()
 	create_components(g_world);
 	printf("components created.\n");
 
-	create_handlers(g_world);
-	printf("handlers created.\n");
+    //create_queries(g_world);
+	printf("queries created.\n");
 
 	create_player(g_world);
 	create_camera(g_world);
 
     TurnComponent *tc = ecs_get(g_world, player, TurnComponent);
     turncomponent_start_turn(tc);
-    printf("\n\n DEBUG 2 \n\n");
 
 }
 
@@ -116,16 +114,13 @@ void update(double delta)
 
 void physics_update(double delta)
 {
-	ecs_run(g_world, player_input_sys, delta, NULL);
-    printf("\n\n DEBUG 3 \n\n");
-	ecs_run(g_world, grid_move_sys, delta, NULL);
-	ecs_run(g_world, camera_move_sys, delta, NULL);
+    //handler_player_input(g_world);
 }
 
 void draw(double delta)
 {
 	grid_draw(&grid_worldspace);
-	ecs_run(g_world, glyph_draw_sys, delta, NULL);
+    handler_draw_glyph(g_world);
 }
 
 void quit()

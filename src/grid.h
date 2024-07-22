@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include <raylib.h>
+#include <stdint.h>
 
 typedef struct Tile {
 	UUID uuid;
@@ -16,8 +17,8 @@ typedef struct Tile {
 	int height;
 	int pos_x; // TOP LEFT corner
 	int pos_y; // TOP LEFT corner
-	Glyph glyph;
-	Color color;
+    CVecVoid entities; // CVecVoid<ecs_entity_t> entities
+    uint16_t collision_layer;
 } Tile;
 
 void tile_initialize(
@@ -26,7 +27,6 @@ void tile_initialize(
 		int pos_y, 
 		int width, 
 		int height,
-		//Glyph *glyph,
 		Color color
 	);
 void tile_free(Tile *tile);
@@ -41,9 +41,18 @@ typedef struct Grid {
 	int tile_height;
 } Grid;
 
+typedef struct GridComponent {
+    Grid *grid;
+    Tile *tile;
+} GridComponent;
+
 void grid_initialize(Grid *grid, int width, int height, int tile_width, int tile_height);
 void grid_initialize_tiles(Grid *grid, int tile_width, int tile_height);
 void grid_free(Grid *grid);
 void grid_draw(Grid *grid);
+Tile* grid_get_tile_from_coords(Grid *grid, int x, int y);
+//Vector2 grid_get_coords_from_tile(Grid *grid
+
+void gridcomponent_initialize(GridComponent *gc, Grid *grid, int pos_x, int pos_y);
 
 #endif // GRID_H

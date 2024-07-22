@@ -49,7 +49,6 @@ void glyph_free(Glyph *glyph);
 void glyph_draw(Glyph* glyph, int pos_x, int pos_y, Color color);
 void glyph_draw_pro(Glyph *glyph, int pos_x, int pos_y, int width, int height, Color color);
 int glyph_get_idx_by_char(char ch);
-void handler_camera_move(ecs_iter_t *it);
 
 
 // Glyph Definitions

@@ -7,7 +7,6 @@ void tile_initialize(
 		int pos_y, 
 		int width, 
 		int height,
-		//Glyph *glyph,
 		Color color
 	)
 {
@@ -39,7 +38,7 @@ void grid_initialize(Grid *grid, int width, int height, int tile_width, int tile
 	grid->height = height;
 	grid->tile_width = tile_width;
 	grid->tile_height = tile_height;
-
+ 
 	// Allocate rows
 	grid->tiles = (Tile ***)malloc(sizeof(Tile **) * height);
 	if (grid->tiles == NULL)
@@ -96,4 +95,17 @@ void grid_draw(Grid *grid)
 			tile_draw(grid->tiles[x][y]);
 		}
 	}
+}
+
+
+Tile* grid_get_tile_from_coords(Grid *grid, int x, int y)
+{
+    Tile *t = grid->tiles[x][y];
+    return t;
+}
+
+void gridcomponent_initialize(GridComponent *gc, Grid *grid, int pos_x, int pos_y)
+{
+    gc->grid = grid;
+    gc->tile = grid_get_tile_from_coords(grid, pos_x, pos_y); 
 }

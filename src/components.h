@@ -19,10 +19,6 @@ extern ECS_COMPONENT_DECLARE(GridPosition);
 typedef Vector2 GridVelocity;
 extern ECS_COMPONENT_DECLARE(GridVelocity);
 
-typedef struct GridComponent{
-	Grid *grid;
-	Tile *tile;
-} GridComponent;
 extern ECS_COMPONENT_DECLARE(GridComponent);
 
 extern ECS_COMPONENT_DECLARE(Glyph);
@@ -46,6 +42,15 @@ struct TAG_TurnIdle{ int empty; };
 extern ECS_ENTITY_DECLARE(TAG_TurnIdle);
 
 void create_components(ecs_world_t *world);
+
+
+
+
+// Handlers
+
+void create_queries(ecs_world_t *world);
+
+void handler_draw_glyph(ecs_world_t *world);
 
 
 #endif // COMPONENTS_H
