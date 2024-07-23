@@ -1,5 +1,7 @@
 #include "turnbasedsystem.h"
+#include <math.h>
 
+ecs_entity_t turn_counter;
 
 void turncomponent_initialize(TurnComponent *tc, TurnManager *tm, ecs_entity_t entity_id, ecs_world_t *world, int init_initiative)
 {
@@ -8,6 +10,7 @@ void turncomponent_initialize(TurnComponent *tc, TurnManager *tm, ecs_entity_t e
     tc->entity_id = entity_id;
 	tc->turn_manager = tm;
 	tc->current_turn_state = TURNSTATE_IDLE;
+	turnmanager_add_turncomponent(tm, tc);
 }
 
 void turncomponent_free(TurnComponent *tc)
@@ -15,9 +18,13 @@ void turncomponent_free(TurnComponent *tc)
 	free(tc);
 }
 
-void turncomponent_inc_initiative(TurnComponent *tc, int inc)
+int turncomponent_inc_initiative(TurnComponent *tc, int inc)
 {
-	tc->initiative += inc;
+	//printf("Entity: %d\tinitial i: %d , inc: %d", (uint32_t)tc->entity_id, tc->initiative, inc);
+	TurnComponent *temp_tc = ecs_get_mut(tc->world, tc->entity_id, TurnComponent);
+	temp_tc->initiative += inc;
+	//printf(" result: %d\n", tc->initiative);
+	return temp_tc->initiative;
 }
 
 int turncomponent_compare_initiatives(const void *a, const void *b)
@@ -38,14 +45,19 @@ void turncomponent_start_turn(TurnComponent *tc)
     ecs_remove(tc->world, tc->entity_id, TAG_TurnIdle);
     ecs_add(tc->world, tc->entity_id, TAG_TurnActive);
     turncomponent_change_state(tc, TURNSTATE_ACTIVE);
-    printf("\n\n DEBUG 1 \n\n");
 }
 
 void turncomponent_end_turn(TurnComponent *tc, int inc)
 {
+	if (tc->world == NULL)
+	{
+		printf("Entity's world is NULL!\n");
+	}
     ecs_remove(tc->world, tc->entity_id, TAG_TurnActive);
 	ecs_add(tc->world, tc->entity_id, TAG_TurnIdle);
-	turncomponent_inc_initiative(tc, inc);
+	int new_init = 	turncomponent_inc_initiative(tc, inc);
+	//printf("new init: %d\n", new_init);
+	//printf("Entity whose turn ended: %d | %p\n", tc->entity_id, tc);
 	turncomponent_change_state(tc, TURNSTATE_IDLE);
 }
 
@@ -76,22 +88,62 @@ void turnmanager_remove_turncomponent(TurnManager *tm, TurnComponent *tc)
 void turnmanager_next_turn(TurnManager *tm, TurnComponent *tc, int inc)
 {
 	turncomponent_end_turn(tc, inc);
-	
-    for (int i = 1; i < tm->tc_ptr_registry.count; i++) 
-    {
-        TurnComponent *key = tm->tc_ptr_registry.data[i];
-        int j = i - 1;
-        while (j >= 0 && turncomponent_compare_initiatives(tm->tc_ptr_registry.data[j], key) < 0) 
-        {
-            tm->tc_ptr_registry.data[j + 1] = tm->tc_ptr_registry.data[j];
-            j = j - 1;
-        }
-        tm->tc_ptr_registry.data[j + 1] = key;
-    }
+		
+    //for (int i = 1; i < tm->tc_ptr_registry.count; i++) 
+    //{
+    //    TurnComponent *key = tm->tc_ptr_registry.data[i];
+    //    int j = i - 1;
+    //    while (
+	//		j >= 0 
+	//		&& turncomponent_compare_initiatives(
+	//			tm->tc_ptr_registry.data[j], key
+	//		) > 0
+	//	) 
+    //    {
+    //        tm->tc_ptr_registry.data[j + 1] = tm->tc_ptr_registry.data[j];
+    //        j = j - 1;
+    //    }
+    //    tm->tc_ptr_registry.data[j + 1] = key;
+    //}
 
-	tm->active_tc_idx = (tm->active_tc_idx++) % tm->tc_ptr_registry.count;
-	TurnComponent *active_tc = tm->tc_ptr_registry.data[tm->active_tc_idx];
-	turncomponent_start_turn(active_tc);
+	int min_initiative_idx = 0; 
+	int min_initiative = -1;
+	for (int i = 0; i < tm->tc_ptr_registry.count; i++)
+	{
+		TurnComponent *index_turncomp = (TurnComponent *)(tm->tc_ptr_registry.data[i]);
+		if (index_turncomp->initiative < min_initiative || min_initiative < 0)
+		{
+			min_initiative_idx = i;
+			min_initiative = index_turncomp->initiative;
+		}
+	}
+
+	if (tm->tc_ptr_registry.count > 0)
+	{
+		tm->active_tc_idx = min_initiative_idx;
+		TurnComponent *active_tc = tm->tc_ptr_registry.data[tm->active_tc_idx];
+		turncomponent_start_turn(active_tc);
+	}
+	turnmanager_print_turn_queue(tm);
 }
 
+void turnmanager_print_turn_queue(TurnManager *tm)
+{
+	printf("Turn Queue:\n");
+	for (int i = 0; i < tm->tc_ptr_registry.count; i++)
+	{
+		TurnComponent *tc = tm->tc_ptr_registry.data[i];
+		int initiative = tc->initiative;
+		printf("Entity:\t%d | %p\ti:%d\n", (uint32_t)tc->entity_id, tc, initiative);
+	}
+	printf("TurnQueue End \n\n");
+}
 
+void turncounter_create(TurnManager *tm, ecs_world_t *world)
+{
+	turn_counter = ecs_new_id(world);
+	ecs_set(world, turn_counter, TurnCountComponent, { .count = 0 });
+	ecs_add(world, turn_counter, TurnComponent);
+	TurnComponent *tc = ecs_get_mut(world, turn_counter, TurnComponent);
+	turncomponent_initialize(tc, tm, turn_counter, world, 0);
+}

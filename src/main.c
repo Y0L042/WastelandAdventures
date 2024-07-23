@@ -28,9 +28,9 @@ Grid grid_worldspace;
 Tileset tileset;
 Glyph player_glyph;
 ecs_world_t *g_world;
+TurnManager turnmanager;
 ecs_entity_t player;
 ecs_entity_t camera;
-TurnManager turnmanager;
 
 void initialize();
 void ready();
@@ -57,7 +57,7 @@ int main()
 		update(frame_time);
 		physics_update(frame_time);
 
-		CameraComponent *cc = ecs_get(g_world, camera, CameraComponent);
+		CameraComponent *cc = ecs_get_mut(g_world, camera, CameraComponent);
 		Camera2D c = cc->camera;
 		BeginDrawing();
 			BeginMode2D(c);
@@ -85,8 +85,6 @@ void ready()
 
 	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
 
-	turnmanager_initialize(&turnmanager);
-
 	g_world = ecs_init();
 	printf("g_world created.\n");
 
@@ -96,10 +94,15 @@ void ready()
     //create_queries(g_world);
 	printf("queries created.\n");
 
+	turnmanager_initialize(&turnmanager);
+	turncounter_create(&turnmanager, g_world);
+
 	create_player(g_world);
+	printf("Player ID:\t%d\n", (uint32_t)player);
 	create_camera(g_world);
 
-    TurnComponent *tc = ecs_get(g_world, player, TurnComponent);
+
+    TurnComponent *tc = ecs_get_mut(g_world, player, TurnComponent);
     turncomponent_start_turn(tc);
 
 }
@@ -117,6 +120,7 @@ void physics_update(double delta)
     handler_player_input(g_world);
 	handler_grid_move(g_world);
 	handler_camera_move(g_world);
+	handler_turncounter_increment(g_world);
 }
 
 void draw(double delta)
@@ -153,9 +157,9 @@ void create_player(ecs_world_t *world)
 			.tileset = &tileset 
 		}); 
     ecs_add(world, player, TurnComponent);  
-    TurnComponent *tc = ecs_get(world, player, TurnComponent);
+    TurnComponent *tc = ecs_get_mut(world, player, TurnComponent);
     turncomponent_initialize(tc, &turnmanager, player, world, 0);
-
+	printf("Player *TC: %p\n", tc);
 	printf("Player creation finished.\n");
 
 }

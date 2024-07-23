@@ -32,6 +32,8 @@ typedef struct CameraComponent{
 extern ECS_COMPONENT_DECLARE(CameraComponent);
 
 extern ECS_COMPONENT_DECLARE(TurnComponent);
+struct TurnCountComponent; // Forward Declaration
+extern ECS_COMPONENT_DECLARE(TurnCountComponent);
 
 struct TAG_Player{ int empty; };
 extern ECS_ENTITY_DECLARE(TAG_Player);
@@ -41,6 +43,7 @@ extern ECS_ENTITY_DECLARE(TAG_TurnActive);
 
 struct TAG_TurnIdle{ int empty; };
 extern ECS_ENTITY_DECLARE(TAG_TurnIdle);
+
 
 void create_components(ecs_world_t *world);
 
@@ -55,5 +58,6 @@ void handler_glyph_draw(ecs_world_t *world);
 void handler_camera_move(ecs_world_t *world);
 void handler_grid_move(ecs_world_t *world);
 void handler_player_input(ecs_world_t *world);
+void handler_turncounter_increment(ecs_world_t *world);
 
 #endif // COMPONENTS_H
