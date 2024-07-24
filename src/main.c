@@ -3,6 +3,7 @@
 #include <raylib.h>
 #define RAYGUI_IMPLEMENTATION
 #include <raygui.h>	
+#include "log.h"
 
 #include "flecs.h"
 
@@ -46,6 +47,7 @@ void create_camera(ecs_world_t *world);
 
 int main()
 {
+	SetTraceLogLevel(0);
 	initialize();
 	InitWindow(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Wasteland Adventures");
 	SetTargetFPS(60);             
@@ -80,31 +82,20 @@ void initialize()
 
 void ready()
 {
+	log_debug("ready() - start");
+
 	grid_initialize(&grid_worldspace, WORLDSPACE_SIZE_X, WORLDSPACE_SIZE_Y, TILE_SIZE_X, TILE_SIZE_Y);
 //	grid_initialize_tiles(&grid_worldspace, TILE_SIZE_X, TILE_SIZE_Y); 
 
 	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
 
 	g_world = ecs_init();
-	printf("g_world created.\n");
-
 	create_components(g_world);
-	printf("components created.\n");
-
-    //create_queries(g_world);
-	printf("queries created.\n");
-
-	turnmanager_initialize(&turnmanager);
-	turncounter_create(&turnmanager, g_world);
-
+	turnmanager_initialize(&turnmanager, g_world);
 	create_player(g_world);
-	printf("Player ID:\t%d\n", (uint32_t)player);
 	create_camera(g_world);
 
-
-    TurnComponent *tc = ecs_get_mut(g_world, player, TurnComponent);
-    turncomponent_start_turn(tc);
-
+	log_debug("ready() - complete");
 }
 
 void handle_input()
@@ -117,10 +108,14 @@ void update(double delta)
 
 void physics_update(double delta)
 {
+	//log_debug("physics_update() - start");
+
     handler_player_input(g_world);
 	handler_grid_move(g_world);
 	handler_camera_move(g_world);
 	handler_turncounter_increment(g_world);
+
+	//log_debug("physics_update() - end");
 }
 
 void draw(double delta)
@@ -138,10 +133,7 @@ void quit()
 
 void create_player(ecs_world_t *world)
 {
-	printf("Player creation starting.\n");
-
 	player = ecs_new_id(world);
-
     ecs_add(world, player, TAG_Player);
     ecs_set(world, player, Position, { .x = 0, .y = 0 });
     ecs_set(world, player, Velocity, { .x = 0, .y = 0 });
@@ -159,9 +151,6 @@ void create_player(ecs_world_t *world)
     ecs_add(world, player, TurnComponent);  
     TurnComponent *tc = ecs_get_mut(world, player, TurnComponent);
     turncomponent_initialize(tc, &turnmanager, player, world, 0);
-	printf("Player *TC: %p\n", tc);
-	printf("Player creation finished.\n");
-
 }
 
 void create_camera(ecs_world_t *world)

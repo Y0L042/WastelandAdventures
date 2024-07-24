@@ -1,7 +1,8 @@
 # Include and library paths
 INCLUDE_PATHS = \
     ./vendor/raylib5/include \
-    ./vendor/cjson/include
+    ./vendor/cjson/include \
+	./vendor/fmt/include
 
 LIBRARY_PATHS = \
     ./vendor/raylib5/lib \

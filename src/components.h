@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include <raymath.h>
+#include "log.h"
 #include "flecs.h"
 #include "grid.h"
 #include "glyph.h"

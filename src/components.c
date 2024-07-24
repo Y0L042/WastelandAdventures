@@ -198,7 +198,6 @@ void handler_player_input(ecs_world_t *world)
 			{
 				static int cntr = 0;
 				//printf("Ending player turn:\t%d\n", ++cntr);
-				tc[i].initiative += 25;
 				turnmanager_next_turn(tm, &tc[i], 50);
 				//turnmanager_print_turn_queue(tm);
 			}
@@ -215,7 +214,7 @@ void handler_turncounter_increment(ecs_world_t *world)
 			{ TAG_TurnActive }
         }
     }); 
-
+	//log_debug("DEBUG");
     ecs_iter_t it = ecs_query_iter(world, query_turncounter_increment);
 	while (ecs_query_next(&it))
 	{
@@ -226,10 +225,9 @@ void handler_turncounter_increment(ecs_world_t *world)
 		{
 			TurnManager *tm = tc[i].turn_manager;
 			tcntc[i].count += 1;
-			printf("TurnCount:\t%d\n", tcntc[i].count);
-			tc[i].initiative += 100;
+			//printf("TurnCount:\t%d\n", tcntc[i].count);
 			turnmanager_next_turn(tm, &tc[i], 100);
-			turnmanager_print_turn_queue(tm);
+			//turnmanager_print_turn_queue(tm);
 		}
 	}
 }
