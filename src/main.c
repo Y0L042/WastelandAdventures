@@ -24,7 +24,6 @@ const int WORLDSPACE_SIZE_Y = 100;
 const int TILE_SIZE_X = 25;
 const int TILE_SIZE_Y = 25;
 
-
 Grid grid_worldspace;
 Tileset tileset;
 Glyph player_glyph;
@@ -66,6 +65,7 @@ int main()
 			ClearBackground(g_BG_COLOR);
 			draw(frame_time);
 			EndMode2D();
+			DrawFPS(10, 10);
 		EndDrawing();
 	}
 	CloseWindow();
@@ -121,7 +121,24 @@ void physics_update(double delta)
 void draw(double delta)
 {
 	grid_draw(&grid_worldspace);
-    handler_glyph_draw(g_world);
+ 	handler_glyph_draw(g_world);
+
+
+	Color color;
+	const TurnComponent *tc = ecs_get(g_world, player, TurnComponent);
+	int active = (tc->current_turn_state == TURNSTATE_ACTIVE) ? 1 : 0;
+	if (active == 0)
+	{
+		color = RED;
+	}
+	else
+	{
+		color = GREEN;
+	}
+
+	float h_tile_size = (TILE_SIZE_X / 2) + 1;
+	const Position *p = ecs_get(g_world, player, Position);
+	DrawCircleLines(p->x + h_tile_size, p->y + h_tile_size, h_tile_size * 1.25f, color);
 }
 
 void quit()
@@ -149,8 +166,6 @@ void create_player(ecs_world_t *world)
 			.tileset = &tileset 
 		}); 
     ecs_add(world, player, TurnComponent);  
-    TurnComponent *tc = ecs_get_mut(world, player, TurnComponent);
-    turncomponent_initialize(tc, &turnmanager, player, world, 0);
 }
 
 void create_camera(ecs_world_t *world)

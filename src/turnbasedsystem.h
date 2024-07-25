@@ -29,27 +29,23 @@ typedef struct TurnManager {
 	int active_tc_idx;
 	ecs_world_t *world;
 	ecs_entity_t turn_counter;
-	CVecVoid tc_ptr_registry; // CVecVoid<*TurnComponent>
+	CVecVoid tc_refs; // CVecVoid<ecs_ref_t *>
 } TurnManager;
 
 typedef struct TurnCountComponent { 
 	uint16_t count; 
 } TurnCountComponent;
-//extern ecs_entity_t turn_counter;
-
-void turncomponent_initialize(TurnComponent *tc, TurnManager *tm, ecs_entity_t entity_id, ecs_world_t *world, int init_initiative);
-void turncomponent_free(TurnComponent *tc);
-int turncomponent_inc_initiative(TurnComponent *tc, int inc);
-int turncomponent_compare_initiatives(const void *a, const void *b);
-void turncomponent_change_state(TurnComponent *tc, enum TurnState new_state);
-void turncomponent_start_turn(TurnComponent *tc);
-void turncomponent_end_turn(TurnComponent *tc, int inc);
 
 void turnmanager_initialize(TurnManager *tm, ecs_world_t *world);
-void turnmanager_add_turncomponent(TurnManager *tm, TurnComponent *tc);
-void turnmanager_remove_turncomponent(TurnManager *tm, TurnComponent *tc);
-void turnmanager_next_turn(TurnManager *tm, TurnComponent *tc, int inc);
+void turnmanager_add_turncomponent(TurnManager *tm, ecs_ref_t *tc_ref, ecs_entity_t entity);
+void turnmanager_remove_turncomponent(TurnManager *tm, ecs_ref_t *tc_ref);
+void turnmanager_next_turn(TurnManager *tm, ecs_ref_t *tc_ref, int inc);
 void turnmanager_print_turn_queue(TurnManager *tm);
+void turnmanager_inc_tc_initiative(TurnManager *tm, ecs_ref_t *tc_ref, int inc);
+int  turnmanager_compare_tc(TurnManager *tm, ecs_ref_t *tc_ref_a, ecs_ref_t *tc_ref_b);
+void turnmanager_change_tc_state(TurnManager *tm, enum TurnState new_state);
+void turnmanager_start_turn(TurnManager *tm, ecs_ref_t *tc_ref);
+void turnmanager_end_turn(TurnManager *tm, ecs_ref_t *tc_ref, int inc);
 
 void turncounter_create(TurnManager *tm, ecs_world_t *world);
 

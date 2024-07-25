@@ -334,7 +334,7 @@ int glyph_get_idx_by_char(char ch);
 #define    THETA          233
 #define    OMEGA          234
 #define    DELTA          235
-#define    EPSILON        238
+//#define    EPSILON        238
 
 
 

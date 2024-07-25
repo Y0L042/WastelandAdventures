@@ -33,16 +33,16 @@ typedef struct CameraComponent{
 extern ECS_COMPONENT_DECLARE(CameraComponent);
 
 extern ECS_COMPONENT_DECLARE(TurnComponent);
-struct TurnCountComponent; // Forward Declaration
+typedef struct TurnCountComponent TurnCountComponent; // Forward Declaration
 extern ECS_COMPONENT_DECLARE(TurnCountComponent);
 
-struct TAG_Player{ int empty; };
+ struct TAG_Player{ int empty; } ;
 extern ECS_ENTITY_DECLARE(TAG_Player);
 
-struct TAG_TurnActive{ int empty; };
+struct TAG_TurnActive{ int empty; } ;
 extern ECS_ENTITY_DECLARE(TAG_TurnActive);
 
-struct TAG_TurnIdle{ int empty; };
+ struct TAG_TurnIdle{ int empty; } ;
 extern ECS_ENTITY_DECLARE(TAG_TurnIdle);
 
 
