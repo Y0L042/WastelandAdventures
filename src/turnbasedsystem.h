@@ -21,6 +21,7 @@ typedef struct TurnComponent {
 	double last_turn_time;
     ecs_world_t *world;
     ecs_entity_t entity_id;
+	ecs_ref_t *self_comp_ref; // a reference to this instance's ecs_ref_t
 	struct TurnManager *turn_manager;
 	enum TurnState current_turn_state;
 } TurnComponent;
@@ -37,7 +38,7 @@ typedef struct TurnCountComponent {
 } TurnCountComponent;
 
 void turnmanager_initialize(TurnManager *tm, ecs_world_t *world);
-void turnmanager_add_turncomponent(TurnManager *tm, ecs_ref_t *tc_ref, ecs_entity_t entity);
+ecs_ref_t* turnmanager_add_turncomponent(TurnManager *tm, ecs_entity_t entity);
 void turnmanager_remove_turncomponent(TurnManager *tm, ecs_ref_t *tc_ref);
 void turnmanager_next_turn(TurnManager *tm, ecs_ref_t *tc_ref, int inc);
 void turnmanager_print_turn_queue(TurnManager *tm);

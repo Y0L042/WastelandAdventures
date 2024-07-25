@@ -166,6 +166,7 @@ void create_player(ecs_world_t *world)
 			.tileset = &tileset 
 		}); 
     ecs_add(world, player, TurnComponent);  
+	turnmanager_add_turncomponent(&turnmanager, player);
 }
 
 void create_camera(ecs_world_t *world)
