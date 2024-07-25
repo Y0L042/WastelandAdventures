@@ -14,7 +14,6 @@ void turncomponentdata_initialize(
     tc_d->entity_id = entity_id;
 	tc_d->turn_manager = tm;
 	tc_d->current_turn_state = TURNSTATE_IDLE;
-	turnmanager_add_turncomponent(tm, tc);
 }
 
 void turncomponentdata_free(TurnComponentData *tc_d)
@@ -29,10 +28,10 @@ void turncomponentdata_inc_initiative(TurnComponentData *tc_d, int inc)
 
 int turncomponentdata_compare_initiatives(TurnComponentData *tc_d_a, TurnComponentData *tc_d_b)
 {
-    int result = tc_a->initiative - tc_b->initiative;
+    int result = tc_d_a->initiative - tc_d_b->initiative;
 	if (result == 0)
 	{
-		double time_diff = tc_a->last_turn_time - tc_b->last_turn_time;
+		double time_diff = tc_d_a->last_turn_time - tc_d_b->last_turn_time;
 		result = time_diff < 0 ? -1 : 1;
 	}
     return result;
@@ -64,11 +63,13 @@ void turncomponentdata_end_turn(TurnComponentData *tc_d, int inc)
 void turnmanager_initialize(TurnManager *tm, ecs_world_t *world)
 {
 	tm->world = world;
-	cvec_void_init(&tm->tc_refs);
-	cvec_void_init(&tm->tc_data);
 
-	TurnComponentData *tc_d = turncounter_create(tm, world);
-    turncomponentdata_start_turn(tc_d);
+	cvec_void_init(&tm->tc_refs);
+	cvec_void_init(&tm->tc_datas);
+	tm->tracked_tc_count = 0;
+
+	turncounter_create(tm, world);
+    turncomponentdata_start_turn(tm->turn_counter_ref);
 }
 
 /*
@@ -82,37 +83,43 @@ void turnmanager_initialize(TurnManager *tm, ecs_world_t *world)
 TurnComponentData* turnmanager_create_turncomponent(TurnManager *tm, ecs_entity_t entity)
 {
 	TurnComponentData *tc_d = (TurnComponentData *)malloc(sizeof(TurnComponentData));
-	cvec_void_add_data(&tm->tc_datas, tc_d);
+	turncomponentdata_initialize(tc_d, tm, entity, tm->world, 0); 
 
 	ecs_set(tm->world, entity, TurnComponent, { .tc_d = tc_d });
 	ecs_ref_t *tc_ref = (ecs_ref_t *)malloc(sizeof(ecs_ref_t));
 	*tc_ref = ecs_ref_init(tm->world, entity, TurnComponent);
-	cvec_void_add_data(&tm->tc_refs, tc_ref);
 	tc_d->tc_ref = tc_ref;
+
+	cvec_void_add_data(&tm->tc_datas, tc_d);
+	cvec_void_add_data(&tm->tc_refs, tc_ref);
+	tm->tracked_tc_count += 1;
 
 	return tc_d;
 }
 
-void turnmanager_add_turncomponent(TurnManager *tm, TurnComponent *tc)
-{
-	cvec_void_add_item(&tm->tc_ptr_registry, tc);
-}
 
-void turnmanager_remove_turncomponent(TurnManager *tm, TurnComponent *tc)
-{
-	for (int i = 0; i < tm->tc_ptr_registry.count; i++)
-	{
-		if (tc == tm->tc_ptr_registry.data[i])
-		{
-			cvec_void_remove_idx_noshrink(&tm->tc_ptr_registry, i);
-			return;
-		}
-	}
-}
+//void turnmanager_remove_turncomponent(TurnManager *tm, TurnComponent *tc)
+//{
+//	for (int i = 0; i < tm->tc_ptr_registry.count; i++)
+//	{
+//		if (tc == tm->tc_ptr_registry.data[i])
+//		{
+//			cvec_void_remove_idx_noshrink(&tm->tc_ptr_registry, i);
+//			return;
+//		}
+//	}
+//}
 
-void turnmanager_next_turn(TurnManager *tm, TurnComponent *tc, int inc)
+void turnmanager_end_turn(TurnManager *tm, int inc)
 {
-	turncomponent_end_turn(tc, inc);
+	/*
+	*	Find the current active turncomponent. end its turn. 
+	*	Sort the turncomponents based on initiative.
+	*	Then activate the next turncomponent.
+	*/
+	ecs_ref_t *active_tc_ref = (ecs_ref_t *)tm->tc_refs.data[tm->active_tc_idx];
+	TurnComponentData *active_tc_d = ecs_ref_get(tm->world, active_tc_ref, TurnComponentData);
+	turncomponentdata_end_turn(active_tc_d, inc);
 		
     //for (int i = 1; i < tm->tc_ptr_registry.count; i++) 
     //{
@@ -132,51 +139,50 @@ void turnmanager_next_turn(TurnManager *tm, TurnComponent *tc, int inc)
     //}
 	int min_initiative_idx = 0; 
 	int min_initiative = -1;
-	for (int i = 0; i < tm->tc_ptr_registry.count; i++)
+	for (int i = 0; i < tm->tracked_tc_count; i++)
 	{
-		log_debug("TurnComponent DEBUG");
 		/*
 		*	Loop thru each turncomponent. If that component has a lower initiative,
 		*	or older (smaller) last_turn_time, set its idx as min_initiative_idx.
 		*	It will be the next component to be TurnActive.
 		*/
-		TurnComponent *index_turncomp = (TurnComponent *)(tm->tc_ptr_registry.data[i]);
-		if (index_turncomp->initiative <= min_initiative || min_initiative < 0)
+		TurnComponentData *tc_d_i = (TurnComponentData *)(tm->tc_datas.data[i]);
+		if (tc_d_i->initiative <= min_initiative || min_initiative < 0)
 		{
 			int init_comp = turncomponent_compare_initiatives(
-					index_turncomp,
-					tm->tc_ptr_registry.data[min_initiative_idx]
+					tc_d_i,
+					tm->tc_datas.data[min_initiative_idx]
 				);
 			if (init_comp > 0)
 			{
 				min_initiative_idx = i;
-				min_initiative = index_turncomp->initiative;
+				min_initiative = tc_d_i->initiative;
 			}
 		}
 	}
 
-	if (tm->tc_ptr_registry.count > 0)
+	if (tm->tracted_tc_count > 0)
 	{
 		tm->active_tc_idx = min_initiative_idx;
-		TurnComponent *active_tc = tm->tc_ptr_registry.data[tm->active_tc_idx];
-		turncomponent_start_turn(active_tc);
+		TurnComponentData *next_tc_d = tm->tc_datas.data[tm->active_tc_idx];
+		turncomponentdata_start_turn(next_tc_d);
 	}
 	turnmanager_print_turn_queue(tm);
 }
 
 void turnmanager_print_turn_queue(TurnManager *tm)
 {
-	const TurnCountComponent *tcc = ecs_get(
+	const TurnCountComponent *tcc = ecs_ref_get(
 			tm->world, 
-			tm->turn_counter, 
+			tm->turn_counter_ref, 
 			TurnCountComponent
 		);
 	printf("Turn %d Queue:\n", tcc->count);
-	for (int i = 0; i < tm->tc_ptr_registry.count; i++)
+	for (int i = 0; i < tm->tracked_tc_count; i++)
 	{
-		TurnComponent *tc = tm->tc_ptr_registry.data[i];
-		int initiative = tc->initiative;
-		printf("Entity:\t%d | %p\ti:%d\n", (uint32_t)tc->entity_id, tc, initiative);
+		TurnComponentData *tc_d = tm->tc_datas.data[i];
+		int initiative = tc_d->initiative;
+		printf("Entity:\t%d | %p\ti:%d\n", (uint32_t)tc_d->entity_id, tc_d, initiative);
 	}
 	printf("TurnQueue End \n\n");
 }
@@ -185,5 +191,10 @@ void turncounter_create(TurnManager *tm, ecs_world_t *world)
 {
 	tm->turn_counter = ecs_new_id(world);
 	ecs_set(world, tm->turn_counter, TurnCountComponent, { .count = 0 });
+	
+	ecs_ref_t *tcntr_ref = (ecs_ref_t *)malloc(sizeof(ecs_ref_t));
+	*tcntr_ref = ecs_ref_init(tm->world, tm->turn_counter, TurnCountComponent);
+	tm->turn_counter_ref = tcntr_ref;
+
 	turnmanager_create_turncomponent(tm, tm->turn_counter);
 }

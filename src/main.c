@@ -125,8 +125,9 @@ void draw(double delta)
 
 
 	Color color;
-	const TurnComponent *tc = ecs_get(g_world, player, TurnComponent);
-	int active = (tc->current_turn_state == TURNSTATE_ACTIVE) ? 1 : 0;
+	const TurnComponent *player_tc = ecs_get(g_world, player, TurnComponent);
+	TurnComponentData *player_tc_d = player_tc->tc_d;
+	int active = (player_tc_d->current_turn_state == TURNSTATE_ACTIVE) ? 1 : 0;
 	if (active == 0)
 	{
 		color = RED;
