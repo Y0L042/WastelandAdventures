@@ -12,6 +12,7 @@
 
 extern ecs_entity_t g_ent_player;
 extern ecs_entity_t g_ent_camera;
+extern ecs_entity_t g_ent_dog;
 
 void ent_player_create(
 		ecs_entity_t *ent_player,
@@ -21,13 +22,19 @@ void ent_player_create(
 		Tileset *tileset
 	);
 
-
-
-
 void ent_camera_create(
 		ecs_entity_t *ent_camera,
 		ecs_world_t *world,
-		ecs_entity_t *entity_target
+		ecs_entity_t entity_target
+	);
+
+void ent_dog_create(
+		ecs_entity_t *ent_dog,
+		ecs_world_t *world, 
+		TurnManager *tm, 
+		Grid* grid_worldspace,
+		Tileset *tileset,
+		ecs_entity_t entity_target
 	);
 
 #endif // ENTITIES_H

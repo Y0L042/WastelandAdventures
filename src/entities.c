@@ -2,6 +2,7 @@
 
 ecs_entity_t g_ent_player;
 ecs_entity_t g_ent_camera;
+ecs_entity_t g_ent_dog;
 
 void ent_player_create(
 		ecs_entity_t *ent_player,
@@ -35,7 +36,7 @@ void ent_player_create(
 void ent_camera_create(
 		ecs_entity_t *ent_camera,
 		ecs_world_t *world,
-		ecs_entity_t *ent_target
+		ecs_entity_t entity_target
 	)
 {
 	*ent_camera = ecs_new_id(world);
@@ -48,7 +49,33 @@ void ent_camera_create(
 		};
 	ecs_set(world, *ent_camera, CameraComponent, { 
 			.camera = new_camera,
-			.target_entity = *ent_target,
+			.target_entity = entity_target,
 			.previous_target_entity = 0	
 		});
+}
+
+void ent_dog_create(
+		ecs_entity_t *ent_dog,
+		ecs_world_t *world, 
+		TurnManager *tm, 
+		Grid* grid_worldspace,
+		Tileset *tileset,
+		ecs_entity_t entity_target
+	)
+{
+	*ent_dog = ecs_new_id(world);
+	ecs_set(world, *ent_dog, Position, { .x = 0, .y = 0 });
+	ecs_set(world, *ent_dog, Velocity, { .x = 0, .y = 0 });
+	ecs_set(world, *ent_dog, GridPosition, { .x = 0, .y = 0 });
+	ecs_set(world, *ent_dog, GridComponent, {
+			.grid = grid_worldspace, 
+			.tile = NULL
+		});
+	ecs_set(world, *ent_dog, Glyph, {
+			.source_tile_x = 0,
+			.source_tile_y = 3,
+			.tileset = tileset
+		});
+	turnmanager_create_turncomponent(tm, *ent_dog);
+	turnmanager_disable_tc(tm, *ent_dog);
 }
