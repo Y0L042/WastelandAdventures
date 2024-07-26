@@ -8,6 +8,7 @@
 #include "flecs.h"
 
 #include "components.h"
+#include "entities.h"
 
 #include "grid.h"
 #include "glyph.h"
@@ -29,8 +30,6 @@ Tileset tileset;
 Glyph player_glyph;
 ecs_world_t *g_world;
 TurnManager turnmanager;
-ecs_entity_t player;
-ecs_entity_t camera;
 
 void initialize();
 void ready();
@@ -40,8 +39,6 @@ void physics_update(double delta);
 void draw(double delta);
 void quit();
 
-void create_player(ecs_world_t *world);
-void create_camera(ecs_world_t *world);
 
 
 int main()
@@ -58,7 +55,7 @@ int main()
 		update(frame_time);
 		physics_update(frame_time);
 
-		CameraComponent *cc = ecs_get_mut(g_world, camera, CameraComponent);
+		CameraComponent *cc = ecs_get_mut(g_world, g_ent_camera, CameraComponent);
 		Camera2D c = cc->camera;
 		BeginDrawing();
 			BeginMode2D(c);
@@ -92,8 +89,20 @@ void ready()
 	g_world = ecs_init();
 	create_components(g_world);
 	turnmanager_initialize(&turnmanager, g_world);
-	create_player(g_world);
-	create_camera(g_world);
+
+	ent_player_create(
+			&g_ent_player, 
+			g_world, 
+			&turnmanager, 
+			&grid_worldspace, 
+			&tileset
+		);
+
+	ent_camera_create(
+			&g_ent_camera, 
+			g_world,
+			&g_ent_player
+		);
 
 	log_debug("ready() - complete");
 }
@@ -108,14 +117,13 @@ void update(double delta)
 
 void physics_update(double delta)
 {
-	//log_debug("physics_update() - start");
-
+//	log_debug("physics_update() - start");
     handler_player_input(g_world);
 	handler_grid_move(g_world);
 	handler_camera_move(g_world);
 	handler_turncounter_increment(g_world);
 
-	//log_debug("physics_update() - end");
+//	log_debug("physics_update() - end");
 }
 
 void draw(double delta)
@@ -125,7 +133,7 @@ void draw(double delta)
 
 
 	Color color;
-	const TurnComponent *player_tc = ecs_get(g_world, player, TurnComponent);
+	const TurnComponent *player_tc = ecs_get(g_world, g_ent_player, TurnComponent);
 	TurnComponentData *player_tc_d = player_tc->tc_d;
 	int active = (player_tc_d->current_turn_state == TURNSTATE_ACTIVE) ? 1 : 0;
 	if (active == 0)
@@ -138,7 +146,7 @@ void draw(double delta)
 	}
 
 	float h_tile_size = (TILE_SIZE_X / 2) + 1;
-	const Position *p = ecs_get(g_world, player, Position);
+	const Position *p = ecs_get(g_world, g_ent_player, Position);
 	DrawCircleLines(p->x + h_tile_size, p->y + h_tile_size, h_tile_size * 1.25f, color);
 }
 
@@ -149,39 +157,3 @@ void quit()
 }
 
 
-void create_player(ecs_world_t *world)
-{
-	player = ecs_new_id(world);
-    ecs_add(world, player, TAG_Player);
-    ecs_set(world, player, Position, { .x = 0, .y = 0 });
-    ecs_set(world, player, Velocity, { .x = 0, .y = 0 });
-    ecs_set(world, player, GridPosition, { .x = 0, .y = 0 });
-    ecs_set(world, player, GridVelocity, { .x = 0, .y = 0 });
-    ecs_set(world, player, GridComponent, { 
-			.grid = &grid_worldspace, 
-			.tile = NULL 
-		});
-    ecs_set(world, player, Glyph, { 
-			.source_tile_x = 0, 
-			.source_tile_y = 4,
-			.tileset = &tileset 
-		}); 
-	turnmanager_create_turncomponent(&turnmanager, player);
-}
-
-void create_camera(ecs_world_t *world)
-{
-	camera = ecs_new_id(world);
-	
-	Camera2D new_camera = { 
-			(Vector2){ (g_SCREEN_WIDTH / 2), (g_SCREEN_HEIGHT / 2) },
-			(Vector2){ 0.0f, 0.0f },
-			0,
-			1
-		};
-	ecs_set(world, camera, CameraComponent, { 
-			.camera = new_camera,
-			.target_entity = player,
-			.previous_target_entity = 0	
-		});
-}

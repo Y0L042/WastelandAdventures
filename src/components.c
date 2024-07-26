@@ -72,7 +72,7 @@ void handler_camera_move(ecs_world_t *world)
 {
     ecs_query_t *query_camera_move = ecs_query(world, {
         .filter.terms = {
-            {ecs_id(CameraComponent) }
+            { ecs_id(CameraComponent) }
         }
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_camera_move);
@@ -83,7 +83,11 @@ void handler_camera_move(ecs_world_t *world)
 
 		for (int i = 0; i < it.count; i++)
 		{
-			const Position *target_pos = ecs_get_mut(world, cc[i].target_entity, Position);
+			const Position *target_pos = ecs_get_mut(
+					world, 
+					cc[i].target_entity, 
+					Position
+				);
 			if (target_pos)
 			{
 				Vector2 current_target = cc[i].camera.target;
