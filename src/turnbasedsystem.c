@@ -34,7 +34,7 @@ int turncomponentdata_compare_initiatives(TurnComponentData *tc_d_a, TurnCompone
 		double time_diff = tc_d_a->last_turn_time - tc_d_b->last_turn_time;
 		result = time_diff < 0 ? -1 : 1;
 	}
-    return result;
+    return result; // neg means a is smaller, pos means b is smaller
 }
 
 void turncomponentdata_change_state(TurnComponentData *tc_d, enum TurnState new_state)
@@ -121,31 +121,15 @@ void turnmanager_end_turn(TurnManager *tm, int inc)
 	TurnComponentData *active_tc_d = active_tc->tc_d;
 	turncomponentdata_end_turn(active_tc_d, inc);
 		
-    //for (int i = 1; i < tm->tc_ptr_registry.count; i++) 
-    //{
-    //    TurnComponent *key = tm->tc_ptr_registry.data[i];
-    //    int j = i - 1;
-    //    while (
-	//		j >= 0 
-	//		&& turncomponent_compare_initiatives(
-	//			tm->tc_ptr_registry.data[j], key
-	//		) > 0
-	//	) 
-    //    {
-    //        tm->tc_ptr_registry.data[j + 1] = tm->tc_ptr_registry.data[j];
-    //        j = j - 1;
-    //    }
-    //    tm->tc_ptr_registry.data[j + 1] = key;
-    //}
+	/*
+	*	Loop thru each turncomponent. If that component has a lower initiative,
+	*	or older (smaller) last_turn_time, set its idx as min_initiative_idx.
+	*	It will be the next component to be TurnActive.
+	*/
 	int min_initiative_idx = 0; 
 	int min_initiative = -1;
 	for (int i = 0; i < tm->tracked_tc_count; i++)
 	{
-		/*
-		*	Loop thru each turncomponent. If that component has a lower initiative,
-		*	or older (smaller) last_turn_time, set its idx as min_initiative_idx.
-		*	It will be the next component to be TurnActive.
-		*/
 		TurnComponentData *tc_d_i = (TurnComponentData *)(tm->tc_datas.data[i]);
 		if (tc_d_i->initiative <= min_initiative || min_initiative < 0)
 		{
@@ -153,10 +137,13 @@ void turnmanager_end_turn(TurnManager *tm, int inc)
 					tc_d_i,
 					tm->tc_datas.data[min_initiative_idx]
 				);
-			if (init_comp > 0)
+			log_info("i: %d", i);
+			log_info("init_comp: %d", init_comp);
+			if (init_comp < 0)
 			{
 				min_initiative_idx = i;
-				min_initiative = tc_d_i->initiative;
+				TurnComponentData *tc_d_current_min = cvec_void_get_item(tm->tc_datas, i, TurnComponentData);
+				min_initiative = tc_d_current_min->initiative;
 			}
 		}
 	}
