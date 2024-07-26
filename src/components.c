@@ -162,7 +162,7 @@ void handler_player_input(ecs_world_t *world)
 			gv[i].x = 0;
 			gv[i].y = 0;
 
-			TurnManager *tm = tc[i].turn_manager;
+			TurnManager *tm = tc[i].tc_d->turn_manager;
 
 			int moved = 0;
 			if (IsKeyDown(KEY_LEFT_SHIFT))
@@ -198,7 +198,7 @@ void handler_player_input(ecs_world_t *world)
 			{
 				static int cntr = 0;
 				//printf("Ending player turn:\t%d\n", ++cntr);
-				turnmanager_next_turn(tm, &tc[i], 50);
+				turnmanager_end_turn(tm, 50);
 				//turnmanager_print_turn_queue(tm);
 			}
 		}
@@ -223,10 +223,10 @@ void handler_turncounter_increment(ecs_world_t *world)
 
 		for (int i = 0; i < it.count; i++)
 		{
-			TurnManager *tm = tc[i].turn_manager;
+			TurnManager *tm = tc[i].tc_d->turn_manager;
 			tcntc[i].count += 1;
 			//printf("TurnCount:\t%d\n", tcntc[i].count);
-			turnmanager_next_turn(tm, &tc[i], 100);
+			turnmanager_end_turn(tm, 100);
 			//turnmanager_print_turn_queue(tm);
 		}
 	}
