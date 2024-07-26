@@ -101,9 +101,17 @@ void ready()
 	ent_camera_create(
 			&g_ent_camera, 
 			g_world,
-			&g_ent_player
+			g_ent_player
 		);
 
+	ent_dog_create(
+			&g_ent_dog,
+			g_world,
+			&turnmanager,
+			&grid_worldspace,
+			&tileset,
+			g_ent_player
+		);
 	log_debug("ready() - complete");
 }
 

@@ -8,6 +8,7 @@ ECS_COMPONENT_DECLARE(GridComponent);
 ECS_COMPONENT_DECLARE(Glyph);
 ECS_COMPONENT_DECLARE(CameraComponent);
 ECS_COMPONENT_DECLARE(TurnComponent);
+ECS_COMPONENT_DECLARE(TAG_TCEnable);
 ECS_COMPONENT_DECLARE(TurnCountComponent);
 
 ECS_ENTITY_DECLARE(TAG_Player);
@@ -24,6 +25,7 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, Glyph);
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
     ECS_COMPONENT_DEFINE(world, TurnComponent);
+ 	ECS_COMPONENT_DEFINE(world, TAG_TCEnable);
 	ECS_COMPONENT_DEFINE(world, TurnCountComponent);
 
     ECS_ENTITY_DEFINE(world, TAG_Player);
@@ -109,7 +111,8 @@ void handler_grid_move(ecs_world_t *world)
 			{ ecs_id(GridComponent) },
             { ecs_id(GridPosition) },
             { ecs_id(GridVelocity) },
-            { ecs_id(Position) }
+            { ecs_id(Position) },
+			{ ecs_id(TAG_TCEnable) }
         }
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_grid_move);

@@ -14,6 +14,7 @@ void turncomponentdata_initialize(
     tc_d->entity_id = entity_id;
 	tc_d->turn_manager = tm;
 	tc_d->current_turn_state = TURNSTATE_IDLE;
+	turncomponentdata_enable(tc_d);
 }
 
 void turncomponentdata_free(TurnComponentData *tc_d)
@@ -58,6 +59,15 @@ void turncomponentdata_end_turn(TurnComponentData *tc_d, int inc)
 	turncomponentdata_change_state(tc_d, TURNSTATE_IDLE);
 }
 
+void turncomponentdata_enable(TurnComponentData *tc_d)
+{
+	tc_d->enable = 1;
+}
+
+void turncomponentdata_disable(TurnComponentData *tc_d)
+{
+	tc_d->enable = 0;
+}
 
 
 void turnmanager_initialize(TurnManager *tm, ecs_world_t *world)
@@ -92,6 +102,8 @@ TurnComponentData* turnmanager_create_turncomponent(TurnManager *tm, ecs_entity_
 	cvec_void_add_item(&tm->tc_datas, tc_d);
 	cvec_void_add_item(&tm->tc_refs, tc_ref);
 	tm->tracked_tc_count += 1;
+
+	turnmanager_enable_tc(tm, entity);
 
 	return tc_d;
 }
@@ -131,6 +143,11 @@ void turnmanager_end_turn(TurnManager *tm, int inc)
 	for (int i = 0; i < tm->tracked_tc_count; i++)
 	{
 		TurnComponentData *tc_d_i = (TurnComponentData *)(tm->tc_datas.data[i]);
+		if (tc_d_i->enable == 0)
+		{
+			continue;
+		}
+		else 
 		if (tc_d_i->initiative <= min_initiative || min_initiative < 0)
 		{
 			int init_comp = turncomponentdata_compare_initiatives(
@@ -167,9 +184,25 @@ void turnmanager_print_turn_queue(TurnManager *tm)
 	{
 		TurnComponentData *tc_d = tm->tc_datas.data[i];
 		int initiative = tc_d->initiative;
-		printf("Entity:\t%d | %p\ti:%d\n", (uint32_t)tc_d->entity_id, tc_d, initiative);
+		printf("Entity:\t%d | %p\ti:%d\te:%d\n", (uint32_t)tc_d->entity_id, tc_d, initiative, tc_d->enable);
 	}
 	printf("TurnQueue End \n\n");
+}
+
+void turnmanager_enable_tc(TurnManager *tm, ecs_entity_t entity)
+{
+	ecs_add(tm->world, entity, TAG_TCEnable);
+	TurnComponent *tc = ecs_get(tm->world, entity, TurnComponent);
+	TurnComponentData *tc_d = tc->tc_d;
+	turncomponentdata_enable(tc_d);
+}
+
+void turnmanager_disable_tc(TurnManager *tm, ecs_entity_t entity)
+{
+	ecs_remove(tm->world, entity, TAG_TCEnable);
+	TurnComponent *tc = ecs_get(tm->world, entity, TurnComponent);
+	TurnComponentData *tc_d = tc->tc_d;
+	turncomponentdata_disable(tc_d);
 }
 
 void turncounter_create(TurnManager *tm, ecs_world_t *world)

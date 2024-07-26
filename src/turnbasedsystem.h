@@ -16,6 +16,7 @@ enum TurnState {
 
 struct TurnManager; // Forward Declaration
 typedef struct TurnComponentData {
+	int enable;
 	int initiative;	
 	double last_turn_time;
 	enum TurnState current_turn_state;
@@ -43,6 +44,8 @@ typedef struct TurnCountComponent {
 	uint16_t count; 
 } TurnCountComponent;
 
+typedef struct TAG_TCEnable { int empty; } TAG_TCEnable;
+
 void turncomponentdata_initialize(
 		TurnComponentData *tc_d, 
 		TurnManager *tm, 
@@ -56,12 +59,16 @@ int turncomponentdata_compare_initiatives(TurnComponentData *tc_d_a, TurnCompone
 void turncomponentdata_change_state(TurnComponentData *tc_d, enum TurnState new_state);
 void turncomponentdata_start_turn(TurnComponentData *tc_d);
 void turncomponentdata_end_turn(TurnComponentData *tc_d, int inc);
+void turncomponentdata_enable(TurnComponentData *tc_d);
+void turncomponentdata_disable(TurnComponentData *tc_d);
 
 void turnmanager_initialize(TurnManager *tm, ecs_world_t *world);
 TurnComponentData* turnmanager_create_turncomponent(TurnManager *tm, ecs_entity_t entity);
 //void turnmanager_remove_turncomponent(TurnManager *tm, TurnComponent *tc);
 void turnmanager_end_turn(TurnManager *tm, int inc);
 void turnmanager_print_turn_queue(TurnManager *tm);
+void turnmanager_enable_tc(TurnManager *tm, ecs_entity_t entity);
+void turnmanager_disable_tc(TurnManager *tm, ecs_entity_t entity);
 
 void turncounter_create(TurnManager *tm, ecs_world_t *world);
 

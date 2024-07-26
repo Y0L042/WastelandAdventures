@@ -35,6 +35,7 @@ extern ECS_COMPONENT_DECLARE(CameraComponent);
 extern ECS_COMPONENT_DECLARE(TurnComponent);
 typedef struct TurnCountComponent TurnCountComponent; // Forward Declaration
 extern ECS_COMPONENT_DECLARE(TurnCountComponent);
+extern ECS_COMPONENT_DECLARE(TAG_TCEnable);
 
 struct TAG_Player{ int empty; } ;
 extern ECS_ENTITY_DECLARE(TAG_Player);
