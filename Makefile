@@ -85,6 +85,22 @@ $(ASM_TARGET):  $(ASM_OBJ)
 	mkdir -p asm/bin
 	gcc $(ASM_OBJ) -o $@ $(LDFLAGS)
 
+
+# Release target
+release: $(TARGET)
+	@date=`date +%Y%m%d_%H%M`; \
+	release_dir="builds/build_$$date"; \
+	mkdir -p $$release_dir; \
+	cp $(TARGET) $$release_dir/; \
+	cp -r assets $$release_dir/; \
+	git log -1 > $$release_dir/git_commit_info.txt; \
+	if [ $$? -eq 0 ]; then \
+		echo "Release created successfully in $$release_dir"; \
+	else \
+		echo "Failed to create release"; \
+	fi
+
+
 # Phony targets
 .PHONY: clean all run asm_build asm_run clean_asm clean_bin clean_bin_int clean_asm_bin_int copy_asm disassemble
 

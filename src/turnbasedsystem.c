@@ -137,8 +137,6 @@ void turnmanager_end_turn(TurnManager *tm, int inc)
 					tc_d_i,
 					tm->tc_datas.data[min_initiative_idx]
 				);
-			log_info("i: %d", i);
-			log_info("init_comp: %d", init_comp);
 			if (init_comp < 0)
 			{
 				min_initiative_idx = i;

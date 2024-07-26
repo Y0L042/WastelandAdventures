@@ -8,6 +8,7 @@ asm/*
 bin-int/*
 bin/*
 vendor/*
+builds/*
 .vs/*
 
 !vendor/raylib5/*
