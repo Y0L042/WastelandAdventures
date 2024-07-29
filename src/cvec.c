@@ -1,5 +1,7 @@
 #include "cvec.h"
 
+#include <stdio.h>
+#include <limits.h>
 #include <stdlib.h>
 
 void cvec_int_init(CVecInt* cvec)
@@ -77,6 +79,37 @@ void cvec_int_remove_idx_noshrink(CVecInt* cvec, int idx)
 	cvec->count--;
 }
 
+void cvec_int_clear_idx(CVecInt *cvec, int idx)
+{
+	if (idx < 0 || idx >= cvec->count)
+	{
+		printf("Index out of bounds: %d\n", idx);
+		return;
+	}
+	cvec->data[idx] = INT_MIN;
+}
+
+void cvec_int_defragment(CVecInt *cvec)
+{
+	int count_sub = 0;
+	int i = 0;
+	while (i < cvec->count)
+	{
+		if (cvec->data[i] == INT_MIN)
+		{
+			cvec->data[i] = cvec->data[i+1];
+			cvec->data[i+1] = INT_MIN;
+			count_sub++;
+		}
+		else 
+		{
+			i++;
+		}
+	}
+
+	cvec->count -= count_sub;
+	if (cvec->count < 0) { printf("Defragment fault!"); }
+}
 
 
 
@@ -155,6 +188,37 @@ void cvec_void_remove_idx_noshrink(CVecVoid* cvec, int idx)
 	cvec->count--;
 }
 
+void cvec_void_clear_idx(CVecVoid *cvec, int idx)
+{
+	if (idx < 0 || idx >= cvec->count)
+	{
+		printf("Index out of bounds: %d\n", idx);
+		return;
+	}
+	cvec->data[idx] = NULL;
+}
+
+void cvec_void_defragment(CVecVoid *cvec)
+{
+	int count_sub = 0;
+	int i = 0;
+	while (i < cvec->count)
+	{
+		if (cvec->data[i] == NULL)
+		{
+			cvec->data[i] = cvec->data[i+1];
+			cvec->data[i+1] = NULL;
+			count_sub++;
+		}
+		else 
+		{
+			i++;
+		}
+	}
+
+	cvec->count -= count_sub;
+	if (cvec->count < 0) { printf("Defragment fault!"); }
+}
 
 
 
