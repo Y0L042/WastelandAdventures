@@ -52,14 +52,15 @@ void tile_add_gc(Tile *tile, ecs_ref_t *gc_ref)
 	}
 }
 
-void tile_remove_gc(Tile *tile, ecs_ref_t *gc_refs)
+void tile_remove_gc(Tile *tile, ecs_ref_t *gc_ref)
 {
 	for (int i = 0; i < tile->gc_refs.count; i++)
 	{
-		if (tile->gc_refs.data[i] == entity)
+		if (tile->gc_refs.data[i] == gc_ref)
 		{
 			cvec_void_clear_idx(&tile->gc_refs, i);
-			tile->collision_layer = tile->collision_layer - ent_coll_layer;
+			GridComponentData *gc_d = gc_ref_data(tile->world, gc_ref);
+			tile->collision_layer = tile->collision_layer - gc_d->collision_layer;
 			break;
 		}
 	}
@@ -68,7 +69,14 @@ void tile_remove_gc(Tile *tile, ecs_ref_t *gc_refs)
 
 
 
-void grid_initialize(Grid *grid, ecs_world_t *world, int width, int height, int tile_width, int tile_height)
+void grid_initialize(
+        Grid *grid, 
+        ecs_world_t *world, 
+        int width, 
+        int height, 
+        int tile_width, 
+        int tile_height
+    )
 {
 	grid->uuid = uuid_generate();
 	grid->world = world;
@@ -118,7 +126,7 @@ void grid_initialize_tiles(Grid *grid, int tile_width, int tile_height)
 			int pos_y = y * tile_height;
 
 			Tile *tile = (Tile *)malloc(sizeof(Tile));
-			tile_initialize(tile, pos_x, pos_y, tile_width, tile_height, RAYWHITE);
+			tile_initialize(tile, grid->world, pos_x, pos_y, tile_width, tile_height, RAYWHITE);
 			grid->tiles[x][y] = tile;
 		}
 	}
@@ -138,29 +146,30 @@ void grid_draw(Grid *grid)
 GridComponentData* grid_create_gridcomponent(Grid *grid, ecs_entity_t entity)
 {
 	GridComponentData *gc_d = (GridComponentData *)malloc(sizeof(GridComponentData));
-	gridcomponentdata_initialize(gc_d, grid, entity);
+	gridcomponentdata_initialize(gc_d, grid, entity, 0, 0);
 
 	ecs_set(grid->world, entity, GridComponent, { .gc_d = gc_d });
 	ecs_ref_t *gc_ref = (ecs_ref_t *)malloc(sizeof(ecs_ref_t));
 	*gc_ref = ecs_ref_init(grid->world, entity, GridComponent);
 	gc_d->gc_ref = gc_ref;
 
-	// add gridcomponent to tiles...
-
+    return gc_d;
 }
 
 Tile* grid_move_entity(
 		Grid *grid, 
-		ecs_entity_t entity,
+		ecs_ref_t *gc_ref,
 		int old_x, int old_y,
 		int new_x, int new_y
 	)
 {
 	Tile *old_t = grid_get_tile_from_coords(grid, old_x, old_y);
-	tile_remove_entity(old_t, entity);
+	tile_remove_gc(old_t, gc_ref);
 	
 	Tile *new_t = grid_get_tile_from_coords(grid, new_x, new_y);
-	tile_add_entity(new_t, entity);
+	tile_add_gc(new_t, gc_ref);
+	
+	return new_t;
 }
 
 Tile* grid_get_tile_from_coords(Grid *grid, int x, int y)
@@ -172,11 +181,13 @@ Tile* grid_get_tile_from_coords(Grid *grid, int x, int y)
 void gridcomponentdata_initialize(
 		GridComponentData *gc_d, 
 		Grid *grid, 
+		ecs_entity_t entity,
 		int pos_x, 
 		int pos_y
 	)
 {
-
+    gc_d->grid = grid;
+    gc_d->entity = entity;
 }
 
 void gridcomponent_initialize(GridComponent *gc, GridComponentData *gc_d)

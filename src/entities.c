@@ -12,22 +12,23 @@ void ent_player_create(
 		Tileset *tileset
 	)
 {
-	*ent_player = ecs_new_id(world);
+//    log_debug("ent_player_create START");
+	
+    *ent_player = ecs_new_id(world);
     ecs_add(world, *ent_player, TAG_Player);
     ecs_set(world, *ent_player, Position, { .x = 0, .y = 0 });
     ecs_set(world, *ent_player, Velocity, { .x = 0, .y = 0 });
     ecs_set(world, *ent_player, GridPosition, { .x = 0, .y = 0 });
     ecs_set(world, *ent_player, GridVelocity, { .x = 0, .y = 0 });
-    ecs_set(world, *ent_player, GridComponent, { 
-			.grid = grid_worldspace, 
-			.tile = NULL 
-		});
     ecs_set(world, *ent_player, Glyph, { 
 			.source_tile_x = 0, 
 			.source_tile_y = 4,
 			.tileset = tileset 
 		}); 
+    grid_create_gridcomponent(grid_worldspace, *ent_player);
 	turnmanager_create_turncomponent(tm, *ent_player);
+    
+//    log_debug("ent_player_create END");
 }
 
 
@@ -67,10 +68,6 @@ void ent_dog_create(
 	ecs_set(world, *ent_dog, Position, { .x = 0, .y = 0 });
 	ecs_set(world, *ent_dog, Velocity, { .x = 0, .y = 0 });
 	ecs_set(world, *ent_dog, GridPosition, { .x = 0, .y = 0 });
-	ecs_set(world, *ent_dog, GridComponent, {
-			.grid = grid_worldspace, 
-			.tile = NULL
-		});
 	ecs_set(world, *ent_dog, Glyph, {
 			.source_tile_x = 0,
 			.source_tile_y = 3,

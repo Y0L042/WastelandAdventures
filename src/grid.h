@@ -61,11 +61,21 @@ int tile_test_for_collision(Tile *tile, ecs_ref_t *gc_ref);
 void tile_add_gc(Tile *tile, ecs_ref_t *gc_ref);
 void tile_remove_gc(Tile *tile, ecs_ref_t *gc_ref);
 
-void grid_initialize(Grid *grid, ecs_world_t *world, int width, int height, int tile_width, int tile_height);
+void grid_initialize(
+        Grid *grid, 
+        ecs_world_t *world, 
+        int width, 
+        int height, 
+        int tile_width, 
+        int tile_height
+    );
 void grid_initialize_tiles(Grid *grid, int tile_width, int tile_height);
 void grid_free(Grid *grid);
 void grid_draw(Grid *grid);
-GridComponentData* grid_create_gridcomponent(Grid *grid, ecs_entity_t entity);
+GridComponentData* grid_create_gridcomponent(
+        Grid *grid, 
+        ecs_entity_t entity 
+    );
 Tile* grid_move_entity(
 		Grid *grid, 
 		ecs_ref_t *gc_ref,
@@ -77,6 +87,7 @@ Tile* grid_get_tile_from_coords(Grid *grid, int x, int y);
 void gridcomponentdata_initialize(
 		GridComponentData *gc_d, 
 		Grid *grid, 
+		ecs_entity_t entity,
 		int pos_x, 
 		int pos_y
 	);

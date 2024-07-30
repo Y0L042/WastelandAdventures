@@ -81,13 +81,21 @@ void ready()
 {
 	log_debug("ready() - start");
 
-	grid_initialize(&grid_worldspace, WORLDSPACE_SIZE_X, WORLDSPACE_SIZE_Y, TILE_SIZE_X, TILE_SIZE_Y);
+	g_world = ecs_init();
+	create_components(g_world);
+
+	grid_initialize(
+            &grid_worldspace, 
+            g_world,
+            WORLDSPACE_SIZE_X, 
+            WORLDSPACE_SIZE_Y, 
+            TILE_SIZE_X, 
+            TILE_SIZE_Y
+        );
 //	grid_initialize_tiles(&grid_worldspace, TILE_SIZE_X, TILE_SIZE_Y); 
 
 	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
 
-	g_world = ecs_init();
-	create_components(g_world);
 	turnmanager_initialize(&turnmanager, g_world);
 
 	ent_player_create(

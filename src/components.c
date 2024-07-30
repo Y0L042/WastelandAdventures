@@ -129,12 +129,17 @@ void handler_grid_move(ecs_world_t *world)
 
 			gp[i].x += gv[i].x;
 			gp[i].y += gv[i].y;
-
-			if (gc[i].grid) 
+            
+            Grid *grid = gc[i].gc_d->grid;
+			if (grid) 
 			{
-				p[i].x = gp[i].x * gc[i].grid->tile_width;
-				p[i].y = gp[i].y * gc[i].grid->tile_height;
+				p[i].x = gp[i].x * grid->tile_width;
+				p[i].y = gp[i].y * grid->tile_height;
 			}
+            else
+            {
+                log_warn("Grid not found.");
+            }
 
 			int x = gp[i].x;
 			int y = gp[i].y;
