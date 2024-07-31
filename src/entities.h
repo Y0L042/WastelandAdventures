@@ -37,4 +37,12 @@ void ent_dog_create(
 		ecs_entity_t entity_target
 	);
 
+void ent_wall_perm_create(
+        ecs_entity_t *ent_wall_perm,
+        ecs_world_t *world,
+        Grid *grid_worldspace,
+        Tileset *tileset,
+        int grid_x, int grid_y
+    );
+
 #endif // ENTITIES_H

@@ -76,3 +76,22 @@ void ent_dog_create(
 	turnmanager_create_turncomponent(tm, *ent_dog);
 	turnmanager_disable_tc(tm, *ent_dog);
 }
+
+void ent_wall_perm_create(
+        ecs_entity_t *ent_wall_perm,
+        ecs_world_t *world,
+        Grid *grid_worldspace,
+        Tileset *tileset,
+        int grid_x, int grid_y
+    )
+{
+   *ent_wall_perm = ecs_new_id(world);
+   ecs_add(world, *ent_wall_perm, Position);
+   ecs_set(world, *ent_wall_perm, GridPosition, { .x = grid_x, .y = grid_y });
+   ecs_set(world, *ent_wall_perm, Glyph, {
+           .source_tile_x = 0,
+           .source_tile_y = 5,
+           .tileset = tileset
+        });
+   grid_create_gridcomponent(grid_worldspace, ent_wall_perm);    
+}
