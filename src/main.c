@@ -84,6 +84,11 @@ void ready()
 	g_world = ecs_init();
 	create_components(g_world);
 
+
+	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
+
+	turnmanager_initialize(&turnmanager, g_world);
+
 	grid_initialize(
             &grid_worldspace, 
             g_world,
@@ -92,11 +97,6 @@ void ready()
             TILE_SIZE_X, 
             TILE_SIZE_Y
         );
-//	grid_initialize_tiles(&grid_worldspace, TILE_SIZE_X, TILE_SIZE_Y); 
-
-	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
-
-	turnmanager_initialize(&turnmanager, g_world);
 
 	ent_player_create(
 			&g_ent_player, 

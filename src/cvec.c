@@ -89,23 +89,26 @@ void cvec_int_clear_idx(CVecInt *cvec, int idx)
 	cvec->data[idx] = INT_MIN;
 }
 
-void cvec_int_defragment(CVecInt *cvec)
+void cvec_int_defragment_ord(CVecInt *cvec)
 {
 	int count_sub = 0;
 	int i = 0;
-	while (i < cvec->count)
-	{
-		if (cvec->data[i] == INT_MIN)
-		{
-			cvec->data[i] = cvec->data[i+1];
-			cvec->data[i+1] = INT_MIN;
-			count_sub++;
-		}
-		else 
-		{
-			i++;
-		}
-	}
+    for (i; i < cvec->count; i++)
+    {
+        int j = i;
+        while (j > 0)
+        {
+            if (cvec->data[j] == INT_MIN) { break; }
+            else
+            if (cvec->data[j-1] == INT_MIN)
+            {
+                cvec->data[j-1] = cvec->data[j];
+                cvec->data[j] = INT_MIN;
+                count_sub++;
+            }
+            j--;
+        }
+    }
 
 	cvec->count -= count_sub;
 	if (cvec->count < 0) { printf("Defragment fault!"); }
@@ -198,26 +201,29 @@ void cvec_void_clear_idx(CVecVoid *cvec, int idx)
 	cvec->data[idx] = NULL;
 }
 
-void cvec_void_defragment(CVecVoid *cvec)
+void cvec_void_defragment_ord(CVecVoid *cvec)
 {
 	int count_sub = 0;
-	int i = 0;
-	while (i < cvec->count)
-	{
-		if (cvec->data[i] == NULL)
-		{
-			cvec->data[i] = cvec->data[i+1];
-			cvec->data[i+1] = NULL;
-			count_sub++;
-		}
-		else 
-		{
-			i++;
-		}
-	}
+	int i = 1;
+    for (i; i < cvec->count; i++)
+    {
+        int j = i;
+        while (j > 0)
+        {
+            if (cvec->data[j] == NULL) { break; }
+            else
+            if (cvec->data[j-1] == NULL)
+            {
+                cvec->data[j-1] = cvec->data[j];
+                cvec->data[j] = NULL;
+                count_sub++;
+            }
+            j--;
+        }
+    }
 
 	cvec->count -= count_sub;
-	if (cvec->count < 0) { printf("Defragment fault!"); }
+	if (cvec->count < 0) { printf("Defragment fault!\n"); }
 }
 
 

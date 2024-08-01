@@ -18,7 +18,7 @@ void ent_player_create(
 		ecs_entity_t *ent_player,
 		ecs_world_t *world, 
 		TurnManager *tm, 
-		Grid* grid_worldspace,
+		Grid* grid,
 		Tileset *tileset
 	);
 
@@ -32,7 +32,7 @@ void ent_dog_create(
 		ecs_entity_t *ent_dog,
 		ecs_world_t *world, 
 		TurnManager *tm, 
-		Grid* grid_worldspace,
+		Grid* grid,
 		Tileset *tileset,
 		ecs_entity_t entity_target
 	);
@@ -40,7 +40,7 @@ void ent_dog_create(
 void ent_wall_perm_create(
         ecs_entity_t *ent_wall_perm,
         ecs_world_t *world,
-        Grid *grid_worldspace,
+        Grid *grid,
         Tileset *tileset,
         int grid_x, int grid_y
     );

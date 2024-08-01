@@ -15,8 +15,8 @@ void grid_initialize(
     grid->tile_width = tile_width;
     grid->tile_height = tile_height;
 
-    _grid_alloc_arr_coll_masks(grid->arr_coll_masks, width, height);
-    _grid_alloc_arr_entity_refs(grid->arr_entity_refs, width, height);
+    _grid_alloc_arr_coll_masks(&grid->arr_coll_masks, width, height);
+    _grid_alloc_arr_entity_refs(&grid->arr_entity_refs, width, height);
 }
 
 void grid_free(Grid *grid)
@@ -48,7 +48,9 @@ GridComponentData* grid_create_gridcomponent(
 {
     GridComponentData *gc_d = (GridComponentData *)malloc(sizeof(GridComponentData));
     gridcomponentdata_initialize(gc_d, grid, entity);
-    ecs_set(grid->world, entity_ptr, GridComponent, { .gc_d = gc_d });
+    log_debug("1\tDEBUG");
+    ecs_set(grid->world, entity, GridComponent, { .gc_d = gc_d });
+    log_debug("2\tDEBUG");
 
     return gc_d;
 }
@@ -74,13 +76,13 @@ void _grid_alloc_arr_coll_masks(
     )
 {
     *grid_arr_coll_masks = (int **)malloc(sizeof(int *) * y_count);
-    if (*grid_arr_coll_masks == NULL) { log_error("MemAlloc failed!\n"); exit(1); }
+    if (*grid_arr_coll_masks == NULL) { log_warn("MemAlloc failed!\n"); exit(1); }
     for (int y_idx = 0; y_idx < y_count; y_idx++)
     {
         (*grid_arr_coll_masks)[y_idx] = (int *)malloc(sizeof(int) * x_count);
         if ((*grid_arr_coll_masks)[y_idx] == NULL)
         {
-            log_error("MemAlloc failed!\n"); 
+            log_warn("MemAlloc failed!\n"); 
             exit(1); 
         }
     }
@@ -93,13 +95,13 @@ void _grid_alloc_arr_entity_refs(
     )
 {
     *grid_arr_entity_refs = (CVecVoid **)malloc(sizeof(CVecVoid *) * y_count);
-    if (grid_arr_entity_refs == NULL) { log_error("MemAlloc failed!\n"); exit(1); }
+    if (grid_arr_entity_refs == NULL) { log_warn("MemAlloc failed!\n"); exit(1); }
     for (int y_idx = 0; y_idx < y_count; y_idx++)
     {
         (*grid_arr_entity_refs)[y_idx] = (CVecVoid *)malloc(sizeof(CVecVoid) * x_count);
         if ((*grid_arr_entity_refs)[y_idx] == NULL)
         {
-            log_error("MemAlloc failed!\n"); 
+            log_warn("MemAlloc failed!\n"); 
             exit(1); 
         }
     }

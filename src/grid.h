@@ -3,8 +3,9 @@
 
 #include "cvec.h"
 #include <raylib.h>
-
-
+#include "flecs.h"
+#include "log.h"
+#include "components.h"
 
 typedef struct Grid {
 	ecs_world_t *world;

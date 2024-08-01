@@ -21,7 +21,9 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, Velocity);
 	ECS_COMPONENT_DEFINE(world, GridPosition);
 	ECS_COMPONENT_DEFINE(world, GridVelocity);
+    log_debug("1\tDEBUG");
 	ECS_COMPONENT_DEFINE(world, GridComponent);
+    log_debug("2\tDEBUG");
 	ECS_COMPONENT_DEFINE(world, Glyph);
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
     ECS_COMPONENT_DEFINE(world, TurnComponent);
