@@ -39,7 +39,7 @@ void physics_update(double delta);
 void draw(double delta);
 void quit();
 
-
+void create_walls();
 
 int main()
 {
@@ -120,6 +120,8 @@ void ready()
 			&tileset,
 			g_ent_player
 		);
+
+
 	log_debug("ready() - complete");
 }
 
@@ -173,3 +175,7 @@ void quit()
 }
 
 
+void create_walls()
+{
+
+}

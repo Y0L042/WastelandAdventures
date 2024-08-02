@@ -8,6 +8,7 @@
 #include "grid.h"
 #include "glyph.h"
 #include "turnbasedsystem.h"
+#include "collision.h"
 
 typedef Vector2 Position;
 extern ECS_COMPONENT_DECLARE(Position);
@@ -24,6 +25,10 @@ extern ECS_COMPONENT_DECLARE(GridVelocity);
 extern ECS_COMPONENT_DECLARE(GridComponent);
 
 extern ECS_COMPONENT_DECLARE(Glyph);
+
+extern ECS_COMPONENT_DECLARE(CollisionComponent);
+extern ECS_COMPONENT_DECLARE(CollisionLayer);
+extern ECS_COMPONENT_DECLARE(CollisionMask);
 
 typedef struct CameraComponent{
 	Camera2D camera;

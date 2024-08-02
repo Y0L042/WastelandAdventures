@@ -41,6 +41,31 @@ void grid_draw(Grid *grid)
     }
 }
 
+int grid_test_move(Grid *grid, coll_bits_t coll_mask, int x_coord, int y_coord)
+{
+    int idx = grid_c2i(grid, x_coord, y_coord);
+    coll_bits_t grid_coll_layer = grid->arr_coll_masks[idx];
+
+    return (grid_coll_layer & coll_mask);
+}
+
+// Coordinates to Index
+int grid_c2i(Grid *grid, int x, int y)
+{
+    int idx = grid->width * y + x;
+
+    return idx;
+}
+
+// Index to Coordinates
+void grid_i2c(Grid *grid, int idx, int *x_coord, int *y_coord)
+{
+    *x_coord = (int)(idx % grid->width);
+    *y_coord = (int)(idx / grid->width);
+}
+
+
+
 GridComponentData* grid_create_gridcomponent(
         Grid *grid, 
         ecs_entity_t entity 
@@ -48,9 +73,7 @@ GridComponentData* grid_create_gridcomponent(
 {
     GridComponentData *gc_d = (GridComponentData *)malloc(sizeof(GridComponentData));
     gridcomponentdata_initialize(gc_d, grid, entity);
-    log_debug("1\tDEBUG");
     ecs_set(grid->world, entity, GridComponent, { .gc_d = gc_d });
-    log_debug("2\tDEBUG");
 
     return gc_d;
 }
@@ -70,41 +93,23 @@ void gridcomponentdata_initialize(
 
 
 void _grid_alloc_arr_coll_masks(
-        int ***grid_arr_coll_masks,
+        int **grid_arr_coll_masks,
         int x_count,
         int y_count
     )
 {
-    *grid_arr_coll_masks = (int **)malloc(sizeof(int *) * y_count);
-    if (*grid_arr_coll_masks == NULL) { log_warn("MemAlloc failed!\n"); exit(1); }
-    for (int y_idx = 0; y_idx < y_count; y_idx++)
-    {
-        (*grid_arr_coll_masks)[y_idx] = (int *)malloc(sizeof(int) * x_count);
-        if ((*grid_arr_coll_masks)[y_idx] == NULL)
-        {
-            log_warn("MemAlloc failed!\n"); 
-            exit(1); 
-        }
-    }
+    long int area = ((long int)x_count) * ((long int)y_count);
+    *grid_arr_coll_masks = (int *)malloc(sizeof(int) * area);
 }
 
 void _grid_alloc_arr_entity_refs(
-        CVecVoid ***grid_arr_entity_refs,
+        CVecVoid **grid_arr_entity_refs,
         int x_count,
         int y_count
     )
 {
-    *grid_arr_entity_refs = (CVecVoid **)malloc(sizeof(CVecVoid *) * y_count);
-    if (grid_arr_entity_refs == NULL) { log_warn("MemAlloc failed!\n"); exit(1); }
-    for (int y_idx = 0; y_idx < y_count; y_idx++)
-    {
-        (*grid_arr_entity_refs)[y_idx] = (CVecVoid *)malloc(sizeof(CVecVoid) * x_count);
-        if ((*grid_arr_entity_refs)[y_idx] == NULL)
-        {
-            log_warn("MemAlloc failed!\n"); 
-            exit(1); 
-        }
-    }
+    long int area = ((long int)x_count) * ((long int)y_count);
+    *grid_arr_entity_refs = (CVecVoid *)malloc(sizeof(CVecVoid) * area);
 }
 
 

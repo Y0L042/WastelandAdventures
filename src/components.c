@@ -10,6 +10,9 @@ ECS_COMPONENT_DECLARE(CameraComponent);
 ECS_COMPONENT_DECLARE(TurnComponent);
 ECS_COMPONENT_DECLARE(TAG_TCEnable);
 ECS_COMPONENT_DECLARE(TurnCountComponent);
+ECS_COMPONENT_DECLARE(CollisionComponent);
+ECS_COMPONENT_DECLARE(CollisionLayer);
+ECS_COMPONENT_DECLARE(CollisionMask);
 
 ECS_ENTITY_DECLARE(TAG_Player);
 ECS_ENTITY_DECLARE(TAG_TurnActive);
@@ -29,6 +32,9 @@ void create_components(ecs_world_t *world)
     ECS_COMPONENT_DEFINE(world, TurnComponent);
  	ECS_COMPONENT_DEFINE(world, TAG_TCEnable);
 	ECS_COMPONENT_DEFINE(world, TurnCountComponent);
+    ECS_COMPONENT_DEFINE(world, CollisionComponent);
+    ECS_COMPONENT_DEFINE(world, CollisionLayer);
+    ECS_COMPONENT_DEFINE(world, CollisionMask);
 
     ECS_ENTITY_DEFINE(world, TAG_Player);
     ECS_ENTITY_DEFINE(world, TAG_TurnActive);

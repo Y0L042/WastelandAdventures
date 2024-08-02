@@ -6,11 +6,12 @@
 #include "flecs.h"
 #include "log.h"
 #include "components.h"
+#include "collision.h"
 
 typedef struct Grid {
 	ecs_world_t *world;
-    int **arr_coll_masks;
-    CVecVoid **arr_entity_refs;
+    int *arr_coll_masks;
+    CVecVoid *arr_entity_refs;
 	int width;
 	int height;
 	int tile_width;
@@ -42,7 +43,9 @@ GridComponentData* grid_create_gridcomponent(
         Grid *grid, 
         ecs_entity_t entity 
     );
-
+int grid_test_move(Grid *grid, coll_bits_t coll_mask, int x_coord, int y_coord);
+int grid_c2i(Grid *grid, int x, int y);
+void grid_i2c(Grid *grid, int idx, int *x_coord, int *y_coord);
 
 
 void gridcomponentdata_initialize(
@@ -54,12 +57,12 @@ void gridcomponentdata_initialize(
 
 
 void _grid_alloc_arr_coll_masks(
-        int ***grid_arr_coll_masks, // Ptr to 2D arr
+        int **grid_arr_coll_masks, // Ptr to 2D arr
         int x_count,
         int y_count
     );
 void _grid_alloc_arr_entity_refs(
-        CVecVoid ***grid_arr_entity_refs, // Ptr to 2D arr
+        CVecVoid **grid_arr_entity_refs, // Ptr to 2D arr
         int x_count,
         int y_count
     );
