@@ -5,10 +5,10 @@
 #include <raymath.h>
 #include "log.h"
 #include "flecs.h"
+#include "collision.h"
 #include "grid.h"
 #include "glyph.h"
 #include "turnbasedsystem.h"
-#include "collision.h"
 
 typedef Vector2 Position;
 extern ECS_COMPONENT_DECLARE(Position);

@@ -34,3 +34,15 @@ int collisiondata_check_collision(
 
     return (mask & layer);
 }
+
+coll_bits_t coll_bits_remove_layer(coll_bits_t layer_a, coll_bits_t layer_b)
+{
+    return (layer_a & ~layer_b);
+}
+
+coll_bits_t coll_bits_add_layer(coll_bits_t layer_a, coll_bits_t layer_b)
+{
+    return (layer_a | layer_b);
+}
+
+

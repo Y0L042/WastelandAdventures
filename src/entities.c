@@ -27,6 +27,7 @@ void ent_player_create(
 		}); 
     grid_create_gridcomponent(grid, *ent_player);
 	turnmanager_create_turncomponent(tm, *ent_player);
+    coll_component_create(world, *ent_player, 1);
     
 //    log_debug("ent_player_create END");
 }
@@ -86,7 +87,9 @@ void ent_wall_perm_create(
     )
 {
    *ent_wall_perm = ecs_new_id(world);
-   ecs_add(world, *ent_wall_perm, Position);
+   int world_x, world_y;
+   grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
+   ecs_set(world, *ent_wall_perm, Position, { .x = world_x, .y = world_y });
    ecs_set(world, *ent_wall_perm, GridPosition, { .x = grid_x, .y = grid_y });
    ecs_set(world, *ent_wall_perm, Glyph, {
            .source_tile_x = 0,
@@ -94,4 +97,6 @@ void ent_wall_perm_create(
            .tileset = tileset
         });
    grid_create_gridcomponent(grid, *ent_wall_perm);    
+   coll_component_create(world, *ent_wall_perm, 1);
+   grid_move_to(grid, 1, grid_x, grid_y); 
 }

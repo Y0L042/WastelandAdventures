@@ -43,10 +43,18 @@ GridComponentData* grid_create_gridcomponent(
         Grid *grid, 
         ecs_entity_t entity 
     );
-int grid_test_move(Grid *grid, coll_bits_t coll_mask, int x_coord, int y_coord);
+int grid_test_place(Grid *grid, int coll_mask, int x_coord, int y_coord);
+void grid_move_to(Grid *grid, int coll_layer, int x_coord, int y_coord);
+void grid_move_from(Grid *grid, int coll_layer, int x_coord, int y_coord);
 int grid_c2i(Grid *grid, int x, int y);
 void grid_i2c(Grid *grid, int idx, int *x_coord, int *y_coord);
-
+void grid_pos_to_world_pos(
+        Grid *grid, 
+        int grid_x, 
+        int grid_y, 
+        int *world_x, 
+        int *world_y
+    );
 
 void gridcomponentdata_initialize(
         GridComponentData *gc_d,

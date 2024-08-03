@@ -37,6 +37,8 @@ int collisiondata_check_collision(
         CollisionData *ent_A_mask, 
         CollisionData *ent_B_layer
     ); 
+coll_bits_t coll_bits_remove_layer(coll_bits_t layer_a, coll_bits_t layer_b);
+coll_bits_t coll_bits_add_layer(coll_bits_t layer_a, coll_bits_t layer_b);
 
 
 

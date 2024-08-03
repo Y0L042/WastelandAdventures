@@ -120,7 +120,8 @@ void handler_grid_move(ecs_world_t *world)
             { ecs_id(GridPosition) },
             { ecs_id(GridVelocity) },
             { ecs_id(Position) },
-			{ ecs_id(TAG_TCEnable) }
+			{ ecs_id(TAG_TCEnable) },
+            { ecs_id(CollisionComponent) }
         }
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_grid_move);
@@ -130,17 +131,36 @@ void handler_grid_move(ecs_world_t *world)
 		GridPosition *gp = ecs_field(&it, GridPosition, 2);
 		GridVelocity *gv = ecs_field(&it, GridVelocity, 3);
 		Position *p = ecs_field(&it, Position, 4);
+        CollisionComponent *cc = ecs_field(&it, CollisionComponent, 6);
 
 		for (int i = 0; i < it.count; i++)
 		{
 			if (gv[i].x == 0 && gv[i].y == 0) { continue; }
-
-			gp[i].x += gv[i].x;
-			gp[i].y += gv[i].y;
             
             Grid *grid = gc[i].gc_d->grid;
+            CollisionData *c_d = cc[i].c_d;
 			if (grid) 
-			{
+			{ 
+                int test_x = gp[i].x + gv[i].x;
+                int test_y = gp[i].y + gv[i].y;
+                int move_test_result = grid_test_place(
+                        grid, 
+                        c_d->coll_bits, 
+                        test_x, 
+                        test_y
+                    );
+                if (move_test_result != 0) 
+                {
+                    continue; 
+                }
+
+                grid_move_from(grid, c_d->coll_bits, gp[i].x, gp[i].y);
+
+                gp[i].x += gv[i].x;
+                gp[i].y += gv[i].y;
+                
+                grid_move_to(grid, c_d->coll_bits, gp[i].x, gp[i].y);
+
 				p[i].x = gp[i].x * grid->tile_width;
 				p[i].y = gp[i].y * grid->tile_height;
 			}

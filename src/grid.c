@@ -1,4 +1,5 @@
 #include "grid.h"
+#include "collision.h"
 
 void grid_initialize(
         Grid *grid, 
@@ -30,30 +31,61 @@ void grid_draw(Grid *grid)
     {
         for (int x = 0; x < grid->width; x++)
         {
+            Color clr;
+            int idx = grid_c2i(grid, x, y);
+            if (grid_test_place(grid, grid->arr_coll_masks[idx], x, y) != 0)
+            {
+                clr = RED;
+            }
+            else
+            {
+                clr = RAYWHITE;
+            }
             DrawRectangleLines(
                     grid->tile_width * x, 
                     grid->tile_height * y, 
                     grid->tile_width, 
                     grid->tile_height, 
-                    RAYWHITE
+                    clr
                 );
         }
     }
 }
 
-int grid_test_move(Grid *grid, coll_bits_t coll_mask, int x_coord, int y_coord)
+int grid_test_place(Grid *grid, coll_bits_t coll_mask, int x_coord, int y_coord)
 {
     int idx = grid_c2i(grid, x_coord, y_coord);
     coll_bits_t grid_coll_layer = grid->arr_coll_masks[idx];
+    int result = grid_coll_layer & coll_mask;
 
-    return (grid_coll_layer & coll_mask);
+    //printf("grid index = %d \n", idx);
+    //printf("move results = %d \n", grid_coll_layer);
+
+    return (result);
+}
+
+void grid_move_to(Grid *grid, int coll_layer, int x_coord, int y_coord)
+{
+   int idx = grid_c2i(grid, x_coord, y_coord);
+   grid->arr_coll_masks[idx] = coll_bits_add_layer(
+           grid->arr_coll_masks[idx], 
+           coll_layer
+        );
+}
+
+void grid_move_from(Grid *grid, int coll_layer, int x_coord, int y_coord)
+{
+   int idx = grid_c2i(grid, x_coord, y_coord);
+   grid->arr_coll_masks[idx] = coll_bits_remove_layer(
+           grid->arr_coll_masks[idx], 
+           coll_layer
+        );
 }
 
 // Coordinates to Index
 int grid_c2i(Grid *grid, int x, int y)
 {
-    int idx = grid->width * y + x;
-
+    int idx = grid->height * y + x;
     return idx;
 }
 
@@ -64,6 +96,17 @@ void grid_i2c(Grid *grid, int idx, int *x_coord, int *y_coord)
     *y_coord = (int)(idx / grid->width);
 }
 
+void grid_pos_to_world_pos(
+        Grid *grid, 
+        int grid_x, 
+        int grid_y, 
+        int *world_x, 
+        int *world_y
+    )
+{
+    *world_x = grid->tile_width * grid_x;
+    *world_y = grid->tile_height * grid_y;
+}
 
 
 GridComponentData* grid_create_gridcomponent(
@@ -99,7 +142,7 @@ void _grid_alloc_arr_coll_masks(
     )
 {
     long int area = ((long int)x_count) * ((long int)y_count);
-    *grid_arr_coll_masks = (int *)malloc(sizeof(int) * area);
+    *grid_arr_coll_masks = (int *)calloc(area, sizeof(int));
 }
 
 void _grid_alloc_arr_entity_refs(

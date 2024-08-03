@@ -39,7 +39,7 @@ void physics_update(double delta);
 void draw(double delta);
 void quit();
 
-void create_walls();
+void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset);
 
 int main()
 {
@@ -121,6 +121,7 @@ void ready()
 			g_ent_player
 		);
 
+    create_walls(g_world, &grid_worldspace, &tileset);
 
 	log_debug("ready() - complete");
 }
@@ -175,7 +176,37 @@ void quit()
 }
 
 
-void create_walls()
+void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 {
+    ecs_entity_t wall;
+    ent_wall_perm_create(
+            &wall,
+            world,
+            grid,
+            tileset,
+            3, 1
+        );
+
+    ent_wall_perm_create(
+            &wall,
+            world,
+            grid,
+            tileset,
+            3, 2
+        );
+    ent_wall_perm_create(
+            &wall,
+            world,
+            grid,
+            tileset,
+            3, 3
+        );
+    ent_wall_perm_create(
+            &wall,
+            world,
+            grid,
+            tileset,
+            3, 4
+        );
 
 }
