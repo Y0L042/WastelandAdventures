@@ -64,6 +64,20 @@ int grid_test_place(Grid *grid, coll_bits_t coll_mask, int x_coord, int y_coord)
     return (result);
 }
 
+coll_bits_t grid_get_coll_at(Grid *grid, int x_coord, int y_coord)
+{
+    int idx = grid_c2i(grid, x_coord, y_coord);
+
+    return grid->arr_coll_masks[idx];
+}
+
+CVecVoid* grid_get_entities_at(Grid *grid, int x_coord, int y_coord)
+{
+    int idx = grid_c2i(grid, x_coord, y_coord);
+
+    return &grid->arr_entity_refs[idx];
+}
+
 void grid_move_to(Grid *grid, int coll_layer, int x_coord, int y_coord)
 {
    int idx = grid_c2i(grid, x_coord, y_coord);
