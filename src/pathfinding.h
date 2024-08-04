@@ -17,7 +17,7 @@ void pathmap_initialize(
         PathMap *pm,
         Grid *grid
     );
-CVecVoid* pathmap_find_path(
+CVecInt* pathmap_find_path(
         PathMap *pm, 
         int x_a, 
         int y_a, 
@@ -25,7 +25,7 @@ CVecVoid* pathmap_find_path(
         int y_b,
         coll_bits_t coll_mask
     );
-CVecVoid* _pathmap_find_path_BFS(
+CVecInt* _pathmap_find_path_BFS(
         PathMap *pm, 
         int x_a, 
         int y_a, 
@@ -33,11 +33,6 @@ CVecVoid* _pathmap_find_path_BFS(
         int y_b,
         coll_bits_t coll_mask
     );
-int _pathmap_is_tile_valid(
-        PathMap *pm,
-        int x_tile,
-        int y_tile,
-        coll_bits_t coll_mask
-    );
+int _pathmap_is_cell_visited(CVecInt *visited_cells, int cell_idx);
 
 #endif // PATHFINDING_H
