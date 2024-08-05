@@ -57,7 +57,7 @@ int grid_test_place(Grid *grid, coll_bits_t coll_mask, int x_coord, int y_coord)
     int idx = grid_c2i(grid, x_coord, y_coord);
     coll_bits_t grid_coll_layer = grid->arr_coll_masks[idx];
     int result = grid_coll_layer & coll_mask;
-
+     
     //printf("grid index = %d \n", idx);
     //printf("move results = %d \n", grid_coll_layer);
 
@@ -122,6 +122,19 @@ void grid_pos_to_world_pos(
     *world_y = grid->tile_height * grid_y;
 }
 
+int grid_test_outofbounds(Grid *grid, int x_coord, int y_coord)
+{
+    if (x_coord < 0 || x_coord >= grid->width)
+    {
+        return 1;
+    }
+    if (y_coord < 0 || y_coord >= grid->height)
+    {
+        return -1;
+    }
+
+    return 0;
+}
 
 GridComponentData* grid_create_gridcomponent(
         Grid *grid, 

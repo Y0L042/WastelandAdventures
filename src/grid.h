@@ -59,6 +59,7 @@ void grid_pos_to_world_pos(
         int *world_x, 
         int *world_y
     );
+int grid_test_outofbounds(Grid *grid, int x_coord, int y_coord);
 
 void gridcomponentdata_initialize(
         GridComponentData *gc_d,

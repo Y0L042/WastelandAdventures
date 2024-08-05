@@ -153,7 +153,8 @@ void handler_grid_move(ecs_world_t *world)
                         test_x, 
                         test_y
                     );
-                if (move_test_result != 0) 
+                int test_bounds = grid_test_outofbounds(grid, test_x, test_y);
+                if (move_test_result != 0 || test_bounds !=0) 
                 {
                     continue; 
                 }
@@ -242,7 +243,9 @@ void handler_player_input(ecs_world_t *world)
 
 			if (moved == 1)
 			{
+                /* Add GridVelocity */ // Might replace with a force component?
                 ecs_set(it.world, it.entities[i], GridVelocity, { .x = g_x, .y = g_y });
+                turnmanager_end_turn(tm, 100);
 			}
 		}
 	}
@@ -330,8 +333,8 @@ void handler_npc_pathfinding(ecs_world_t *world)
             cvec_int_free(path_idx);
             int next_x, next_y;
             grid_i2c(gc[i].gc_d->grid, next_cell_idx, &next_x, &next_y);
-            gv[i].x = next_x;
-            gv[i].y = next_y;
+            
+            // TODO add GridVelocity component, and the velocity to go
         }
     }
 }
