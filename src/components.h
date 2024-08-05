@@ -9,6 +9,7 @@
 #include "grid.h"
 #include "glyph.h"
 #include "turnbasedsystem.h"
+#include "pathfinding.h"
 
 typedef Vector2 Position;
 extern ECS_COMPONENT_DECLARE(Position);
@@ -42,6 +43,15 @@ typedef struct TurnCountComponent TurnCountComponent; // Forward Declaration
 extern ECS_COMPONENT_DECLARE(TurnCountComponent);
 extern ECS_COMPONENT_DECLARE(TAG_TCEnable);
 
+extern ECS_COMPONENT_DECLARE(PathComponent);
+
+typedef struct NPCTarget {
+    ecs_entity_t target;
+} NPCTarget;
+extern ECS_COMPONENT_DECLARE(NPCTarget);
+
+
+
 struct TAG_Player{ int empty; } ;
 extern ECS_ENTITY_DECLARE(TAG_Player);
 
@@ -66,5 +76,6 @@ void handler_camera_move(ecs_world_t *world);
 void handler_grid_move(ecs_world_t *world);
 void handler_player_input(ecs_world_t *world);
 void handler_turncounter_increment(ecs_world_t *world);
+void handler_npc_pathfinding(ecs_world_t *world);
 
 #endif // COMPONENTS_H

@@ -13,6 +13,8 @@ ECS_COMPONENT_DECLARE(TurnCountComponent);
 ECS_COMPONENT_DECLARE(CollisionComponent);
 ECS_COMPONENT_DECLARE(CollisionLayer);
 ECS_COMPONENT_DECLARE(CollisionMask);
+ECS_COMPONENT_DECLARE(PathComponent);
+ECS_COMPONENT_DECLARE(NPCTarget);
 
 ECS_ENTITY_DECLARE(TAG_Player);
 ECS_ENTITY_DECLARE(TAG_TurnActive);
@@ -35,6 +37,8 @@ void create_components(ecs_world_t *world)
     ECS_COMPONENT_DEFINE(world, CollisionComponent);
     ECS_COMPONENT_DEFINE(world, CollisionLayer);
     ECS_COMPONENT_DEFINE(world, CollisionMask);
+    ECS_COMPONENT_DEFINE(world, PathComponent);
+    ECS_COMPONENT_DEFINE(world, NPCTarget);
 
     ECS_ENTITY_DEFINE(world, TAG_Player);
     ECS_ENTITY_DEFINE(world, TAG_TurnActive);
@@ -272,3 +276,52 @@ void handler_turncounter_increment(ecs_world_t *world)
 	}
 }
 
+void handler_npc_pathfinding(ecs_world_t *world)
+{
+    ecs_query_t *query_npc_pathfinding = ecs_query(world, {
+        .filter.terms = {
+            { ecs_id(GridPosition) },
+            { ecs_id(GridVelocity) },
+            { ecs_id(PathComponent) },
+            { ecs_id(NPCTarget) },
+            { ecs_id(TurnComponent) },
+            { ecs_id(CollisionComponent) },
+            { ecs_id(GridComponent) },
+            { TAG_TurnActive }
+        }
+    });
+
+    ecs_iter_t it = ecs_query_iter(world, query_npc_pathfinding);
+    while (ecs_query_next(&it))
+    {
+        GridPosition *gp = ecs_field(&it, GridPosition, 1);
+        GridVelocity *gv = ecs_field(&it, GridVelocity, 2);
+        PathComponent *pc = ecs_field(&it, PathComponent, 3);
+        NPCTarget *npct = ecs_field(&it, NPCTarget, 4);
+        TurnComponent *tc = ecs_field(&it, TurnComponent, 5);
+        CollisionComponent *cc = ecs_field(&it, CollisionComponent, 6);
+        GridComponent *gc = ecs_field(&it, GridComponent, 7);
+        
+        for (int i = 0; i < it.count; i++)
+        {
+            const GridPosition *target_gp = ecs_get(world, npct->target, GridPosition);
+            if (target_gp == NULL) { continue; }
+
+            CVecInt *path_idx = pathmap_find_path(
+                    pc[i].pm,
+                    gp[i].x,
+                    gp[i].y,
+                    target_gp->x,
+                    target_gp->y,
+                    cc[i].c_d->coll_bits
+                );
+            if (path_idx == NULL) { continue; }
+            int next_cell_idx = path_idx->data[0];
+            cvec_int_free(path_idx);
+            int next_x, next_y;
+            grid_i2c(gc[i].gc_d->grid, next_cell_idx, &next_x, &next_y);
+            gv[i].x = next_x;
+            gv[i].y = next_y;
+        }
+    }
+}

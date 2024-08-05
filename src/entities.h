@@ -9,6 +9,7 @@
 #include "turnbasedsystem.h"
 #include "components.h"
 #include "glyph.h"
+#include "pathfinding.h"
 
 extern ecs_entity_t g_ent_player;
 extern ecs_entity_t g_ent_camera;
@@ -32,8 +33,9 @@ void ent_dog_create(
 		ecs_entity_t *ent_dog,
 		ecs_world_t *world, 
 		TurnManager *tm, 
-		Grid* grid,
+		Grid *grid,
 		Tileset *tileset,
+        PathMap *pm,
 		ecs_entity_t entity_target
 	);
 

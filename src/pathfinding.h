@@ -13,6 +13,10 @@ typedef struct PathMap {
     CVecVoid **entity_map_ref; // NO TOUCHY!
 } PathMap;
 
+typedef struct PathComponent {
+    PathMap *pm;
+} PathComponent;
+
 void pathmap_initialize(
         PathMap *pm,
         Grid *grid

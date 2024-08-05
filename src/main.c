@@ -12,6 +12,7 @@
 
 #include "grid.h"
 #include "glyph.h"
+#include "pathfinding.h"
 
 #include <stdio.h>
 
@@ -30,6 +31,7 @@ Tileset tileset;
 Glyph player_glyph;
 ecs_world_t *g_world;
 TurnManager turnmanager;
+PathMap pathmap;
 
 void initialize();
 void ready();
@@ -98,6 +100,8 @@ void ready()
             TILE_SIZE_Y
         );
 
+    pathmap_initialize(&pathmap, &grid_worldspace);
+
 	ent_player_create(
 			&g_ent_player, 
 			g_world, 
@@ -118,6 +122,7 @@ void ready()
 			&turnmanager,
 			&grid_worldspace,
 			&tileset,
+            &pathmap,
 			g_ent_player
 		);
 
