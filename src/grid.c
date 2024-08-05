@@ -1,5 +1,6 @@
 #include "grid.h"
 #include "collision.h"
+#include "components.h"
 
 void grid_initialize(
         Grid *grid, 

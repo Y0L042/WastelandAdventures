@@ -192,7 +192,7 @@ void turnmanager_print_turn_queue(TurnManager *tm)
 void turnmanager_enable_tc(TurnManager *tm, ecs_entity_t entity)
 {
 	ecs_add(tm->world, entity, TAG_TCEnable);
-	TurnComponent *tc = ecs_get(tm->world, entity, TurnComponent);
+	const TurnComponent *tc = ecs_get(tm->world, entity, TurnComponent);
 	TurnComponentData *tc_d = tc->tc_d;
 	turncomponentdata_enable(tc_d);
 }
@@ -200,7 +200,7 @@ void turnmanager_enable_tc(TurnManager *tm, ecs_entity_t entity)
 void turnmanager_disable_tc(TurnManager *tm, ecs_entity_t entity)
 {
 	ecs_remove(tm->world, entity, TAG_TCEnable);
-	TurnComponent *tc = ecs_get(tm->world, entity, TurnComponent);
+	const TurnComponent *tc = ecs_get(tm->world, entity, TurnComponent);
 	TurnComponentData *tc_d = tc->tc_d;
 	turncomponentdata_disable(tc_d);
 }

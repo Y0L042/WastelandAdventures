@@ -5,8 +5,6 @@
 #include <raylib.h>
 #include "flecs.h"
 #include "log.h"
-#include "components.h"
-#include "collision.h"
 
 typedef int coll_bits_t;
 
