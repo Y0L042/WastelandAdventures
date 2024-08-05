@@ -39,14 +39,17 @@ void cvec_int_remove_idx(CVecInt* cvec, int idx)
 		return;
 	}
 
-	cvec->data[idx] = 0;
+	cvec->data[idx] = INT_MIN;
 
 	// Takes O(N), but keeps item order
 	int i;
-	for (i = idx; i < cvec->count; i++)
-	{
-		cvec->data[i] = cvec->data[i+1]; 
-	}
+    if (cvec->count > 1)
+    {
+        for (i = idx; i < cvec->count; i++)
+        {
+            cvec->data[i] = cvec->data[i+1]; 
+        }
+    }
 
 	cvec->count--;
 

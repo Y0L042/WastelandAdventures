@@ -15,8 +15,8 @@ ECS_COMPONENT_DECLARE(CollisionLayer);
 ECS_COMPONENT_DECLARE(CollisionMask);
 ECS_COMPONENT_DECLARE(PathComponent);
 ECS_COMPONENT_DECLARE(NPCTarget);
+ECS_COMPONENT_DECLARE(TAG_Player);
 
-ECS_ENTITY_DECLARE(TAG_Player);
 ECS_ENTITY_DECLARE(TAG_TurnActive);
 ECS_ENTITY_DECLARE(TAG_TurnIdle);
 
@@ -26,9 +26,7 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, Velocity);
 	ECS_COMPONENT_DEFINE(world, GridPosition);
 	ECS_COMPONENT_DEFINE(world, GridVelocity);
-    log_debug("1\tDEBUG");
 	ECS_COMPONENT_DEFINE(world, GridComponent);
-    log_debug("2\tDEBUG");
 	ECS_COMPONENT_DEFINE(world, Glyph);
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
     ECS_COMPONENT_DEFINE(world, TurnComponent);
@@ -39,8 +37,8 @@ void create_components(ecs_world_t *world)
     ECS_COMPONENT_DEFINE(world, CollisionMask);
     ECS_COMPONENT_DEFINE(world, PathComponent);
     ECS_COMPONENT_DEFINE(world, NPCTarget);
+    ECS_COMPONENT_DEFINE(world, TAG_Player);
 
-    ECS_ENTITY_DEFINE(world, TAG_Player);
     ECS_ENTITY_DEFINE(world, TAG_TurnActive);
     ECS_ENTITY_DEFINE(world, TAG_TurnIdle);
 }
@@ -125,7 +123,8 @@ void handler_grid_move(ecs_world_t *world)
             { ecs_id(GridVelocity) },
             { ecs_id(Position) },
 			{ ecs_id(TAG_TCEnable) },
-            { ecs_id(CollisionComponent) }
+            { ecs_id(CollisionComponent) },
+            { ecs_id(TurnComponent) }
         }
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_grid_move);
@@ -136,6 +135,7 @@ void handler_grid_move(ecs_world_t *world)
 		GridVelocity *gv = ecs_field(&it, GridVelocity, 3);
 		Position *p = ecs_field(&it, Position, 4);
         CollisionComponent *cc = ecs_field(&it, CollisionComponent, 6);
+        TurnComponent *tc = ecs_field(&it, TurnComponent, 7);
 
 		for (int i = 0; i < it.count; i++)
 		{
@@ -173,6 +173,8 @@ void handler_grid_move(ecs_world_t *world)
                 log_warn("Grid not found.");
             }
 
+            turnmanager_end_turn(tc[i].tc_d->turn_manager, 50);
+
 			int x = gp[i].x;
 			int y = gp[i].y;
 			int px = p[i].x;
@@ -181,6 +183,7 @@ void handler_grid_move(ecs_world_t *world)
 			//printf("P { %d, %d }\n", px, py);
 			gv[i].x = 0;
 			gv[i].y = 0;
+            ecs_remove(it.world, it.entities[i], GridVelocity);
 		}
 	}
 }
@@ -189,22 +192,21 @@ void handler_player_input(ecs_world_t *world)
 {
     ecs_query_t *query_player_input = ecs_query(world, {
         .filter.terms = {
-            { ecs_id(GridVelocity) },
 			{ ecs_id(TurnComponent) },
+            { ecs_id(TAG_Player) },
 			{ TAG_TurnActive }
         }
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_player_input);
 	while (ecs_query_next(&it))
 	{
-		GridVelocity *gv = ecs_field(&it, GridVelocity, 1);
-		TurnComponent *tc = ecs_field(&it, TurnComponent, 2);
+		TurnComponent *tc = ecs_field(&it, TurnComponent, 1);
 
 		int mult = 1;
 		for (int i = 0; i < it.count; i++)
 		{
-			gv[i].x = 0;
-			gv[i].y = 0;
+            int g_x = 0;
+            int g_y = 0;
 
 			TurnManager *tm = tc[i].tc_d->turn_manager;
 
@@ -215,22 +217,22 @@ void handler_player_input(ecs_world_t *world)
 			}
 			if (IsKeyPressed(KEY_KP_7) || IsKeyPressed(KEY_KP_8) || IsKeyPressed(KEY_KP_9))
 			{
-				gv[i].y -= 1 * mult; // UP
+				g_y -= 1 * mult; // UP
 				moved = 1;
 			}
 			if (IsKeyPressed(KEY_KP_1) || IsKeyPressed(KEY_KP_2) || IsKeyPressed(KEY_KP_3))
 			{
-				gv[i].y += 1 * mult; // DOWN
+				g_y += 1 * mult; // DOWN
 				moved = 1;
 			}
 			if (IsKeyPressed(KEY_KP_1) || IsKeyPressed(KEY_KP_4) || IsKeyPressed(KEY_KP_7))
 			{
-				gv[i].x -= 1 * mult; // LEFT
+				g_x -= 1 * mult; // LEFT
 				moved = 1;
 			}
 			if (IsKeyPressed(KEY_KP_3) || IsKeyPressed(KEY_KP_6) || IsKeyPressed(KEY_KP_9))
 			{
-				gv[i].x += 1 * mult; // RIGHT
+				g_x += 1 * mult; // RIGHT
 				moved = 1;
 			}
 			if (IsKeyPressed(KEY_KP_5))
@@ -240,10 +242,7 @@ void handler_player_input(ecs_world_t *world)
 
 			if (moved == 1)
 			{
-				static int cntr = 0;
-				//printf("Ending player turn:\t%d\n", ++cntr);
-				turnmanager_end_turn(tm, 50);
-				//turnmanager_print_turn_queue(tm);
+                ecs_set(it.world, it.entities[i], GridVelocity, { .x = g_x, .y = g_y });
 			}
 		}
 	}
@@ -290,7 +289,6 @@ void handler_npc_pathfinding(ecs_world_t *world)
             { TAG_TurnActive }
         }
     });
-
     ecs_iter_t it = ecs_query_iter(world, query_npc_pathfinding);
     while (ecs_query_next(&it))
     {
@@ -302,10 +300,16 @@ void handler_npc_pathfinding(ecs_world_t *world)
         CollisionComponent *cc = ecs_field(&it, CollisionComponent, 6);
         GridComponent *gc = ecs_field(&it, GridComponent, 7);
         
+
         for (int i = 0; i < it.count; i++)
         {
             const GridPosition *target_gp = ecs_get(world, npct->target, GridPosition);
-            if (target_gp == NULL) { continue; }
+            TurnManager *tm = tc[i].tc_d->turn_manager;
+            if (target_gp == NULL) 
+            {
+                turnmanager_end_turn(tm, 100);
+                continue; 
+            }
 
             CVecInt *path_idx = pathmap_find_path(
                     pc[i].pm,
@@ -315,7 +319,13 @@ void handler_npc_pathfinding(ecs_world_t *world)
                     target_gp->y,
                     cc[i].c_d->coll_bits
                 );
-            if (path_idx == NULL) { continue; }
+
+
+            if (path_idx == NULL) 
+            { 
+                turnmanager_end_turn(tm, 100);
+                continue; 
+            }
             int next_cell_idx = path_idx->data[0];
             cvec_int_free(path_idx);
             int next_x, next_y;

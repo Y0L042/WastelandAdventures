@@ -38,9 +38,9 @@ void ent_player_create(
     *ent_player = ecs_new_id(world);
     ecs_add(world, *ent_player, TAG_Player);
     ecs_set(world, *ent_player, Position, { .x = 0, .y = 0 });
-    ecs_set(world, *ent_player, Velocity, { .x = 0, .y = 0 });
+    //ecs_set(world, *ent_player, Velocity, { .x = 0, .y = 0 });
     ecs_set(world, *ent_player, GridPosition, { .x = 0, .y = 0 });
-    ecs_set(world, *ent_player, GridVelocity, { .x = 0, .y = 0 });
+    //ecs_set(world, *ent_player, GridVelocity, { .x = 0, .y = 0 });
     ecs_set(world, *ent_player, Glyph, { 
 			.source_tile_x = 0, 
 			.source_tile_y = 4,

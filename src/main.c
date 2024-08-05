@@ -143,6 +143,7 @@ void physics_update(double delta)
 {
 //	log_debug("physics_update() - start");
     handler_player_input(g_world);
+    handler_npc_pathfinding(g_world);
 	handler_grid_move(g_world);
 	handler_camera_move(g_world);
 	handler_turncounter_increment(g_world);

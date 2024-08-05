@@ -19,7 +19,7 @@ CVecInt* pathmap_find_path(
         coll_bits_t coll_mask
     )
 {
-    return _pathmap_find_path_BFS(
+    return _pathmap_find_path_ASTAR(
             pm,
             x_a,
             y_a,
@@ -27,6 +27,18 @@ CVecInt* pathmap_find_path(
             y_b,
             coll_mask
         );
+}
+
+CVecInt* _pathmap_find_path_ASTAR(
+        PathMap *pm, 
+        int x_a, 
+        int y_a, 
+        int x_b, 
+        int y_b,
+        coll_bits_t coll_mask
+    )
+{
+    return NULL;
 }
 
 CVecInt* _pathmap_find_path_BFS(
@@ -38,6 +50,7 @@ CVecInt* _pathmap_find_path_BFS(
         coll_bits_t coll_mask
     )
 {
+    /* Create CVecs of Queue, Visited, Parent */
     CVecInt cell_queue;
     cvec_int_init(&cell_queue);
     CVecInt cell_visited;
@@ -45,23 +58,57 @@ CVecInt* _pathmap_find_path_BFS(
     CVecInt cell_parent;
     cvec_int_init(&cell_parent);
     
+    /* Set start cell idx, and add it to cvecs */
     int start_idx = grid_c2i(pm->grid, x_a, y_a);
     int target_idx = grid_c2i(pm->grid, x_b, y_b);
-
     cvec_int_add_item(&cell_queue, start_idx);
     cvec_int_add_item(&cell_visited, start_idx);
-    cvec_int_add_item(&cell_parent, -1); // start cell has no parent
 
-    while (cell_queue.count != 0)
+    CVecInt *path = (CVecInt *)malloc(sizeof(CVecInt));
+    if (!path) {
+        log_error("Memory allocation failed\n");
+        cvec_int_free(&cell_queue);
+        cvec_int_free(&cell_visited);
+        cvec_int_free(&cell_parent);
+        return NULL;
+    }
+    cvec_int_init(path);
+
+    cvec_int_add_item(path, 900);
+    return path;
+
+    // Initialize parent vector with the same size as the grid with default value -1
+    for (int i = 0; i < pm->grid->width * pm->grid->height; ++i) 
+    {
+        cvec_int_add_item(&cell_parent, -1);
+    }
+    cell_parent.data[start_idx] = -1; // Start cell has no parent
+
+    while (cell_queue.count > 0)
     {
         int idx = cell_queue.data[0];
         cvec_int_remove_idx(&cell_queue, 0);
         int curr_cell_x, curr_cell_y;
         grid_i2c(pm->grid, idx, &curr_cell_x, &curr_cell_y);
 
+        if (idx >= (pm->grid->width * pm->grid->height - 1)) 
+        {
+            log_error("Pathfinding stuck in INF loop! Exiting with code 47... \n");
+            exit(47);
+            // return NULL; 
+        }
+
+        /* Target has been found */
         if (idx == target_idx)
         {
             CVecInt *path = (CVecInt *)malloc(sizeof(CVecInt));
+            if (!path) {
+                log_error("Memory allocation failed\n");
+                cvec_int_free(&cell_queue);
+                cvec_int_free(&cell_visited);
+                cvec_int_free(&cell_parent);
+                return NULL;
+            }
             cvec_int_init(path);
 
             int path_idx = idx;
@@ -81,10 +128,13 @@ CVecInt* _pathmap_find_path_BFS(
             cvec_int_free(&cell_queue);
             cvec_int_free(&cell_visited);
             cvec_int_free(&cell_parent);
+            
+            log_debug("BFS END-PATH \n");
 
             return path;
         }
 
+        /* Target has not been found yet */
         for (int i = -1; i < 2; i++)
         {
             for (int j = -1; j < 2; j++)
@@ -102,12 +152,14 @@ CVecInt* _pathmap_find_path_BFS(
                 int visited = _pathmap_is_cell_visited(&cell_visited, neighbor_idx);
                 
                 if (visited) { continue; }
-                if ((*pm->coll_map_ref)[neighbor_idx] & coll_mask != 0)
+                if (((*pm->coll_map_ref)[neighbor_idx] & coll_mask) != 0)
                 { continue; }
 
                 cvec_int_add_item(&cell_queue, neighbor_idx);
                 cvec_int_add_item(&cell_visited, neighbor_idx);
-                cvec_int_add_item(&cell_parent, idx);
+
+                // Set the parent of the neighbor
+                cell_parent.data[neighbor_idx] = idx;             
             }
         }
     }
@@ -115,6 +167,8 @@ CVecInt* _pathmap_find_path_BFS(
     cvec_int_free(&cell_queue);
     cvec_int_free(&cell_visited);
     cvec_int_free(&cell_parent);
+
+    log_debug("BFS END-NULL \n");
 
     return NULL;
 }

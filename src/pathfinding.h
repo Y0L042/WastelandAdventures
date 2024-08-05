@@ -29,6 +29,14 @@ CVecInt* pathmap_find_path(
         int y_b,
         coll_bits_t coll_mask
     );
+CVecInt* _pathmap_find_path_ASTAR(
+        PathMap *pm, 
+        int x_a, 
+        int y_a, 
+        int x_b, 
+        int y_b,
+        coll_bits_t coll_mask
+    );
 CVecInt* _pathmap_find_path_BFS(
         PathMap *pm, 
         int x_a, 

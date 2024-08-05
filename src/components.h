@@ -52,8 +52,8 @@ extern ECS_COMPONENT_DECLARE(NPCTarget);
 
 
 
-struct TAG_Player{ int empty; } ;
-extern ECS_ENTITY_DECLARE(TAG_Player);
+typedef struct TAG_Player{ int empty; } TAG_Player;
+extern ECS_COMPONENT_DECLARE(TAG_Player);
 
 struct TAG_TurnActive{ int empty; } ;
 extern ECS_ENTITY_DECLARE(TAG_TurnActive);
