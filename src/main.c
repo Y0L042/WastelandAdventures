@@ -86,7 +86,6 @@ void ready()
 	g_world = ecs_init();
 	create_components(g_world);
 
-
 	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
 
 	turnmanager_initialize(&turnmanager, g_world);

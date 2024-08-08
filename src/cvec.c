@@ -4,6 +4,8 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#define CVEC_INT_ITEM_EMPTY INT_MIN
+
 void cvec_int_init(CVecInt* cvec)
 {
 	cvec->count = 0;
@@ -39,7 +41,7 @@ void cvec_int_remove_idx(CVecInt* cvec, int idx)
 		return;
 	}
 
-	cvec->data[idx] = INT_MIN;
+	cvec->data[idx] = CVEC_INT_ITEM_EMPTY;
 
 	// Takes O(N), but keeps item order
 	int i;
@@ -89,7 +91,7 @@ void cvec_int_clear_idx(CVecInt *cvec, int idx)
 		printf("Index out of bounds: %d\n", idx);
 		return;
 	}
-	cvec->data[idx] = INT_MIN;
+	cvec->data[idx] = CVEC_INT_ITEM_EMPTY;
 }
 
 void cvec_int_defragment_ord(CVecInt *cvec)
@@ -101,12 +103,12 @@ void cvec_int_defragment_ord(CVecInt *cvec)
         int j = i;
         while (j > 0)
         {
-            if (cvec->data[j] == INT_MIN) { break; }
+            if (cvec->data[j] == CVEC_INT_ITEM_EMPTY) { break; }
             else
-            if (cvec->data[j-1] == INT_MIN)
+            if (cvec->data[j-1] == CVEC_INT_ITEM_EMPTY)
             {
                 cvec->data[j-1] = cvec->data[j];
-                cvec->data[j] = INT_MIN;
+                cvec->data[j] = CVEC_INT_ITEM_EMPTY;
                 count_sub++;
             }
             j--;
