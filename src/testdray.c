@@ -44,7 +44,7 @@ int main()
     dray_init_pointers(&dray_ptr, TestStruct);
     populate_dray_ptr(&dray_ptr);
     print_dray_ptr(&dray_ptr);
-
+    
     return 0;
 }
 

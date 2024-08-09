@@ -2,44 +2,28 @@
 #define DRAY_H
 
 #include "memory.h"
+#include "stdlib.h"
 
 #define dray_init_values(_dray, _type) \
-    ({ \
-        size_t _type_size = sizeof(_type); \
-        dray_init(_dray, _type_size); \
-    })
+        dray_init(_dray, sizeof(_type));
 
 #define dray_init_pointers(_dray, _pointer_type) \
-    ({ \
-        size_t _type_size = sizeof(_pointer_type *); \
-        dray_init(_dray, _type_size); \
-    })
+        dray_init(_dray, sizeof(_pointer_type *)); 
 
 #define dray_add_value(_dray, _value, _type) \
-    ({ \
+    do { \
         _type _dray_val_add = _value; \
-        dray_add_data(_dray, &_dray_val_add); \
-    })
+        _dray_add_value(_dray, &_dray_val_add, sizeof(_type)); \
+    } while (0)
 
 #define dray_add_pointer(_dray, _pointer) \
-    ({ \
-        dray_add_data(_dray, &_pointer); \
-    })
+        _dray_add_pointer(_dray, _pointer); 
 
 #define dray_get_value(_dray, _idx, _type) \
-    ({ \
-        _type RETURN_dray_val_get; \
-        _type *_dray_val_get_idx_ptr = (_type *)dray_get_idx_ptr(_dray, _idx); \
-        RETURN_dray_val_get = *_dray_val_get_idx_ptr; \
-        RETURN_dray_val_get; \
-    })
+        (*((_type *)_dray_get_value(_dray, _idx, sizeof(_type))))
 
 #define dray_get_pointer(_dray, _idx, _type) \
-    ({ \
-        _type **_dray_ptr_ptr = (_type **)dray_get_idx_ptr(_dray, _idx); \
-        _type *RETURN_dray_ptr = *_dray_ptr_ptr; \
-        RETURN_dray_ptr; \
-    })
+        ((_type *)_dray_get_pointer(_dray, _idx))
 
 typedef struct DRay {
     void *data;
@@ -63,6 +47,30 @@ void dray_insert_data(DRay *dray, void *data, size_t idx);
 void dray_remove_idx(DRay *dray, size_t idx);
 void dray_clear_idx(DRay *dray, size_t idx);
 void dray_defragment(DRay *dray);
+
+static inline void _dray_add_value(DRay *dray, void *value, size_t value_size)
+{
+    dray_add_data(dray, value);
+}
+
+static inline void _dray_add_pointer(DRay *dray, void *pointer)
+{
+    dray_add_data(dray, &pointer);
+}
+
+static inline void *_dray_get_value(DRay *dray, int idx, size_t type_size)
+{
+    void *idx_ptr = dray_get_idx_ptr(dray, idx);
+    
+    return idx_ptr;
+}
+
+static inline void *_dray_get_pointer(DRay *dray, int idx)
+{
+    void **idx_ptr_ptr = (void **)dray_get_idx_ptr(dray, idx);
+
+    return *idx_ptr_ptr;
+}
 
 // DRayIt dray_iter(DRay *dray);
 #endif // DRAY_H
