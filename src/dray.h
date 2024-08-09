@@ -3,6 +3,32 @@
 
 #include "memory.h"
 
+#define dray_add_value(_dray, _value, _type) \
+    ({ \
+        _type _dray_val_add = _value; \
+        dray_add_data(_dray, &_dray_val_add); \
+    })
+
+#define dray_add_pointer(_dray, _pointer) \
+    ({ \
+        dray_add_data(_dray, &_pointer); \
+    })
+
+#define dray_get_value(_dray, _idx, _type) \
+    ({ \
+        _type _dray_val_get; \
+        _type *_dray_val_get_idx_ptr = (_type *)dray_get_idx_ptr(_dray, _idx); \
+        _dray_val_get = *_dray_val_get_idx_ptr; \
+        _dray_val_get; \
+    })
+
+#define dray_get_pointer(_dray, _idx, _type) \
+    ({ \
+        _type **_dray_ptr_ptr = (_type **)dray_get_idx_ptr(_dray, _idx); \
+        _type *_dray_ptr = *_dray_ptr_ptr; \
+        _dray_ptr; \
+    })
+
 typedef struct DRay {
     void *data;
     size_t count;
