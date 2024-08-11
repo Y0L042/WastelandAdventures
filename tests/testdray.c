@@ -1,11 +1,11 @@
-#include "dray.h"
+#include "../src/dray.h"
 #include "stdlib.h"
 #include "stdio.h"
 
 typedef struct TestStruct {
     int x;
     float y;
-    int z;
+    char z;
     int k, l, m;
 } TestStruct;
 
@@ -33,16 +33,33 @@ int main()
     populate_dray_int(&dray_int);
     print_dray_int(&dray_int);
     
+    dray_clear_idx(&dray_int, 4);
+    print_dray_int(&dray_int);
+    
     DRay dray_ts; // DRay<TestStruct>
     //dray_init(&dray_ts, sizeof(TestStruct));
     dray_init_values(&dray_ts, TestStruct);
     populate_dray_ts(&dray_ts);
     print_dray_ts(&dray_ts);
 
+    dray_remove_idx(&dray_ts, 0);
+    print_dray_ts(&dray_ts);
+    dray_clear_idx(&dray_ts, 6);
+    print_dray_ts(&dray_ts);
+    dray_remove_idx(&dray_ts, 8);
+    print_dray_ts(&dray_ts);
+
     DRay dray_ptr; // DRay<TestStruct *>
     //dray_init(&dray_ptr, sizeof(TestStruct *));
     dray_init_pointers(&dray_ptr, TestStruct);
     populate_dray_ptr(&dray_ptr);
+    print_dray_ptr(&dray_ptr);
+
+    dray_remove_idx(&dray_ptr, 0);
+    print_dray_ptr(&dray_ptr);
+    dray_clear_idx(&dray_ptr, 4);
+    print_dray_ptr(&dray_ptr);
+    dray_remove_idx(&dray_ptr, 8);
     print_dray_ptr(&dray_ptr);
     
     return 0;
@@ -67,6 +84,11 @@ void print_dray_int(DRay *dray_int)
         //int *data = (int *)dray_get_idx_ptr(dray_int, i);
         //printf("idx %d \t=\t%d\n", i, *data);
         int data = dray_get_value(dray_int, i, int);
+        if (dray_test_for_empty_idx(dray_int, i)) 
+        {
+            printf("idx %d \t=\tEMPTY\n", i);
+            continue; 
+        }
         printf("idx %d \t=\t%d\n", i, data);
     }
     printf("\nPrinting DRay INT Finished.\n");
@@ -77,7 +99,7 @@ void populate_dray_ts(DRay *dray_ts)
 {
     for (int i = 0; i < LOOP_COUNT; i++)
     {
-        TestStruct ts = { i, (float)i * 2.5f, 1, 2, 3, 4 };
+        TestStruct ts = { i, (float)i * 2.5f, 'a', 2, 3, 4 };
         dray_add_value(dray_ts, ts, TestStruct);
         // dray_add_data(dray_ts, &ts);
     }
@@ -91,7 +113,12 @@ void print_dray_ts(DRay *dray_ts)
         // TestStruct *data = (TestStruct *)dray_get_idx_ptr(dray_ts, i);
         // printf("idx %d \t=\t%d | %.2f | %d\n", i, data->x, data->y, data->z);
         TestStruct data = dray_get_value(dray_ts, i, TestStruct);
-        printf("idx %d \t=\t%d | %.2f | %d\n", i, data.x, data.y, data.z);
+        if (dray_test_for_empty_idx(dray_ts, i)) 
+        {
+            printf("idx %d \t=\tEMPTY\n", i);
+            continue; 
+        }
+        printf("idx %d \t=\t%d | %.2f | %c\n", i, data.x, data.y, data.z);
     }
     printf("\nPrinting DRay TS Finished.\n");
     printf("________________________________________________________________________________\n");
@@ -102,7 +129,7 @@ void populate_dray_ptr(DRay *dray_ptr)
     for (int i = 0; i < LOOP_COUNT; i++)
     {
         TestStruct *data = (TestStruct *)malloc(sizeof(TestStruct));
-        data->x = 1; data->y = 2.0f; data->z = 5; data->k = 1; data->l = 2; data->m = 3;
+        data->x = i; data->y = i * 2.5f; data->z = 'a'; data->k = 1; data->l = 2; data->m = 3;
         dray_add_pointer(dray_ptr, data);
     }
 }
@@ -115,7 +142,12 @@ void print_dray_ptr(DRay *dray_ptr)
         // TestStruct **data_ptr = (TestStruct **)dray_get_idx_ptr(dray_ptr, i);
         // TestStruct *data =  *data_ptr;       
         TestStruct *data = dray_get_pointer(dray_ptr, i, TestStruct);
-        printf("idx %d \t=\t%p\t%d | %.2f | %d\n", i, data, data->x, data->y, data->z);
+        if (dray_test_for_empty_idx(dray_ptr, i)) 
+        {
+            printf("idx %d \t=\tEMPTY\n", i);
+            continue; 
+        }
+        printf("idx %d \t=\t%p\t%d | %.2f | %c\n", i, data, data->x, data->y, data->z);
     }
     printf("\nPrinting DRay PTR Finished.\n");
     printf("________________________________________________________________________________\n");

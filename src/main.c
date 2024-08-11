@@ -184,6 +184,9 @@ void quit()
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 {
     ecs_entity_t wall;
+    
+    mapgen_generate_RANDOMWALKER(grid);
+
     ent_wall_perm_create(
             &wall,
             world,

@@ -19,6 +19,7 @@ LIBRARIES = \
 	-lWs2_32
 
 # Directories
+SRCDIR = ../src
 BIN_INT = ../bin-int
 BIN = ../bin
 TARGET = $(BIN)/$(PROJ_NAME).exe
@@ -27,7 +28,8 @@ TARGET = $(BIN)/$(PROJ_NAME).exe
 CFLAGS = -O2 -g -s -fno-asynchronous-unwind-tables $(foreach path, $(INCLUDE_PATHS), -I$(path)) -std=gnu99
 LDFLAGS = $(foreach path, $(LIBRARY_PATHS), -L$(path)) $(LIBRARIES)
 
-SRC = $(wildcard ./*.c)
+# Source files in ROOT/src/ and ROOT/tests/
+SRC = $(wildcard ../src/*.c) $(wildcard ./*.c)
 OBJ = $(patsubst %.c,$(BIN_INT)/%.o,$(notdir $(SRC)))
 
 
@@ -45,8 +47,8 @@ run : $(TARGET)
 clean: clean_bin clean_bin_int
 
 # Units
-testdray : memory.h dray.c dray.h testdray.c | $(BIN)
-	$(CC) $(CFLAGS) testdray.c dray.c memory.c -o $(BIN)/testdray $(LDFLAGS)
+testdray : $(SRCDIR)/memory.h $(SRCDIR)/dray.c $(SRCDIR)/dray.h testdray.c | $(BIN)
+	$(CC) $(CFLAGS) testdray.c $(SRCDIR)/dray.c $(SRCDIR)/memory.c -o $(BIN)/testdray $(LDFLAGS)
 	$(BIN)/testdray
 
 clean_bin:
