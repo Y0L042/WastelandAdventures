@@ -35,6 +35,11 @@ int main()
     
     dray_clear_idx(&dray_int, 4);
     print_dray_int(&dray_int);
+    dray_remove_idx(&dray_int, 5);
+    print_dray_int(&dray_int);
+
+    dray_defragment(&dray_int);
+    print_dray_int(&dray_int);
     
     DRay dray_ts; // DRay<TestStruct>
     //dray_init(&dray_ts, sizeof(TestStruct));
@@ -48,6 +53,8 @@ int main()
     print_dray_ts(&dray_ts);
     dray_remove_idx(&dray_ts, 8);
     print_dray_ts(&dray_ts);
+    dray_defragment(&dray_ts);
+    print_dray_ts(&dray_ts);
 
     DRay dray_ptr; // DRay<TestStruct *>
     //dray_init(&dray_ptr, sizeof(TestStruct *));
@@ -60,6 +67,8 @@ int main()
     dray_clear_idx(&dray_ptr, 4);
     print_dray_ptr(&dray_ptr);
     dray_remove_idx(&dray_ptr, 8);
+    print_dray_ptr(&dray_ptr);
+    dray_defragment(&dray_ptr);
     print_dray_ptr(&dray_ptr);
     
     return 0;

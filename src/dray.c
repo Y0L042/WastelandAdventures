@@ -157,7 +157,13 @@ void dray_clear_idx(DRay *dray, size_t idx)
 
 void dray_defragment(DRay *dray)
 {
-    return;
+    for (int i = 0; i < dray->count; i++)
+    {
+        if (dray_test_for_empty_idx(dray, i))
+        {
+            dray_remove_idx(dray, i--);
+        }
+    }
 }
 
 int dray_test_for_empty_idx(DRay *dray, size_t idx)
