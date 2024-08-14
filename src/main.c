@@ -6,6 +6,8 @@
 #include "log.h"
 
 #include "flecs.h"
+#include "dray.h"
+#include "maths.h"
 
 #include "components.h"
 #include "entities.h"
@@ -13,6 +15,7 @@
 #include "grid.h"
 #include "glyph.h"
 #include "pathfinding.h"
+#include "map_generator.h"
 
 #include <stdio.h>
 
@@ -25,6 +28,8 @@ const int WORLDSPACE_SIZE_Y = 100;
 
 const int TILE_SIZE_X = 25;
 const int TILE_SIZE_Y = 25;
+
+int spawn_x, spawn_y;
 
 Grid grid_worldspace;
 Tileset tileset;
@@ -101,12 +106,15 @@ void ready()
 
     pathmap_initialize(&pathmap, &grid_worldspace);
 
+    create_walls(g_world, &grid_worldspace, &tileset);
+
 	ent_player_create(
 			&g_ent_player, 
 			g_world, 
 			&turnmanager, 
 			&grid_worldspace, 
-			&tileset
+			&tileset,
+            spawn_x, spawn_y
 		);
 
 	ent_camera_create(
@@ -125,7 +133,6 @@ void ready()
 			g_ent_player
 		);
 
-    create_walls(g_world, &grid_worldspace, &tileset);
 
 	log_debug("ready() - complete");
 }
@@ -183,9 +190,40 @@ void quit()
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 {
+    log_debug("DEBUG");
     ecs_entity_t wall;
-    
-    mapgen_generate_RANDOMWALKER(grid);
+    int area = grid->width * grid->height;
+    for (int i = 0; i < grid->width; i++)
+    {
+        for (int j = 0; j < grid->height; j++)
+        {
+            ent_wall_perm_create(
+                    &wall,
+                    world,
+                    grid,
+                    tileset,
+                    i, j
+                );
+        }
+    }
+
+    DRay *map_idx = mapgen_generate_RANDOMWALKER(grid);
+    for (int i = 0; i < map_idx->count; i++)
+    {
+        log_debug("DEBUG, i %d", i);
+        int x, y;
+        grid_i2c(grid, dray_get_value(map_idx, i, int), &x, &y);
+        DRay *entities =  grid_get_entities_at(grid, x, y);
+        for (int ent_idx = 0; ent_idx < entities->count; ent_idx++)
+        {
+            ecs_entity_t ent = dray_get_value(entities, ent_idx, ecs_entity_t);
+            ecs_delete(world, ent);
+            printf("walls: %d\n", ent);
+        }
+    }
+
+    int rand_idx = maths_randbetween_int(0, map_idx->count);
+    grid_i2c(grid, rand_idx, &spawn_x, &spawn_y);
 
     ent_wall_perm_create(
             &wall,

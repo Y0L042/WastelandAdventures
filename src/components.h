@@ -17,13 +17,10 @@ extern ECS_COMPONENT_DECLARE(Position);
 typedef Vector2 Velocity;
 extern ECS_COMPONENT_DECLARE(Velocity);
 
-typedef Vector2 GridPosition;
 extern ECS_COMPONENT_DECLARE(GridPosition);
 
 typedef Vector2 GridVelocity;
 extern ECS_COMPONENT_DECLARE(GridVelocity);
-
-extern ECS_COMPONENT_DECLARE(GridComponent);
 
 extern ECS_COMPONENT_DECLARE(Glyph);
 

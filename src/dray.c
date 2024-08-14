@@ -1,6 +1,7 @@
 #include "dray.h"
-#include "stdlib.h"
-#include "string.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 
 void dray_init(DRay *dray, size_t elem_size, DRAY_CAT cat)

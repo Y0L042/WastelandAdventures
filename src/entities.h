@@ -20,7 +20,8 @@ void ent_player_create(
 		ecs_world_t *world, 
 		TurnManager *tm, 
 		Grid* grid,
-		Tileset *tileset
+		Tileset *tileset,
+        int grid_x, int grid_y
 	);
 
 void ent_camera_create(

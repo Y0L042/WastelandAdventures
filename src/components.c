@@ -4,7 +4,6 @@ ECS_COMPONENT_DECLARE(Position);
 ECS_COMPONENT_DECLARE(Velocity);
 ECS_COMPONENT_DECLARE(GridPosition);
 ECS_COMPONENT_DECLARE(GridVelocity);
-ECS_COMPONENT_DECLARE(GridComponent);
 ECS_COMPONENT_DECLARE(Glyph);
 ECS_COMPONENT_DECLARE(CameraComponent);
 ECS_COMPONENT_DECLARE(TurnComponent);
@@ -26,7 +25,6 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, Velocity);
 	ECS_COMPONENT_DEFINE(world, GridPosition);
 	ECS_COMPONENT_DEFINE(world, GridVelocity);
-	ECS_COMPONENT_DEFINE(world, GridComponent);
 	ECS_COMPONENT_DEFINE(world, Glyph);
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
     ECS_COMPONENT_DEFINE(world, TurnComponent);
@@ -118,7 +116,6 @@ void handler_grid_move(ecs_world_t *world)
 {
     ecs_query_t *query_grid_move = ecs_query(world, {
         .filter.terms = {
-			{ ecs_id(GridComponent) },
             { ecs_id(GridPosition) },
             { ecs_id(GridVelocity) },
             { ecs_id(Position) },
@@ -130,18 +127,17 @@ void handler_grid_move(ecs_world_t *world)
     ecs_iter_t it = ecs_query_iter(world, query_grid_move);
 	while (ecs_query_next(&it))
 	{
-		GridComponent *gc = ecs_field(&it, GridComponent, 1);
-		GridPosition *gp = ecs_field(&it, GridPosition, 2);
-		GridVelocity *gv = ecs_field(&it, GridVelocity, 3);
-		Position *p = ecs_field(&it, Position, 4);
-        CollisionComponent *cc = ecs_field(&it, CollisionComponent, 6);
-        TurnComponent *tc = ecs_field(&it, TurnComponent, 7);
+		GridPosition *gp = ecs_field(&it, GridPosition, 1);
+		GridVelocity *gv = ecs_field(&it, GridVelocity, 2);
+		Position *p = ecs_field(&it, Position, 3);
+        CollisionComponent *cc = ecs_field(&it, CollisionComponent, 5);
+        TurnComponent *tc = ecs_field(&it, TurnComponent, 6);
 
 		for (int i = 0; i < it.count; i++)
 		{
 			if (gv[i].x == 0 && gv[i].y == 0) { continue; }
             
-            Grid *grid = gc[i].gc_d->grid;
+            Grid *grid = gp[i].grid;
             CollisionData *c_d = cc[i].c_d;
 			if (grid) 
 			{ 
@@ -288,7 +284,6 @@ void handler_npc_pathfinding(ecs_world_t *world)
             { ecs_id(NPCTarget) },
             { ecs_id(TurnComponent) },
             { ecs_id(CollisionComponent) },
-            { ecs_id(GridComponent) },
             { TAG_TurnActive }
         }
     });
@@ -301,7 +296,6 @@ void handler_npc_pathfinding(ecs_world_t *world)
         NPCTarget *npct = ecs_field(&it, NPCTarget, 4);
         TurnComponent *tc = ecs_field(&it, TurnComponent, 5);
         CollisionComponent *cc = ecs_field(&it, CollisionComponent, 6);
-        GridComponent *gc = ecs_field(&it, GridComponent, 7);
         
 
         for (int i = 0; i < it.count; i++)
@@ -332,7 +326,7 @@ void handler_npc_pathfinding(ecs_world_t *world)
             int next_cell_idx = path_idx->data[0];
             cvec_int_free(path_idx);
             int next_x, next_y;
-            grid_i2c(gc[i].gc_d->grid, next_cell_idx, &next_x, &next_y);
+            grid_i2c(gp[i].grid, next_cell_idx, &next_x, &next_y);
             
             // TODO add GridVelocity component, and the velocity to go
         }

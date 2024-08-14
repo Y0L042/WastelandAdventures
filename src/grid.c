@@ -72,7 +72,7 @@ coll_bits_t grid_get_coll_at(Grid *grid, int x_coord, int y_coord)
     return grid->arr_coll_masks[idx];
 }
 
-CVecVoid* grid_get_entities_at(Grid *grid, int x_coord, int y_coord)
+DRay* grid_get_entities_at(Grid *grid, int x_coord, int y_coord)
 {
     int idx = grid_c2i(grid, x_coord, y_coord);
 
@@ -137,31 +137,38 @@ int grid_test_outofbounds(Grid *grid, int x_coord, int y_coord)
     return 0;
 }
 
-GridComponentData* grid_create_gridcomponent(
+void grid_create_gridposition(
+		int x, int y,
         Grid *grid, 
         ecs_entity_t entity 
     )
 {
-    GridComponentData *gc_d = (GridComponentData *)malloc(sizeof(GridComponentData));
-    gridcomponentdata_initialize(gc_d, grid, entity);
-    ecs_set(grid->world, entity, GridComponent, { .gc_d = gc_d });
-
-    return gc_d;
+    ecs_set(grid->world, entity, GridPosition, {
+				.x = x,
+				.y = y,
+				.grid = grid,
+				.entity = entity
+			});
 }
 
-
-
-void gridcomponentdata_initialize(
-        GridComponentData *gc_d,
-        Grid *grid,
-        ecs_entity_t entity
-    )
+void gridposition_initialize(
+		GridPosition *gp,
+		int x, int y,
+		Grid *grid,
+		ecs_entity_t entity
+	)
 {
-   gc_d->grid = grid;
-   gc_d->entity = entity;
+	gp->x = x;
+	gp->y = y;
+	gp->grid = grid;
+	gp->entity = entity;
 }
 
-
+int gridposition_move(GridPosition *gp, int new_x, int new_y)
+{
+	Grid *grid = gp->grid;
+	return 1;
+}
 
 void _grid_alloc_arr_coll_masks(
         int **grid_arr_coll_masks,
@@ -174,13 +181,19 @@ void _grid_alloc_arr_coll_masks(
 }
 
 void _grid_alloc_arr_entity_refs(
-        CVecVoid **grid_arr_entity_refs,
+        DRay **grid_arr_entity_refs,
         int x_count,
         int y_count
     )
 {
-    long int area = ((long int)x_count) * ((long int)y_count);
-    *grid_arr_entity_refs = (CVecVoid *)malloc(sizeof(CVecVoid) * area);
+    int area = ((int)x_count) * ((int)y_count);
+    *grid_arr_entity_refs = (DRay *)malloc(sizeof(DRay) * area);
+    if (*grid_arr_entity_refs == NULL) { exit(69); }
+    for (int i = 0; i < area; i++)
+    {
+        log_debug("DEBUG, i %d, area %d", i, area);
+        dray_init_values(&(*grid_arr_entity_refs)[i], ecs_entity_t);
+    }
 }
 
 
