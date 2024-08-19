@@ -5,7 +5,6 @@
 #include <raymath.h>
 #include "log.h"
 #include "flecs.h"
-#include "collision.h"
 #include "grid.h"
 #include "glyph.h"
 #include "turnbasedsystem.h"
@@ -23,10 +22,6 @@ typedef Vector2 GridVelocity;
 extern ECS_COMPONENT_DECLARE(GridVelocity);
 
 extern ECS_COMPONENT_DECLARE(Glyph);
-
-extern ECS_COMPONENT_DECLARE(CollisionComponent);
-extern ECS_COMPONENT_DECLARE(CollisionLayer);
-extern ECS_COMPONENT_DECLARE(CollisionMask);
 
 typedef struct CameraComponent{
 	Camera2D camera;
@@ -73,6 +68,5 @@ void handler_camera_move(ecs_world_t *world);
 void handler_grid_move(ecs_world_t *world);
 void handler_player_input(ecs_world_t *world);
 void handler_turncounter_increment(ecs_world_t *world);
-void handler_npc_pathfinding(ecs_world_t *world);
 
 #endif // COMPONENTS_H

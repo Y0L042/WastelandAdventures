@@ -11,6 +11,11 @@
 #include "glyph.h"
 #include "pathfinding.h"
 
+#define ENT_PLAYER_COLL_LAYER 0b1
+#define ENT_PLAYER_COLL_MASK 0b1
+#define ENT_WALL_PERM_COLL_LAYER 0b1
+#define ENT_WALL_PERM_COLL_MASK 0b0
+
 extern ecs_entity_t g_ent_player;
 extern ecs_entity_t g_ent_camera;
 extern ecs_entity_t g_ent_dog;
@@ -36,7 +41,6 @@ void ent_dog_create(
 		TurnManager *tm, 
 		Grid *grid,
 		Tileset *tileset,
-        PathMap *pm,
 		ecs_entity_t entity_target
 	);
 

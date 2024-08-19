@@ -11,8 +11,8 @@ typedef int coll_bits_t;
 
 typedef struct Grid {
 	ecs_world_t *world;
-    int *arr_coll_masks;
-    DRay *arr_entity_refs;
+    int **arr_coll_layers;
+    DRay **arr_entity_refs;
 	int width;
 	int height;
 	int tile_width;
@@ -23,6 +23,7 @@ typedef struct GridPosition {
 	int x, y;
 	Grid *grid;
 	ecs_entity_t entity;
+	int coll_layer, coll_mask;
 } GridPosition;
 
 void grid_initialize(
@@ -38,15 +39,14 @@ void grid_draw(Grid *grid);
 void grid_create_gridposition(
 		int x, int y,
         Grid *grid, 
-        ecs_entity_t entity 
+        ecs_entity_t entity, 
+		int coll_layer, int coll_mask
     );
 int grid_test_place(Grid *grid, int coll_mask, int x_coord, int y_coord);
 coll_bits_t grid_get_coll_at(Grid *grid, int x_coord, int y_coord);
 DRay* grid_get_entities_at(Grid *grid, int x_coord, int y_coord);
 void grid_move_to(Grid *grid, int coll_layer, int x_coord, int y_coord);
 void grid_move_from(Grid *grid, int coll_layer, int x_coord, int y_coord);
-int grid_c2i(Grid *grid, int x, int y);
-void grid_i2c(Grid *grid, int idx, int *x_coord, int *y_coord);
 void grid_pos_to_world_pos(
         Grid *grid, 
         int grid_x, 
@@ -57,20 +57,22 @@ void grid_pos_to_world_pos(
 int grid_test_outofbounds(Grid *grid, int x_coord, int y_coord);
 
 void gridposition_initialize(
-        GridPosition *gp,
+		GridPosition *gp,
 		int x, int y,
-        Grid *grid,
-        ecs_entity_t entity
+		Grid *grid,
+		ecs_entity_t entity,
+		int coll_layer, int coll_mask
     );
-int gridposition_move(GridPosition *gp, int new_x, int new_y);
+int gridposition_move(GridPosition *gp, int new_x, int new_y, int ignore_coll);
+int gridposition_delete(GridPosition *gp);
 
-void _grid_alloc_arr_coll_masks(
-        int **grid_arr_coll_masks, // Ptr to 2D arr
+void _grid_alloc_arr_coll_layers(
+        int ***grid_arr_coll_layers, // Ptr to 2D arr
         int x_count,
         int y_count
     );
 void _grid_alloc_arr_entity_refs(
-        DRay **grid_arr_entity_refs, // Ptr to 2D arr
+        DRay ***grid_arr_entity_refs, // Ptr to 2D arr
         int x_count,
         int y_count
     );

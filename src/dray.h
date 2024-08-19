@@ -16,7 +16,7 @@
 
 #define dray_add_value(_dray, _value, _type) \
     do { \
-        _type _dray_val_add = _value; \
+        _type _dray_val_add = (_type)(_value); \
         _dray_add_value(_dray, &_dray_val_add, sizeof(_type)); \
     } while (0)
 
@@ -72,6 +72,8 @@ static inline void _dray_add_pointer(DRay *dray, void *pointer)
 
 static inline void *_dray_get_value(DRay *dray, int idx, size_t type_size)
 {
+	if (idx >= dray->count) { return NULL; }
+	
     void *idx_ptr = dray_get_idx_ptr(dray, idx);
 
     if ( *((char *)idx_ptr) == DRAY_EMPTY_VALUE)
@@ -84,6 +86,8 @@ static inline void *_dray_get_value(DRay *dray, int idx, size_t type_size)
 
 static inline void *_dray_get_pointer(DRay *dray, int idx)
 {
+	if (idx >= dray->count) { return NULL; }
+	
     void **idx_ptr_ptr = (void **)dray_get_idx_ptr(dray, idx);
 
     if ( *((char *)idx_ptr_ptr) == DRAY_EMPTY_VALUE)

@@ -108,7 +108,7 @@ clean_bin:
 	rm -rf bin
 
 clean_bin_int:
-	rm -rf bin-int
+	find bin-int -mindepth 1 ! -name 'flecs.o' ! -name 'log.o' ! -name 'mt19937-64.o' -exec rm -rf {} +
 
 clean_asm:
 	rm -rf asm

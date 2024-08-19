@@ -44,7 +44,9 @@ void ent_player_create(
 	grid_create_gridposition(
 			grid_x, grid_y,
 			grid, 
-			*ent_player 
+			*ent_player,
+			ENT_PLAYER_COLL_LAYER,
+			ENT_PLAYER_COLL_MASK
 		);
 
     ecs_set(world, *ent_player, Glyph, { 
@@ -53,7 +55,6 @@ void ent_player_create(
 			.tileset = tileset 
 		}); 
 	turnmanager_create_turncomponent(tm, *ent_player);
-    coll_component_create(world, *ent_player, 2);//1);
     
 //    log_debug("ent_player_create END");
 }
@@ -64,7 +65,6 @@ void ent_dog_create(
 		TurnManager *tm, 
 		Grid* grid,
 		Tileset *tileset,
-        PathMap *pm,
 		ecs_entity_t entity_target
 	)
 {
@@ -78,9 +78,7 @@ void ent_dog_create(
 		});
 	turnmanager_create_turncomponent(tm, *ent_dog);
 	turnmanager_disable_tc(tm, *ent_dog);
-    ecs_set(world, *ent_dog, PathComponent, { .pm = pm });
     ecs_set(world, *ent_dog, NPCTarget, { .target = entity_target });
-    coll_component_create(world, *ent_dog, 1);
 }
 
 void ent_wall_perm_create(
@@ -98,13 +96,13 @@ void ent_wall_perm_create(
    grid_create_gridposition(
 			grid_x, grid_y,
 			grid, 
-			*ent_wall_perm 
+			*ent_wall_perm,
+			ENT_WALL_PERM_COLL_LAYER,
+			ENT_WALL_PERM_COLL_MASK
 		);
    ecs_set(world, *ent_wall_perm, Glyph, {
            .source_tile_x = 0,
            .source_tile_y = 5,
            .tileset = tileset
         });
-   coll_component_create(world, *ent_wall_perm, 1);
-   grid_move_to(grid, 1, grid_x, grid_y); 
 }

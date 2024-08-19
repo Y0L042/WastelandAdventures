@@ -13,8 +13,8 @@ void _maths_initialize()
 int maths_randbetween_int(int min, int max)
 {
     if (!_maths_initialized) { _maths_initialize(); }
-    
-    int x = min + (rand() % (max + 1 - min));
+   	int _max = max + 1 - min; 
+    int x = min + (rand() % (_max != 0 ? _max : 1));
 
     return x;
 }

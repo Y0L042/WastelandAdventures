@@ -23,8 +23,8 @@ const int g_SCREEN_WIDTH = 1280;
 const int g_SCREEN_HEIGHT = 720;
 const Color g_BG_COLOR = BLACK;
 
-const int WORLDSPACE_SIZE_X = 100;
-const int WORLDSPACE_SIZE_Y = 100;
+const int WORLDSPACE_SIZE_X = 25;
+const int WORLDSPACE_SIZE_Y = 25;
 
 const int TILE_SIZE_X = 25;
 const int TILE_SIZE_Y = 25;
@@ -36,7 +36,6 @@ Tileset tileset;
 Glyph player_glyph;
 ecs_world_t *g_world;
 TurnManager turnmanager;
-PathMap pathmap;
 
 void initialize();
 void ready();
@@ -104,8 +103,6 @@ void ready()
             TILE_SIZE_Y
         );
 
-    pathmap_initialize(&pathmap, &grid_worldspace);
-
     create_walls(g_world, &grid_worldspace, &tileset);
 
 	ent_player_create(
@@ -129,7 +126,6 @@ void ready()
 			&turnmanager,
 			&grid_worldspace,
 			&tileset,
-            &pathmap,
 			g_ent_player
 		);
 
@@ -149,7 +145,6 @@ void physics_update(double delta)
 {
 //	log_debug("physics_update() - start");
     handler_player_input(g_world);
-    handler_npc_pathfinding(g_world);
 	handler_grid_move(g_world);
 	handler_camera_move(g_world);
 	handler_turncounter_increment(g_world);
@@ -190,8 +185,25 @@ void quit()
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 {
-    log_debug("DEBUG");
+    log_debug("CREATE WALLS START");
     ecs_entity_t wall;
+
+	/*
+    DRay *map_idx = mapgen_generate_RANDOMWALKER(grid);
+    for (int i = 0; i < map_idx->count; i++)
+	{
+		Vector2 pos = dray_get_value(map_idx, i, Vector2);
+		ent_wall_perm_create(
+				&wall,
+				world,
+				grid,
+				tileset,
+				pos.x, pos.y
+			);
+	}
+	free(map_idx);
+	*/
+
     int area = grid->width * grid->height;
     for (int i = 0; i < grid->width; i++)
     {
@@ -210,20 +222,26 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
     DRay *map_idx = mapgen_generate_RANDOMWALKER(grid);
     for (int i = 0; i < map_idx->count; i++)
     {
-        log_debug("DEBUG, i %d", i);
-        int x, y;
-        grid_i2c(grid, dray_get_value(map_idx, i, int), &x, &y);
-        DRay *entities =  grid_get_entities_at(grid, x, y);
+        Vector2 pos = dray_get_value(map_idx, i, Vector2);
+        DRay *entities =  grid_get_entities_at(grid, pos.x, pos.y);
         for (int ent_idx = 0; ent_idx < entities->count; ent_idx++)
         {
             ecs_entity_t ent = dray_get_value(entities, ent_idx, ecs_entity_t);
+			GridPosition *gp = ecs_get_mut(world, ent, GridPosition);
+			gridposition_delete(gp);
+			ecs_remove(world, ent, GridPosition);
             ecs_delete(world, ent);
-            printf("walls: %d\n", ent);
+			dray_clear_idx(entities, ent_idx);
         }
     }
+	free(map_idx);
+
+	log_debug("CREATE WALLS _DEBUG_");
 
     int rand_idx = maths_randbetween_int(0, map_idx->count);
-    grid_i2c(grid, rand_idx, &spawn_x, &spawn_y);
+	Vector2 spawnpos = dray_get_value(map_idx, rand_idx, Vector2);
+	spawn_x = spawnpos.x;
+	spawn_y = spawnpos.y;
 
     ent_wall_perm_create(
             &wall,
@@ -255,4 +273,5 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
             3, 4
         );
 
+    log_debug("CREATE WALLS END");
 }

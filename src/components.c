@@ -9,9 +9,6 @@ ECS_COMPONENT_DECLARE(CameraComponent);
 ECS_COMPONENT_DECLARE(TurnComponent);
 ECS_COMPONENT_DECLARE(TAG_TCEnable);
 ECS_COMPONENT_DECLARE(TurnCountComponent);
-ECS_COMPONENT_DECLARE(CollisionComponent);
-ECS_COMPONENT_DECLARE(CollisionLayer);
-ECS_COMPONENT_DECLARE(CollisionMask);
 ECS_COMPONENT_DECLARE(PathComponent);
 ECS_COMPONENT_DECLARE(NPCTarget);
 ECS_COMPONENT_DECLARE(TAG_Player);
@@ -30,10 +27,6 @@ void create_components(ecs_world_t *world)
     ECS_COMPONENT_DEFINE(world, TurnComponent);
  	ECS_COMPONENT_DEFINE(world, TAG_TCEnable);
 	ECS_COMPONENT_DEFINE(world, TurnCountComponent);
-    ECS_COMPONENT_DEFINE(world, CollisionComponent);
-    ECS_COMPONENT_DEFINE(world, CollisionLayer);
-    ECS_COMPONENT_DEFINE(world, CollisionMask);
-    ECS_COMPONENT_DEFINE(world, PathComponent);
     ECS_COMPONENT_DEFINE(world, NPCTarget);
     ECS_COMPONENT_DEFINE(world, TAG_Player);
 
@@ -120,7 +113,6 @@ void handler_grid_move(ecs_world_t *world)
             { ecs_id(GridVelocity) },
             { ecs_id(Position) },
 			{ ecs_id(TAG_TCEnable) },
-            { ecs_id(CollisionComponent) },
             { ecs_id(TurnComponent) }
         }
     }); 
@@ -130,38 +122,24 @@ void handler_grid_move(ecs_world_t *world)
 		GridPosition *gp = ecs_field(&it, GridPosition, 1);
 		GridVelocity *gv = ecs_field(&it, GridVelocity, 2);
 		Position *p = ecs_field(&it, Position, 3);
-        CollisionComponent *cc = ecs_field(&it, CollisionComponent, 5);
-        TurnComponent *tc = ecs_field(&it, TurnComponent, 6);
+        TurnComponent *tc = ecs_field(&it, TurnComponent, 5);
 
 		for (int i = 0; i < it.count; i++)
 		{
 			if (gv[i].x == 0 && gv[i].y == 0) { continue; }
             
             Grid *grid = gp[i].grid;
-            CollisionData *c_d = cc[i].c_d;
 			if (grid) 
-			{ 
-                int test_x = gp[i].x + gv[i].x;
-                int test_y = gp[i].y + gv[i].y;
-                int move_test_result = grid_test_place(
-                        grid, 
-                        c_d->coll_bits, 
-                        test_x, 
-                        test_y
-                    );
-                int test_bounds = grid_test_outofbounds(grid, test_x, test_y);
-                if (move_test_result != 0 || test_bounds !=0) 
-                {
-                    continue; 
-                }
-
-                grid_move_from(grid, c_d->coll_bits, gp[i].x, gp[i].y);
-
-                gp[i].x += gv[i].x;
-                gp[i].y += gv[i].y;
+			{
+				int coll_mask = 0;
+				int coll_layer = 0;
+				gridposition_move(
+						&gp[i], 
+						gp[i].x + gv[i].x, 
+						gp[i].y + gv[i].y, 
+						0						
+					);
                 
-                grid_move_to(grid, c_d->coll_bits, gp[i].x, gp[i].y);
-
 				p[i].x = gp[i].x * grid->tile_width;
 				p[i].y = gp[i].y * grid->tile_height;
 			}
@@ -172,12 +150,6 @@ void handler_grid_move(ecs_world_t *world)
 
             turnmanager_end_turn(tc[i].tc_d->turn_manager, 50);
 
-			int x = gp[i].x;
-			int y = gp[i].y;
-			int px = p[i].x;
-			int py = p[i].y;
-			//printf("GP { %d, %d }\n", x, y);
-			//printf("P { %d, %d }\n", px, py);
 			gv[i].x = 0;
 			gv[i].y = 0;
             ecs_remove(it.world, it.entities[i], GridVelocity);
@@ -274,61 +246,3 @@ void handler_turncounter_increment(ecs_world_t *world)
 	}
 }
 
-void handler_npc_pathfinding(ecs_world_t *world)
-{
-    ecs_query_t *query_npc_pathfinding = ecs_query(world, {
-        .filter.terms = {
-            { ecs_id(GridPosition) },
-            { ecs_id(GridVelocity) },
-            { ecs_id(PathComponent) },
-            { ecs_id(NPCTarget) },
-            { ecs_id(TurnComponent) },
-            { ecs_id(CollisionComponent) },
-            { TAG_TurnActive }
-        }
-    });
-    ecs_iter_t it = ecs_query_iter(world, query_npc_pathfinding);
-    while (ecs_query_next(&it))
-    {
-        GridPosition *gp = ecs_field(&it, GridPosition, 1);
-        GridVelocity *gv = ecs_field(&it, GridVelocity, 2);
-        PathComponent *pc = ecs_field(&it, PathComponent, 3);
-        NPCTarget *npct = ecs_field(&it, NPCTarget, 4);
-        TurnComponent *tc = ecs_field(&it, TurnComponent, 5);
-        CollisionComponent *cc = ecs_field(&it, CollisionComponent, 6);
-        
-
-        for (int i = 0; i < it.count; i++)
-        {
-            const GridPosition *target_gp = ecs_get(world, npct->target, GridPosition);
-            TurnManager *tm = tc[i].tc_d->turn_manager;
-            if (target_gp == NULL) 
-            {
-                turnmanager_end_turn(tm, 100);
-                continue; 
-            }
-
-            CVecInt *path_idx = pathmap_find_path(
-                    pc[i].pm,
-                    gp[i].x,
-                    gp[i].y,
-                    target_gp->x,
-                    target_gp->y,
-                    cc[i].c_d->coll_bits
-                );
-
-
-            if (path_idx == NULL) 
-            { 
-                turnmanager_end_turn(tm, 100);
-                continue; 
-            }
-            int next_cell_idx = path_idx->data[0];
-            cvec_int_free(path_idx);
-            int next_x, next_y;
-            grid_i2c(gp[i].grid, next_cell_idx, &next_x, &next_y);
-            
-            // TODO add GridVelocity component, and the velocity to go
-        }
-    }
-}
