@@ -178,7 +178,6 @@ void draw(double delta)
 
 void quit()
 {
-	grid_free(&grid_worldspace);
 	ecs_fini(g_world);
 }
 
