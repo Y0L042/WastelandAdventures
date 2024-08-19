@@ -127,7 +127,11 @@ void grid_create_gridposition(
 				.coll_layer = coll_layer,
 				.coll_mask = coll_mask
 			});
+
+	/* Add collision layer to cell */
 	grid->arr_coll_layers[x][y] = grid->arr_coll_layers[x][y] | coll_layer;
+
+	/* Add entity to cell */
 	dray_add_value(&grid->arr_entity_refs[x][y], entity, ecs_entity_t);
 }
 
@@ -163,6 +167,7 @@ int gridposition_move(
 	{
 		coll_bits_t grid_coll_layer = grid->arr_coll_layers[new_x][new_y];
 		int result = grid_coll_layer & coll_mask;
+		log_info("Coll result: %d", result);
 		if (result != 0) { return 1;}
 
 		/* Remove layer */
