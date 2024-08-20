@@ -34,6 +34,9 @@ extern ECS_COMPONENT_DECLARE(TurnComponent);
 typedef struct TurnCountComponent TurnCountComponent; // Forward Declaration
 extern ECS_COMPONENT_DECLARE(TurnCountComponent);
 extern ECS_COMPONENT_DECLARE(TAG_TCEnable);
+extern ECS_COMPONENT_DECLARE(TurnEnter);
+extern ECS_COMPONENT_DECLARE(TurnProcess);
+extern ECS_COMPONENT_DECLARE(TurnExit);
 
 extern ECS_COMPONENT_DECLARE(PathComponent);
 
@@ -47,11 +50,9 @@ extern ECS_COMPONENT_DECLARE(NPCTarget);
 typedef struct TAG_Player{ int empty; } TAG_Player;
 extern ECS_COMPONENT_DECLARE(TAG_Player);
 
-struct TAG_TurnActive{ int empty; } ;
-extern ECS_ENTITY_DECLARE(TAG_TurnActive);
+extern ECS_COMPONENT_DECLARE(TAG_TurnActive);
 
-struct TAG_TurnIdle{ int empty; } ;
-extern ECS_ENTITY_DECLARE(TAG_TurnIdle);
+extern ECS_COMPONENT_DECLARE(TAG_TurnIdle);
 
 
 void create_components(ecs_world_t *world);
@@ -67,6 +68,7 @@ void handler_glyph_draw(ecs_world_t *world);
 void handler_camera_move(ecs_world_t *world);
 void handler_grid_move(ecs_world_t *world);
 void handler_player_input(ecs_world_t *world);
+void handler_pathfinding(ecs_world_t *world);
 void handler_turncounter_increment(ecs_world_t *world);
 
 #endif // COMPONENTS_H

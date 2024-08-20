@@ -7,6 +7,15 @@
 #include "log.h"
 #include "dray.h"
 
+#define GRID_CREATE_2D(_grid_width, _grid_height, _grid_type) \
+	((_grid_type **)_grid_create_2d(_grid_width, _grid_height, sizeof(_grid_type)))
+
+#define GRID_FREE_2D(_grid_ptr) \
+	do {\
+		free(_grid_ptr[0]); \
+		free(_grid_ptr); \
+	} while (0)
+
 typedef int coll_bits_t;
 
 typedef struct Grid {
@@ -77,6 +86,18 @@ void _grid_alloc_arr_entity_refs(
         int y_count
     );
         
+static inline void **_grid_create_2d(int width, int height, size_t size)
+{
+    void **grid = calloc(width, sizeof(void *));
+	if (!grid) { return NULL; }
+	grid[0] = calloc(width * height, size);
+	if (!grid[0]) { free(grid); return NULL; }
+	for (int i = 1; i < width; i++)
+	{
+		grid[i] = (char *)grid[0] + i * height * size;
+	}
 
+	return grid;
+}
 
 #endif // GRID_H

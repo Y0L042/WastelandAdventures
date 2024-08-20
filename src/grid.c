@@ -167,7 +167,6 @@ int gridposition_move(
 	{
 		coll_bits_t grid_coll_layer = grid->arr_coll_layers[new_x][new_y];
 		int result = grid_coll_layer & coll_mask;
-		log_info("Coll result: %d", result);
 		if (result != 0) { return 1;}
 
 		/* Remove layer */

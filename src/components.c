@@ -6,15 +6,20 @@ ECS_COMPONENT_DECLARE(GridPosition);
 ECS_COMPONENT_DECLARE(GridVelocity);
 ECS_COMPONENT_DECLARE(Glyph);
 ECS_COMPONENT_DECLARE(CameraComponent);
+
 ECS_COMPONENT_DECLARE(TurnComponent);
 ECS_COMPONENT_DECLARE(TAG_TCEnable);
 ECS_COMPONENT_DECLARE(TurnCountComponent);
+ECS_COMPONENT_DECLARE(TurnEnter);
+ECS_COMPONENT_DECLARE(TurnProcess);
+ECS_COMPONENT_DECLARE(TurnExit);
+
 ECS_COMPONENT_DECLARE(PathComponent);
 ECS_COMPONENT_DECLARE(NPCTarget);
 ECS_COMPONENT_DECLARE(TAG_Player);
 
-ECS_ENTITY_DECLARE(TAG_TurnActive);
-ECS_ENTITY_DECLARE(TAG_TurnIdle);
+ECS_COMPONENT_DECLARE(TAG_TurnActive);
+ECS_COMPONENT_DECLARE(TAG_TurnIdle);
 
 void create_components(ecs_world_t *world)
 {
@@ -24,14 +29,20 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, GridVelocity);
 	ECS_COMPONENT_DEFINE(world, Glyph);
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
+
     ECS_COMPONENT_DEFINE(world, TurnComponent);
  	ECS_COMPONENT_DEFINE(world, TAG_TCEnable);
 	ECS_COMPONENT_DEFINE(world, TurnCountComponent);
+	ECS_COMPONENT_DEFINE(world, TurnEnter);
+	ECS_COMPONENT_DEFINE(world, TurnProcess);
+	ECS_COMPONENT_DEFINE(world, TurnExit);
+
     ECS_COMPONENT_DEFINE(world, NPCTarget);
     ECS_COMPONENT_DEFINE(world, TAG_Player);
-
-    ECS_ENTITY_DEFINE(world, TAG_TurnActive);
-    ECS_ENTITY_DEFINE(world, TAG_TurnIdle);
+	ECS_COMPONENT_DEFINE(world, PathComponent);
+	
+    ECS_COMPONENT_DEFINE(world, TAG_TurnActive);
+    ECS_COMPONENT_DEFINE(world, TAG_TurnIdle);
 }
 
 
@@ -126,7 +137,12 @@ void handler_grid_move(ecs_world_t *world)
 
 		for (int i = 0; i < it.count; i++)
 		{
-			if (gv[i].x == 0 && gv[i].y == 0) { continue; }
+			if (gv[i].x == 0 && gv[i].y == 0) 
+			{
+				turnmanager_end_turn(tc[i].tc_d->turn_manager, 50);
+				ecs_remove(it.world, it.entities[i], GridVelocity);
+				continue; 
+			}
             
             Grid *grid = gp[i].grid;
 			if (grid) 
@@ -163,7 +179,7 @@ void handler_player_input(ecs_world_t *world)
         .filter.terms = {
 			{ ecs_id(TurnComponent) },
             { ecs_id(TAG_Player) },
-			{ TAG_TurnActive }
+			{ ecs_id(TAG_TurnActive) }
         }
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_player_input);
@@ -219,13 +235,58 @@ void handler_player_input(ecs_world_t *world)
 	}
 }
 
+void handler_pathfinding(ecs_world_t *world)
+{
+    ecs_query_t *query_pathfinding = ecs_query(world, {
+        .filter.terms = {
+			{ ecs_id(TurnComponent) },
+			{ ecs_id(TAG_TurnActive) },
+			{ ecs_id(PathComponent) },
+			{ ecs_id(GridPosition) },
+			{ ecs_id(NPCTarget) }
+        }
+    }); 
+	ecs_iter_t it = ecs_query_iter(world, query_pathfinding);
+	while(ecs_query_next(&it))
+	{
+		PathComponent *pc = ecs_field(&it, PathComponent, 3);
+		GridPosition *gp = ecs_field(&it, GridPosition, 4);
+		NPCTarget *target = ecs_field(&it, NPCTarget, 5);
+
+		for (int i = 0; i < it.count; i++)
+		{
+			Grid *grid = gp[i].grid;
+			const GridPosition *gp_target = ecs_get(world, target->target, GridPosition);
+			if (gp_target == NULL) 
+			{ 
+				ecs_remove(it.world, it.entities[i], PathComponent);
+				continue; 
+			}
+
+			DRay *path = find_path(grid, gp[i].x, gp[i].y, gp_target->x, gp_target->y, gp[i].coll_mask);
+			if ((path == NULL) || (path->count == 0)) 
+			{ 
+				ecs_remove(it.world, it.entities[i], PathComponent);
+				free(path); 
+				continue; 
+			}
+
+			Vector2 next_pos = dray_get_value(path, 0, Vector2);
+			Vector2 vel = Vector2Subtract(next_pos, (Vector2){ gp[i].x, gp[i].y });
+			ecs_set(it.world, it.entities[i], GridVelocity, { .x = vel.x, .y = vel.y });
+
+			free(path);
+		}
+	}
+}
+
 void handler_turncounter_increment(ecs_world_t *world)
 {
     ecs_query_t *query_turncounter_increment = ecs_query(world, {
         .filter.terms = {
             { ecs_id(TurnCountComponent) },
 			{ ecs_id(TurnComponent) },
-			{ TAG_TurnActive }
+			{ ecs_id(TAG_TurnActive) }
         }
     }); 
 	//log_debug("DEBUG");

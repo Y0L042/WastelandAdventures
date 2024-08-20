@@ -4,6 +4,16 @@ ecs_entity_t g_ent_player;
 ecs_entity_t g_ent_camera;
 ecs_entity_t g_ent_dog;
 
+const int ENT_PLAYER_COLL_LAYER = 0b0011;
+const int ENT_PLAYER_COLL_MASK = 0b0001;
+const int ENT_DOG_COLL_LAYER = 0b0010;
+const int ENT_DOG_COLL_MASK = 0b0011;
+const int ENT_WALL_PERM_COLL_LAYER = 0b0001;
+const int ENT_WALL_PERM_COLL_MASK = 0b0000;
+
+
+
+
 void ent_camera_create(
 		ecs_entity_t *ent_camera,
 		ecs_world_t *world,
@@ -65,19 +75,29 @@ void ent_dog_create(
 		TurnManager *tm, 
 		Grid* grid,
 		Tileset *tileset,
-		ecs_entity_t entity_target
+		ecs_entity_t entity_target,
+		int grid_x, int grid_y
 	)
 {
 	*ent_dog = ecs_new_id(world);
-	ecs_set(world, *ent_dog, Position, { .x = 0, .y = 0 });
-	ecs_set(world, *ent_dog, Velocity, { .x = 0, .y = 0 });
+    int world_x, world_y;
+    grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
+	ecs_set(world, *ent_dog, Position, { .x = world_x, .y = world_y });
 	ecs_set(world, *ent_dog, Glyph, {
-			.source_tile_x = 0,
-			.source_tile_y = 3,
+			.source_tile_x = 13,
+			.source_tile_y = 6,
 			.tileset = tileset
 		});
+	grid_create_gridposition(
+			grid_x, grid_y,
+			grid, 
+			*ent_dog,
+			ENT_DOG_COLL_LAYER,
+			ENT_DOG_COLL_MASK
+		);
 	turnmanager_create_turncomponent(tm, *ent_dog);
-	turnmanager_disable_tc(tm, *ent_dog);
+	//turnmanager_disable_tc(tm, *ent_dog);
+	cmp_add_PathComponent(world, *ent_dog, grid);
     ecs_set(world, *ent_dog, NPCTarget, { .target = entity_target });
 }
 
@@ -101,8 +121,8 @@ void ent_wall_perm_create(
 			ENT_WALL_PERM_COLL_MASK
 		);
    ecs_set(world, *ent_wall_perm, Glyph, {
-           .source_tile_x = 0,
-           .source_tile_y = 5,
+           .source_tile_x = 11,
+           .source_tile_y = 13,
            .tileset = tileset
         });
 }

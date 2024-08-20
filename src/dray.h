@@ -26,8 +26,22 @@
 #define dray_get_value(_dray, _idx, _type) \
         (*((_type *)_dray_get_value(_dray, _idx, sizeof(_type))))
 
+#define dray_pop_value(_dray, _type) \
+        (*((_type *)_dray_pop_value(_dray, sizeof(_type))))
+
+#define dray_dequeue_value(_dray, _type) \
+        (*((_type *)_dray_dequeue_value(_dray, sizeof(_type))))
+
 #define dray_get_pointer(_dray, _idx, _type) \
         ((_type *)_dray_get_pointer(_dray, _idx))
+
+#define dray_pop_pointer(_dray, _type) \
+        ((_type *)_dray_pop_pointer(_dray))
+
+#define dray_dequeue_pointer(_dray, _type) \
+        ((_type *)_dray_dequeue_pointer(_dray))
+
+
 
 typedef enum DRAY_CAT {
     DRAY_CAT_VALUE = 0,
@@ -73,9 +87,7 @@ static inline void _dray_add_pointer(DRay *dray, void *pointer)
 static inline void *_dray_get_value(DRay *dray, int idx, size_t type_size)
 {
 	if (idx >= dray->count) { return NULL; }
-	
     void *idx_ptr = dray_get_idx_ptr(dray, idx);
-
     if ( *((char *)idx_ptr) == DRAY_EMPTY_VALUE)
     {
         return (char *)idx_ptr;
@@ -87,9 +99,7 @@ static inline void *_dray_get_value(DRay *dray, int idx, size_t type_size)
 static inline void *_dray_get_pointer(DRay *dray, int idx)
 {
 	if (idx >= dray->count) { return NULL; }
-	
     void **idx_ptr_ptr = (void **)dray_get_idx_ptr(dray, idx);
-
     if ( *((char *)idx_ptr_ptr) == DRAY_EMPTY_VALUE)
     {
         return NULL;
@@ -98,5 +108,60 @@ static inline void *_dray_get_pointer(DRay *dray, int idx)
     return *idx_ptr_ptr;
 }
 
-// DRayIt dray_iter(DRay *dray);
+static inline void *_dray_pop_value(DRay *dray, size_t type_size)
+{
+	if (dray->count == 0) { return NULL; }
+	int idx = dray->count - 1;
+	void *val = _dray_get_value(dray, idx, type_size);
+    if ( *((char *)val) == DRAY_EMPTY_VALUE)
+    {
+        return (char *)val;
+    }
+	dray_remove_idx(dray, idx);
+
+	return val;
+}
+
+static inline void *_dray_pop_pointer(DRay *dray)
+{
+	if (dray->count == 0) { return NULL; }
+	int idx = dray->count - 1;
+    void **idx_ptr_ptr = (void **)dray_get_idx_ptr(dray, idx);
+    if ( *((char *)idx_ptr_ptr) == DRAY_EMPTY_VALUE)
+    {
+        return NULL;
+    }
+	dray_remove_idx(dray, idx);
+
+    return *idx_ptr_ptr;
+}
+
+static inline void *_dray_dequeue_value(DRay *dray, size_t type_size)
+{
+	if (dray->count == 0) { return NULL; }
+	int idx = 0;
+	void *val = _dray_get_value(dray, idx, type_size);
+    if ( *((char *)val) == DRAY_EMPTY_VALUE)
+    {
+        return (char *)val;
+    }
+	dray_remove_idx(dray, idx);
+
+	return val;
+}
+
+static inline void *_dray_dequeue_pointer(DRay *dray)
+{
+	if (dray->count == 0) { return NULL; }
+	int idx = 0;
+    void **idx_ptr_ptr = (void **)dray_get_idx_ptr(dray, idx);
+    if ( *((char *)idx_ptr_ptr) == DRAY_EMPTY_VALUE)
+    {
+        return NULL;
+    }
+	dray_remove_idx(dray, idx);
+
+    return *idx_ptr_ptr;
+}
+
 #endif // DRAY_H

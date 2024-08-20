@@ -14,6 +14,12 @@ enum TurnState {
 	TURNSTATE_IDLE
 };
 
+typedef struct TAG_TurnActive { int empty; } TAG_TurnActive;
+typedef struct TAG_TurnIdle { int empty; } TAG_TurnIdle;
+typedef struct TurnEnter { int empty; } TurnEnter;
+typedef struct TurnProcess { int empty; } TurnProcess;
+typedef struct TurnExit { int empty; } TurnExit;
+
 struct TurnManager; // Forward Declaration
 typedef struct TurnComponentData {
 	int enable;

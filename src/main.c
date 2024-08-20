@@ -126,7 +126,8 @@ void ready()
 			&turnmanager,
 			&grid_worldspace,
 			&tileset,
-			g_ent_player
+			g_ent_player,
+			spawn_x, spawn_y
 		);
 
 
@@ -147,6 +148,7 @@ void physics_update(double delta)
     handler_player_input(g_world);
 	handler_grid_move(g_world);
 	handler_camera_move(g_world);
+	handler_pathfinding(g_world);
 	handler_turncounter_increment(g_world);
 
 //	log_debug("physics_update() - end");
