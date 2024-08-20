@@ -5,14 +5,16 @@
 DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask);
 DRay* find_path(Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask)
 {
+	/*
 	DRay *path = (DRay *)malloc(sizeof(DRay));
 	dray_init_values(path, Vector2);
 	Vector2 next_pos = { to_x - 1, to_y - 1 };
 	dray_add_value(path, next_pos, Vector2);
 
-	pathfind_astar(grid, from_x, from_y, to_x, to_y, coll_mask);
-
 	return path;
+	*/
+
+	return pathfind_astar(grid, from_x, from_y, to_x, to_y, coll_mask);
 }
 
 enum ASTAR_NodeState { ASTAR_NONE, ASTAR_OPENLIST, ASTAR_CLOSEDLIST, ASTAR_IGNORE };
@@ -55,6 +57,9 @@ DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int
 	closed_list = (DRay *)malloc(sizeof(DRay));
 	dray_init_pointers(closed_list, AStarNode);
 
+	int path_found = 0;
+	AStarNode *target_node;
+
 	AStarNode *start_node = &nodemap[from_x][from_y];
 	dray_add_pointer(open_list, start_node);
 	start_node->state = ASTAR_OPENLIST;
@@ -62,6 +67,7 @@ DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int
 	while (open_list->count != 0)
 	{
 		AStarNode *current_node = dray_get_pointer(open_list, 0, AStarNode);
+		target_node = current_node;
 		int current_node_idx = 0;
 		for (int i = 0; i < open_list->count; i++)
 		{
@@ -73,13 +79,75 @@ DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int
 			}
 		}
 
-		if ((current_node->x == current_node->t_x) && (current_node->y == current_node->t_y)) { log_info("TARGET_AQUIRED"); break; }
+		if ((current_node->x == current_node->t_x) && (current_node->y == current_node->t_y)) 
+		{
+			path_found = 1; 
+			break; 
+		}
 
 		dray_add_pointer(closed_list, current_node);
 		current_node->state = ASTAR_CLOSEDLIST;
 		dray_remove_idx(open_list, current_node_idx);
+
 		DRay *neighbors = _pathfind_get_neighbors(&nodemap, current_node, coll_mask);
+		for (int i = 0; i < neighbors->count; i++)
+		{
+			AStarNode *neighbor = dray_get_pointer(neighbors, i, AStarNode);
+			if (neighbor->state == ASTAR_NONE) /* If neighbor is not on openlist, calculate values and add */
+			{
+				neighbor->parent = current_node;
+				neighbor->g = current_node->g + 1;
+				neighbor->h = Vector2DistanceSqr((Vector2){ neighbor->t_x, neighbor->t_y }, (Vector2){ neighbor->x, neighbor->y });
+				neighbor->f = neighbor->g + neighbor->h;
+
+				dray_add_pointer(open_list, neighbor);
+				neighbor->state = ASTAR_OPENLIST;
+			}
+			else
+			{
+				if (neighbor->g > (current_node->g + 1)) /* If path from node to neighbor is shorter than neighbor's pref path, update */
+				{
+					neighbor->parent = current_node;
+					neighbor->g = current_node->g + 1;
+					neighbor->f = neighbor->g + neighbor->h;
+				}
+			}
+		}
 	}
+	
+	if (path_found)
+	{
+		DRay *path = (DRay *)malloc(sizeof(DRay));
+		dray_init_values(path, Vector2);
+		AStarNode *iter_node = target_node;
+		printf("%d %d\n", iter_node->x, iter_node->y);
+		Vector2 pos = { (float)iter_node->x, (float)iter_node->y };
+		printf("%.f %.f\n", pos.x, pos.y);
+		//dray_add_value(path, pos, Vector2);
+		do {
+			pos.x =  (float)iter_node->x;
+			pos.y = (float)iter_node->y;
+			log_info("PATHFIND PATH POS: { %.f, %.f }", pos.x, pos.y);
+			DrawCircle(
+					pos.x * grid->tile_width, 
+					pos.y * grid->tile_height, 
+					20, 
+					YELLOW
+				);
+			dray_add_value(path, pos, Vector2);
+			iter_node = iter_node->parent;	
+		} while (iter_node->parent != NULL);
+
+		log_info("TARGET_AQUIRED");
+		return path;
+	}
+	else
+	{
+		log_info("TARGET_NOT_FOUND");
+		return NULL;
+	}
+
+	return NULL;
 }
 
 void _astarnode_init(AStarNode *node, int x, int y, int t_x, int t_y, int coll_layer, AStarNode *parent, Grid *grid)
@@ -116,28 +184,15 @@ DRay* _pathfind_get_neighbors(AStarNode ***nodemap, AStarNode *node, int coll_ma
 			if ((nx < 0) || (nx >= grid->width)) { continue; }
 			if ((ny < 0) || (ny >= grid->height)) { continue; }
 
-			AStarNode *neighbor = &map[nx][ny];
-			if (neighbor->coll_layer & coll_mask) { continue; } /* If collision found */
+			AStarNode *neighbor = &map[nx][ny];			/* Include target pos, even if colliding */
+			if (
+					(neighbor->coll_layer & coll_mask) 
+					&& ((nx != neighbor->t_x) || (ny != neighbor->t_y))
+				) 
+			{ 
+				continue; 
+			} /* If collision found */
 			if (neighbor->state == ASTAR_CLOSEDLIST) { continue; }
-			if (neighbor->state == ASTAR_NONE) /* If neighbor is not on openlist, calculate values and add */
-			{
-				neighbor->parent = node;
-				neighbor->g = node->g + 1;
-				neighbor->h = Vector2DistanceSqr((Vector2){ node->t_x, node->t_y }, (Vector2){ nx, ny });
-				neighbor->f = neighbor->g + neighbor->h;
-
-				dray_add_pointer(open_list, neighbor);
-				neighbor->state = ASTAR_OPENLIST;
-			}
-			else
-			{
-				if (neighbor->g > (node->g + 1)) /* If path from node to neighbor is shorter than neighbor's pref path, update */
-				{
-					neighbor->parent = node;
-					neighbor->g = node->g + 1;
-					neighbor->f = neighbor->g + neighbor->h;
-				}
-			}
 
 			dray_add_pointer(neighbors, neighbor); 
 		}

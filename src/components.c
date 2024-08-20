@@ -259,20 +259,31 @@ void handler_pathfinding(ecs_world_t *world)
 			const GridPosition *gp_target = ecs_get(world, target->target, GridPosition);
 			if (gp_target == NULL) 
 			{ 
-				ecs_remove(it.world, it.entities[i], PathComponent);
+				//ecs_remove(it.world, it.entities[i], PathComponent);
 				continue; 
 			}
 
-			DRay *path = find_path(grid, gp[i].x, gp[i].y, gp_target->x, gp_target->y, gp[i].coll_mask);
+			DRay *path = find_path(
+					grid, 
+					gp[i].x, 
+					gp[i].y, 
+					gp_target->x, 
+					gp_target->y, 
+					gp[i].coll_mask
+				);
 			if ((path == NULL) || (path->count == 0)) 
 			{ 
-				ecs_remove(it.world, it.entities[i], PathComponent);
+				//ecs_remove(it.world, it.entities[i], PathComponent);
 				free(path); 
 				continue; 
 			}
-
-			Vector2 next_pos = dray_get_value(path, 0, Vector2);
-			Vector2 vel = Vector2Subtract(next_pos, (Vector2){ gp[i].x, gp[i].y });
+			
+			Vector2 next_pos = dray_pop_value(path, Vector2);
+			log_info("PATHFIND TARGET  : { %d, %d }", gp_target->x, gp_target->y);
+			log_info("PATHFIND NEXT_POS: { %.f, %.f }", next_pos.x, next_pos.y);
+			Vector2 vel = { next_pos.x - gp[i].x, next_pos.y - gp[i].y };
+			log_info("POS: { %d, %d }", gp[i].x, gp[i].y);
+			log_info("VEL: { %.f, %.f }", vel.x, vel.y);
 			ecs_set(it.world, it.entities[i], GridVelocity, { .x = vel.x, .y = vel.y });
 
 			free(path);
