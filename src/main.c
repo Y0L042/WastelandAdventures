@@ -220,10 +220,10 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
         }
     }
 
-    DRay *map_idx = mapgen_generate_RANDOMWALKER(grid);
-    for (int i = 0; i < map_idx->count; i++)
+    DRay *walkable_tiles = mapgen_generate_RANDOMWALKER(grid);
+    for (int i = 0; i < walkable_tiles->count; i++)
     {
-        Vector2 pos = dray_get_value(map_idx, i, Vector2);
+        Vector2 pos = dray_get_value(walkable_tiles, i, Vector2);
         DRay *entities =  grid_get_entities_at(grid, pos.x, pos.y);
         for (int ent_idx = 0; ent_idx < entities->count; ent_idx++)
         {
@@ -235,14 +235,14 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 			dray_clear_idx(entities, ent_idx);
         }
     }
-	free(map_idx);
-
 	log_debug("CREATE WALLS _DEBUG_");
 
-    int rand_idx = maths_randbetween_int(0, map_idx->count);
-	Vector2 spawnpos = dray_get_value(map_idx, rand_idx, Vector2);
+    int rand_idx = maths_randbetween_int(0, walkable_tiles->count);
+	Vector2 spawnpos = dray_get_value(walkable_tiles, rand_idx, Vector2);
 	spawn_x = spawnpos.x;
 	spawn_y = spawnpos.y;
+
+	free(walkable_tiles);
 
     ent_wall_perm_create(
             &wall,

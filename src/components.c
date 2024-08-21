@@ -260,6 +260,7 @@ void handler_pathfinding(ecs_world_t *world)
 			if (gp_target == NULL) 
 			{ 
 				//ecs_remove(it.world, it.entities[i], PathComponent);
+				ecs_set(it.world, it.entities[i], GridVelocity, { .x = 0, .y = 0 });
 				continue; 
 			}
 
@@ -275,17 +276,23 @@ void handler_pathfinding(ecs_world_t *world)
 			{ 
 				//ecs_remove(it.world, it.entities[i], PathComponent);
 				free(path); 
+				ecs_set(it.world, it.entities[i], GridVelocity, { .x = 0, .y = 0 });
 				continue; 
 			}
 			
-			Vector2 next_pos = dray_pop_value(path, Vector2);
 			log_info("PATHFIND TARGET  : { %d, %d }", gp_target->x, gp_target->y);
+			Vector2 next_pos = dray_pop_value(path, Vector2);
 			log_info("PATHFIND NEXT_POS: { %.f, %.f }", next_pos.x, next_pos.y);
 			Vector2 vel = { next_pos.x - gp[i].x, next_pos.y - gp[i].y };
 			log_info("POS: { %d, %d }", gp[i].x, gp[i].y);
 			log_info("VEL: { %.f, %.f }", vel.x, vel.y);
 			ecs_set(it.world, it.entities[i], GridVelocity, { .x = vel.x, .y = vel.y });
-
+			
+			for (int i = 0; i < path->count; i++)
+			{
+				Vector2 p = dray_get_value(path, i, Vector2);
+				log_info("PATH { %d, %d }", p.x, p.y);
+			}
 			free(path);
 		}
 	}
