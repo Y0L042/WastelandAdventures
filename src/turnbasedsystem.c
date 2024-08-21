@@ -207,7 +207,7 @@ void turnmanager_disable_tc(TurnManager *tm, ecs_entity_t entity)
 
 void turncounter_create(TurnManager *tm, ecs_world_t *world)
 {
-	tm->turn_counter = ecs_new_id(world);
+	tm->turn_counter = ecs_new(world);
 	ecs_set(world, tm->turn_counter, TurnCountComponent, { .count = 0 });
 	
 	ecs_ref_t *tcntr_ref = (ecs_ref_t *)malloc(sizeof(ecs_ref_t));

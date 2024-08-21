@@ -20,7 +20,7 @@ void ent_camera_create(
 		ecs_entity_t entity_target
 	)
 {
-	*ent_camera = ecs_new_id(world);
+	*ent_camera = ecs_new(world);
 	
 	Camera2D new_camera = { 
 			(Vector2){ (g_SCREEN_WIDTH / 2), (g_SCREEN_HEIGHT / 2) },
@@ -46,7 +46,7 @@ void ent_player_create(
 {
 //    log_debug("ent_player_create START");
 	
-    *ent_player = ecs_new_id(world);
+    *ent_player = ecs_new(world);
     ecs_add(world, *ent_player, TAG_Player);
     int world_x, world_y;
     grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
@@ -79,7 +79,7 @@ void ent_dog_create(
 		int grid_x, int grid_y
 	)
 {
-	*ent_dog = ecs_new_id(world);
+	*ent_dog = ecs_new(world);
     int world_x, world_y;
     grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
 	ecs_set(world, *ent_dog, Position, { .x = world_x, .y = world_y });
@@ -109,7 +109,7 @@ void ent_wall_perm_create(
         int grid_x, int grid_y
     )
 {
-   *ent_wall_perm = ecs_new_id(world);
+   *ent_wall_perm = ecs_new(world);
    int world_x, world_y;
    grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
    ecs_set(world, *ent_wall_perm, Position, { .x = world_x, .y = world_y });

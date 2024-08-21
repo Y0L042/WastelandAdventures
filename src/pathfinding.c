@@ -2,8 +2,8 @@
 #include "components.h"
 #include <raylib.h>
 
-DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask);
-DRay* find_path(Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask)
+void pathfind_astar(DRay *path, Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask);
+void find_path(DRay *path, Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask)
 {
 	/*
 	DRay *path = (DRay *)malloc(sizeof(DRay));
@@ -14,7 +14,7 @@ DRay* find_path(Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll
 	return path;
 	*/
 
-	return pathfind_astar(grid, from_x, from_y, to_x, to_y, coll_mask);
+	return pathfind_astar(path, grid, from_x, from_y, to_x, to_y, coll_mask);
 }
 
 enum ASTAR_NodeState { ASTAR_NONE, ASTAR_OPENLIST, ASTAR_CLOSEDLIST, ASTAR_IGNORE };
@@ -35,16 +35,14 @@ typedef struct AStarNode {
 	Grid *grid;
 } AStarNode;
 
-static DRay *open_list = NULL;
-static DRay *closed_list = NULL;
-
 void _astarnode_init(AStarNode *node, int x, int y, int s_x, int s_y, int t_x, int t_y, int coll_layer, AStarNode *parent, Grid *grid);
-DRay* _pathfind_get_neighbors(AStarNode ***nodemap, AStarNode *node, int coll_mask);
+void _pathfind_get_neighbors(DRay *neighbors, AStarNode ***nodemap, AStarNode *node, int coll_mask);
 
-DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask)
+void pathfind_astar(DRay *path, Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask)
 {
 	/* Create grid for pathfinding */
-	AStarNode **nodemap = GRID_CREATE_2D(grid->width, grid->height, AStarNode);
+	AStarNode **nodemap = NULL;
+	nodemap = GRID_CREATE_2D(grid->width, grid->height, AStarNode);
 	for (int _x = 0; _x < grid->width; _x++)
 	{
 		for (int _y = 0; _y < grid->height; _y++)
@@ -62,9 +60,9 @@ DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int
 	}
 
 	/* Create open/closed lists */
-	open_list = (DRay *)malloc(sizeof(DRay));
+	DRay *open_list = (DRay *)malloc(sizeof(DRay));
 	dray_init_pointers(open_list, AStarNode);
-	closed_list = (DRay *)malloc(sizeof(DRay));
+	DRay *closed_list = (DRay *)malloc(sizeof(DRay));
 	dray_init_pointers(closed_list, AStarNode);
 
 	int path_found = 0;
@@ -104,11 +102,15 @@ DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int
 		current_node->state = ASTAR_CLOSEDLIST;
 		dray_remove_idx(open_list, current_node_idx);
 
+		/* Create DRay for neighbors list */
+		DRay neighbors;
+		dray_init_pointers(&neighbors, AStarNode);
+
 		/* Get neighbors of smallest F node */
-		DRay *neighbors = _pathfind_get_neighbors(&nodemap, current_node, coll_mask);
-		for (int i = 0; i < neighbors->count; i++)
+		_pathfind_get_neighbors(&neighbors, &nodemap, current_node, coll_mask);
+		for (int i = 0; i < neighbors.count; i++)
 		{
-			AStarNode *neighbor = dray_get_pointer(neighbors, i, AStarNode);
+			AStarNode *neighbor = dray_get_pointer(&neighbors, i, AStarNode);
 			if (neighbor->state == ASTAR_NONE) /* If neighbor is not on openlist, calculate values and add */
 			{
 				neighbor->parent = current_node;
@@ -135,10 +137,6 @@ DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int
 	{
 		log_info("TARGET_AQUIRED");
 
-		/* Create array of path positions */
-		DRay *path = (DRay *)malloc(sizeof(DRay));
-		dray_init_values(path, Vector2);
-
 		/* Add target_node pos to path */
 		AStarNode *iter_node = target_node;
 		Vector2 pos = { (float)iter_node->x, (float)iter_node->y };
@@ -163,23 +161,19 @@ DRay* pathfind_astar(Grid *grid, int from_x, int from_y, int to_x, int to_y, int
 					YELLOW
 				);
 		} 
+		GRID_FREE_2D(nodemap);	
 
-		return path;
+		return;
 	}
 	else
 	{
 		log_info("TARGET_NOT_FOUND");
-		return NULL;
+		GRID_FREE_2D(nodemap);
+
+		return;
 	}
 
-/*	
- 	for (int i = 0; i < grid->height; i++)
-	{
-		free(nodemap[i]);
-	}
-	free(nodemap);
-*/
-	return NULL;
+	GRID_FREE_2D(nodemap);
 }
 
 void _astarnode_init(AStarNode *node, int x, int y, int s_x, int s_y, int t_x, int t_y, int coll_layer, AStarNode *parent, Grid *grid)
@@ -198,12 +192,8 @@ void _astarnode_init(AStarNode *node, int x, int y, int s_x, int s_y, int t_x, i
 	node->grid = grid;
 }
 
-DRay* _pathfind_get_neighbors(AStarNode ***nodemap, AStarNode *node, int coll_mask)
+void _pathfind_get_neighbors(DRay *neighbors, AStarNode ***nodemap, AStarNode *node, int coll_mask)
 {
-	/* Create DRay for neighbors list */
-	DRay *neighbors = (DRay *)malloc(sizeof(DRay));
-	dray_init_pointers(neighbors, AStarNode);
-
 	int x = node->x;
 	int y = node->y;
 	int t_x = node->t_x;
@@ -236,7 +226,7 @@ DRay* _pathfind_get_neighbors(AStarNode ***nodemap, AStarNode *node, int coll_ma
 				neighbor->parent = node;
 				dray_add_pointer(neighbors, neighbor); 
 
-				return neighbors;
+				return;
 			}
 
 			/* Do more conditional checks for valid neighbor */
@@ -252,7 +242,7 @@ DRay* _pathfind_get_neighbors(AStarNode ***nodemap, AStarNode *node, int coll_ma
 		}
 	}
 
-	return neighbors;
+	return;
 }
 
 

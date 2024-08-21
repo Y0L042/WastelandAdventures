@@ -56,18 +56,20 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset);
 	SetTraceLogLevel(0);
 	initialize();
 	InitWindow(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Wasteland Adventures");
-	SetTargetFPS(60);             
+	SetTargetFPS(60);       
+	double frame_time;
 	ready();
+	ecs_ref_t cc_ref = ecs_ref_init(g_world, g_ent_camera, CameraComponent);
 	while (!WindowShouldClose())    
 	{
-		double frame_time = GetFrameTime();
+		frame_time = GetFrameTime();
 		handle_input();
 		update(frame_time);
 		physics_update(frame_time);
 
-		CameraComponent *cc = ecs_get_mut(g_world, g_ent_camera, CameraComponent);
-		Camera2D c = cc->camera;
 		BeginDrawing();
+			const CameraComponent *cc = ecs_ref_get(g_world, &cc_ref, CameraComponent);
+			Camera2D c = cc->camera;
 			BeginMode2D(c);
 			ClearBackground(g_BG_COLOR);
 			draw(frame_time);
@@ -149,6 +151,9 @@ void update(double delta)
 
 void physics_update(double delta)
 {
+
+
+
 //	log_debug("physics_update() - start");
     handler_player_input(g_world);
 	handler_grid_move(g_world);
@@ -163,6 +168,7 @@ void draw(double delta)
 {
 	grid_draw(&grid_worldspace);
  	handler_glyph_draw(g_world);
+
 
 
 	Color color;
@@ -191,30 +197,13 @@ void quit()
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 {
-    log_debug("CREATE WALLS START");
-    ecs_entity_t wall;
-
-	/*
-    DRay *map_idx = mapgen_generate_RANDOMWALKER(grid);
-    for (int i = 0; i < map_idx->count; i++)
-	{
-		Vector2 pos = dray_get_value(map_idx, i, Vector2);
-		ent_wall_perm_create(
-				&wall,
-				world,
-				grid,
-				tileset,
-				pos.x, pos.y
-			);
-	}
-	free(map_idx);
-	*/
 
     int area = grid->width * grid->height;
     for (int i = 0; i < grid->width; i++)
     {
         for (int j = 0; j < grid->height; j++)
         {
+			ecs_entity_t wall;
             ent_wall_perm_create(
                     &wall,
                     world,
@@ -240,7 +229,6 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 			dray_clear_idx(entities, ent_idx);
         }
     }
-	log_debug("CREATE WALLS _DEBUG_");
 
     int rand_idx = maths_randbetween_int(0, walkable_tiles->count);
 	Vector2 spawnpos = dray_get_value(walkable_tiles, rand_idx, Vector2);
@@ -248,37 +236,5 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 	spawn_y = spawnpos.y;
 
 	free(walkable_tiles);
-
-    ent_wall_perm_create(
-            &wall,
-            world,
-            grid,
-            tileset,
-            3, 1
-        );
-
-    ent_wall_perm_create(
-            &wall,
-            world,
-            grid,
-            tileset,
-            3, 2
-        );
-    ent_wall_perm_create(
-            &wall,
-            world,
-            grid,
-            tileset,
-            3, 3
-        );
-    ent_wall_perm_create(
-            &wall,
-            world,
-            grid,
-            tileset,
-            3, 4
-        );
-
-    log_debug("CREATE WALLS END");
 }
 

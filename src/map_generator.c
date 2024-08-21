@@ -24,7 +24,6 @@ DRay* mapgen_generate_RANDOMWALKER(Grid *grid)
 		}
 		int rand_idx = maths_randbetween_int(0, neighbors->count - 1);
         Vector2 rand_neighbor = dray_get_value(neighbors, rand_idx, Vector2);
-		printf("%d\n", rand_idx);
 		dray_add_value(visited, rand_neighbor, Vector2);
 		x = rand_neighbor.x;
 		y = rand_neighbor.y;

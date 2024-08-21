@@ -62,7 +62,7 @@ void create_queries(ecs_world_t *world)
 void handler_glyph_draw(ecs_world_t *world)
 {
     ecs_query_t *query_glyph_draw = ecs_query(world, {
-        .filter.terms = {
+        .terms = {
             {ecs_id(Glyph) },
             {ecs_id(Position) }
         }
@@ -70,8 +70,8 @@ void handler_glyph_draw(ecs_world_t *world)
     ecs_iter_t it = ecs_query_iter(world, query_glyph_draw);
     while (ecs_query_next(&it))
     {
-        Glyph *g = ecs_field(&it, Glyph, 1);
-        Position *p = ecs_field(&it, Position, 2);
+        Glyph *g = ecs_field(&it, Glyph, 0);
+        Position *p = ecs_field(&it, Position, 1);
 
         for (int i = 0; i < it.count; i++)
         {
@@ -79,20 +79,22 @@ void handler_glyph_draw(ecs_world_t *world)
             glyph_draw(&glyph, p[i].x, p[i].y, RAYWHITE);
         }
     }
+	ecs_query_fini(query_glyph_draw);
 }
 
 
 void handler_camera_move(ecs_world_t *world)
 {
     ecs_query_t *query_camera_move = ecs_query(world, {
-        .filter.terms = {
+        .terms = {
             { ecs_id(CameraComponent) }
-        }
+        },
+		.cache_kind = EcsQueryCacheNone
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_camera_move);
 	while (ecs_query_next(&it))
 	{
-		CameraComponent *cc = ecs_field(&it, CameraComponent, 1);
+		CameraComponent *cc = ecs_field(&it, CameraComponent, 0);
 		float lerp_factor = 0.1f;
 
 		for (int i = 0; i < it.count; i++)
@@ -114,26 +116,28 @@ void handler_camera_move(ecs_world_t *world)
 			}
 		}	
 	}
+	ecs_query_fini(query_camera_move);
 }
 
 void handler_grid_move(ecs_world_t *world)
 {
     ecs_query_t *query_grid_move = ecs_query(world, {
-        .filter.terms = {
+        .terms = {
             { ecs_id(GridPosition) },
             { ecs_id(GridVelocity) },
             { ecs_id(Position) },
 			{ ecs_id(TAG_TCEnable) },
             { ecs_id(TurnComponent) }
-        }
+        },
+		.cache_kind = EcsQueryCacheNone
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_grid_move);
 	while (ecs_query_next(&it))
 	{
-		GridPosition *gp = ecs_field(&it, GridPosition, 1);
-		GridVelocity *gv = ecs_field(&it, GridVelocity, 2);
-		Position *p = ecs_field(&it, Position, 3);
-        TurnComponent *tc = ecs_field(&it, TurnComponent, 5);
+		GridPosition *gp = ecs_field(&it, GridPosition, 0);
+		GridVelocity *gv = ecs_field(&it, GridVelocity, 1);
+		Position *p = ecs_field(&it, Position, 2);
+        TurnComponent *tc = ecs_field(&it, TurnComponent, 4);
 
 		for (int i = 0; i < it.count; i++)
 		{
@@ -171,21 +175,23 @@ void handler_grid_move(ecs_world_t *world)
             ecs_remove(it.world, it.entities[i], GridVelocity);
 		}
 	}
+	ecs_query_fini(query_grid_move);
 }
 
 void handler_player_input(ecs_world_t *world)
 {
     ecs_query_t *query_player_input = ecs_query(world, {
-        .filter.terms = {
+        .terms = {
 			{ ecs_id(TurnComponent) },
             { ecs_id(TAG_Player) },
 			{ ecs_id(TAG_TurnActive) }
-        }
+        },
+		.cache_kind = EcsQueryCacheNone
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_player_input);
 	while (ecs_query_next(&it))
 	{
-		TurnComponent *tc = ecs_field(&it, TurnComponent, 1);
+		TurnComponent *tc = ecs_field(&it, TurnComponent, 0);
 
 		int mult = 1;
 		for (int i = 0; i < it.count; i++)
@@ -233,25 +239,28 @@ void handler_player_input(ecs_world_t *world)
 			}
 		}
 	}
+	ecs_query_fini(query_player_input);
 }
 
 void handler_pathfinding(ecs_world_t *world)
 {
     ecs_query_t *query_pathfinding = ecs_query(world, {
-        .filter.terms = {
+        .terms = {
 			{ ecs_id(TurnComponent) },
 			{ ecs_id(TAG_TurnActive) },
 			{ ecs_id(PathComponent) },
 			{ ecs_id(GridPosition) },
-			{ ecs_id(NPCTarget) }
-        }
+			{ ecs_id(NPCTarget) },
+			{ ecs_id(GridVelocity), .oper = EcsNot }
+        },
+		.cache_kind = EcsQueryCacheNone
     }); 
 	ecs_iter_t it = ecs_query_iter(world, query_pathfinding);
 	while(ecs_query_next(&it))
 	{
-		PathComponent *pc = ecs_field(&it, PathComponent, 3);
-		GridPosition *gp = ecs_field(&it, GridPosition, 4);
-		NPCTarget *target = ecs_field(&it, NPCTarget, 5);
+		PathComponent *pc = ecs_field(&it, PathComponent, 2);
+		GridPosition *gp = ecs_field(&it, GridPosition, 3);
+		NPCTarget *target = ecs_field(&it, NPCTarget, 4);
 
 		for (int i = 0; i < it.count; i++)
 		{
@@ -264,7 +273,10 @@ void handler_pathfinding(ecs_world_t *world)
 				continue; 
 			}
 
-			DRay *path = find_path(
+			DRay path;
+			dray_init_values(&path, Vector2);
+			find_path(
+					&path,
 					grid, 
 					gp[i].x, 
 					gp[i].y, 
@@ -272,47 +284,47 @@ void handler_pathfinding(ecs_world_t *world)
 					gp_target->y, 
 					gp[i].coll_mask
 				);
-			if ((path == NULL) || (path->count == 0)) 
+			if ((path.count == 0)) 
 			{ 
 				//ecs_remove(it.world, it.entities[i], PathComponent);
-				free(path); 
 				ecs_set(it.world, it.entities[i], GridVelocity, { .x = 0, .y = 0 });
 				continue; 
 			}
 			
 			log_info("PATHFIND TARGET  : { %d, %d }", gp_target->x, gp_target->y);
-			Vector2 next_pos = dray_pop_value(path, Vector2);
+			Vector2 next_pos = dray_pop_value(&path, Vector2);
 			log_info("PATHFIND NEXT_POS: { %.f, %.f }", next_pos.x, next_pos.y);
 			Vector2 vel = { next_pos.x - gp[i].x, next_pos.y - gp[i].y };
 			log_info("POS: { %d, %d }", gp[i].x, gp[i].y);
 			log_info("VEL: { %.f, %.f }", vel.x, vel.y);
 			ecs_set(it.world, it.entities[i], GridVelocity, { .x = vel.x, .y = vel.y });
 			
-			for (int i = 0; i < path->count; i++)
+			for (int i = 0; i < path.count; i++)
 			{
-				Vector2 p = dray_get_value(path, i, Vector2);
+				Vector2 p = dray_get_value(&path, i, Vector2);
 				log_info("PATH { %d, %d }", p.x, p.y);
 			}
-			free(path);
 		}
 	}
+	ecs_query_fini(query_pathfinding);
 }
 
 void handler_turncounter_increment(ecs_world_t *world)
 {
     ecs_query_t *query_turncounter_increment = ecs_query(world, {
-        .filter.terms = {
+        .terms = {
             { ecs_id(TurnCountComponent) },
 			{ ecs_id(TurnComponent) },
 			{ ecs_id(TAG_TurnActive) }
-        }
+        },
+		.cache_kind = EcsQueryCacheNone
     }); 
 	//log_debug("DEBUG");
     ecs_iter_t it = ecs_query_iter(world, query_turncounter_increment);
 	while (ecs_query_next(&it))
 	{
-		TurnCountComponent *tcntc = ecs_field(&it, TurnCountComponent, 1);
-		TurnComponent *tc = ecs_field(&it, TurnComponent, 2);
+		TurnCountComponent *tcntc = ecs_field(&it, TurnCountComponent, 0);
+		TurnComponent *tc = ecs_field(&it, TurnComponent, 1);
 
 		for (int i = 0; i < it.count; i++)
 		{
@@ -323,5 +335,6 @@ void handler_turncounter_increment(ecs_world_t *world)
 			//turnmanager_print_turn_queue(tm);
 		}
 	}
+	ecs_query_fini(query_turncounter_increment);
 }
 

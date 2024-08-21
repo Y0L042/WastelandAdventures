@@ -23,6 +23,6 @@ static inline int cmp_add_PathComponent(
 	return 0;
 }
 
-DRay* find_path(Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask);
+void find_path(DRay *path, Grid *grid, int from_x, int from_y, int to_x, int to_y, int coll_mask);
 
 #endif // PATHFINDING_H
