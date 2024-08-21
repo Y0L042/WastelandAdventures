@@ -62,7 +62,8 @@ void ent_player_create(
     ecs_set(world, *ent_player, Glyph, { 
 			.source_tile_x = 0, 
 			.source_tile_y = 4,
-			.tileset = tileset 
+			.tileset = tileset,
+			.color = RAYWHITE
 		}); 
 	turnmanager_create_turncomponent(tm, *ent_player);
     
@@ -86,7 +87,8 @@ void ent_dog_create(
 	ecs_set(world, *ent_dog, Glyph, {
 			.source_tile_x = 13,
 			.source_tile_y = 6,
-			.tileset = tileset
+			.tileset = tileset,
+			.color = BROWN
 		});
 	grid_create_gridposition(
 			grid_x, grid_y,
@@ -123,6 +125,7 @@ void ent_wall_perm_create(
    ecs_set(world, *ent_wall_perm, Glyph, {
            .source_tile_x = 11,
            .source_tile_y = 13,
-           .tileset = tileset
+           .tileset = tileset,
+		   .color = LIGHTGRAY
         });
 }

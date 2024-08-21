@@ -35,6 +35,7 @@ typedef struct Glyph {
     int source_tile_x; // x position in the tileset
     int source_tile_y; // y position in the tileset
 	Tileset *tileset;
+	Color color;
 } Glyph;
 
 
@@ -43,10 +44,11 @@ void glyph_initialize(
 		Glyph *glyph, 
 		Tileset *tileset, 
 		int source_tile_x, 
-		int source_tile_y
+		int source_tile_y,
+		Color color
 	);
 void glyph_free(Glyph *glyph);
-void glyph_draw(Glyph* glyph, int pos_x, int pos_y, Color color);
+void glyph_draw(Glyph* glyph, int pos_x, int pos_y);
 void glyph_draw_pro(Glyph *glyph, int pos_x, int pos_y, int width, int height, Color color);
 int glyph_get_idx_by_char(char ch);
 

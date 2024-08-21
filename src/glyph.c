@@ -29,12 +29,14 @@ void glyph_initialize(
 		Glyph *glyph, 
 		Tileset *tileset, 
 		int source_tile_x, 
-		int source_tile_y
+		int source_tile_y,
+		Color color
 	)
 {
 	glyph->source_tile_x = source_tile_x;
 	glyph->source_tile_y = source_tile_y;
 	glyph->tileset = tileset;
+	glyph->color = color;
 }
 
 void glyph_free(Glyph *glyph)
@@ -42,7 +44,7 @@ void glyph_free(Glyph *glyph)
 	free(glyph);
 }
 
-void glyph_draw(Glyph* glyph, int pos_x, int pos_y, Color color)
+void glyph_draw(Glyph* glyph, int pos_x, int pos_y)
 {
 	float width = glyph->tileset->target_tile_width;
 	float height = glyph->tileset->target_tile_height;
@@ -66,7 +68,7 @@ void glyph_draw(Glyph* glyph, int pos_x, int pos_y, Color color)
 				//width / 2, height / 2
 			}, // origin
 		0, // rotation
-		color
+		glyph->color
 	);
 }
 

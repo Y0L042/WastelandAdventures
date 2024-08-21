@@ -30,6 +30,7 @@ const int TILE_SIZE_X = 25;
 const int TILE_SIZE_Y = 25;
 
 int spawn_x, spawn_y;
+int spawn_x_dog, spawn_y_dog;
 
 Grid grid_worldspace;
 Tileset tileset;
@@ -134,7 +135,7 @@ void ready()
 			&grid_worldspace,
 			&tileset,
 			g_ent_player,
-			spawn_x, spawn_y
+			spawn_x_dog, spawn_y_dog
 		);
 
 
@@ -234,6 +235,11 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 	Vector2 spawnpos = dray_get_value(walkable_tiles, rand_idx, Vector2);
 	spawn_x = spawnpos.x;
 	spawn_y = spawnpos.y;
+
+    rand_idx = maths_randbetween_int(0, walkable_tiles->count);
+	spawnpos = dray_get_value(walkable_tiles, rand_idx, Vector2);
+	spawn_x_dog = spawnpos.x;
+	spawn_y_dog = spawnpos.y;
 
 	free(walkable_tiles);
 }

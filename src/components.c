@@ -76,7 +76,7 @@ void handler_glyph_draw(ecs_world_t *world)
         for (int i = 0; i < it.count; i++)
         {
             Glyph glyph = g[i];
-            glyph_draw(&glyph, p[i].x, p[i].y, RAYWHITE);
+            glyph_draw(&glyph, p[i].x, p[i].y);
         }
     }
 	ecs_query_fini(query_glyph_draw);

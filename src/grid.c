@@ -37,7 +37,7 @@ void grid_draw(Grid *grid)
             }
             else
             {
-                clr = RAYWHITE;
+                clr = (Color){ 245, 245, 245, 50 };
             }
             DrawRectangleLines(
                     grid->tile_width * x, 
