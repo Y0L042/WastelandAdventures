@@ -5,46 +5,40 @@ INCLUDE_PATHS = \
 	./vendor/fmt/include
 
 LIBRARY_PATHS = \
-    ./vendor/raylib5/lib \
-    ./vendor/cjson/lib
+    ./vendor/raylib5/lib/$(PLATFORM) \
+    ./vendor/cjson/lib/$(PLATFORM)
 
-# Libraries to link
-LIBRARIES = \
-    -lraylib \
-    -lcjson \
-    -lgdi32 \
-    -lwinmm \
-	-lWs2_32
-
-# Exec target
-TARGET = bin/main.exe
-ASM_TARGET = asm/bin/main.exe
-
-# Flags
-CFLAGS = -O2 -g -s -fno-asynchronous-unwind-tables $(foreach path, $(INCLUDE_PATHS), -I$(path)) -std=gnu99
-LDFLAGS = $(foreach path, $(LIBRARY_PATHS), -L$(path)) $(LIBRARIES)
+# Platform detection
+OS := $(shell uname)
+ifeq ($(OS), Linux)
+    TARGET := bin/main
+    PLATFORM := linux
+    LIBRARIES := -lraylib -lcjson -lGL -lm -lpthread -ldl -lrt -lX11
+    CFLAGS := -O2 -g -s -std=gnu99 $(foreach path, $(INCLUDE_PATHS), -I$(path))
+    LDFLAGS := $(foreach path, $(LIBRARY_PATHS), -L$(path)) $(LIBRARIES)
+else
+    TARGET := bin/main.exe
+	PLATFORM := windows
+    LIBRARIES := -lraylib -lcjson -lgdi32 -lwinmm -lWs2_32
+    CFLAGS := -O2 -g -s -fno-asynchronous-unwind-tables $(foreach path, $(INCLUDE_PATHS), -I$(path)) -std=gnu99
+    LDFLAGS := $(foreach path, $(LIBRARY_PATHS), -L$(path)) $(LIBRARIES)
+endif
 
 SRC_C = $(wildcard ./src/*.c)
-SRC_ASM = $(wildcard ./src/*.asm)
 OBJ_C = $(patsubst ./src/%.c, ./bin-int/%.o, $(SRC_C))
-OBJ_ASM = $(patsubst ./src/%.asm, ./bin-int/%.o, $(SRC_ASM))
-OBJ = $(OBJ_C) $(OBJ_ASM)
+OBJ = $(OBJ_C)
 
 OBJCONV = objconv
 
 # Targets
 all: $(TARGET)  # Main target for normal C build
 
-asm_build: copy_asm $(ASM_TARGET)  # Target for building NASM-based executable
-
-asm_run: asm_build  # Target to build and run NASM-based executable
-	./$(ASM_TARGET)
-
 run: $(TARGET)  # Target to run the C executable
 	./$(TARGET)
 
 clean: clean_bin clean_bin_int clean_asm  # Target to clean all build directories
 
+clean_all: clean_bin clean_bin_int_all clean_asm  # Target to clean all build directories
 # Build and run C program normally
 $(TARGET): $(OBJ)
 	mkdir -p bin
@@ -55,17 +49,6 @@ $(TARGET): $(OBJ)
 	mkdir -p bin-int
 	gcc $(CFLAGS) -c $< -o $@
 
-# Assemble ASM source files to object files
-./bin-int/%.o: ./src/%.asm
-	mkdir -p bin-int
-	nasm -f win64 $< -o $@
-
-# Copy ASM files from ./src to ./asm/nasm
-copy_asm: $(SRC_ASM)
-	mkdir -p asm/nasm
-	cp $^ asm/nasm/
-	@echo "Copied $^ to asm/nasm/"
-
 # Disassemble object files to NASM assembly
 disassemble: $(OBJ_C)
 	mkdir -p asm/nasm
@@ -74,17 +57,6 @@ disassemble: $(OBJ_C)
 		$(OBJCONV) -fnasm $$obj -o $$outfile; \
 		./cleanup_asm.sh $$outfile; \
 	done
-
-# Compile NASM assembly files to object files
-$(ASM_OBJ): ./asm/nasm/%.asm
-	mkdir -p asm/bin-int
-	nasm -f win64 $< -o $@
-
-# Link NASM object files to create executable
-$(ASM_TARGET):  $(ASM_OBJ)
-	mkdir -p asm/bin
-	gcc $(ASM_OBJ) -o $@ $(LDFLAGS)
-
 
 # Release target
 release: $(TARGET)
@@ -109,6 +81,9 @@ clean_bin:
 
 clean_bin_int:
 	find bin-int -mindepth 1 ! -name 'flecs.o' ! -name 'log.o' ! -name 'mt19937-64.o' -exec rm -rf {} +
+
+clean_bin_int_all:
+	rm -rf bin-int
 
 clean_asm:
 	rm -rf asm

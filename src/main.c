@@ -47,7 +47,11 @@ void quit();
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset);
 
-int main()
+#ifdef _WIN32
+	int main()
+#else
+	int main(int argc, char *argv[])
+#endif
 {
 	SetTraceLogLevel(0);
 	initialize();
@@ -73,6 +77,7 @@ int main()
 	}
 	CloseWindow();
 	quit();
+
 	return 0;
 }
 
@@ -276,3 +281,4 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 
     log_debug("CREATE WALLS END");
 }
+
