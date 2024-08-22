@@ -21,7 +21,7 @@ typedef int coll_bits_t;
 typedef struct Grid {
 	ecs_world_t *world;
     int **arr_coll_layers;
-    DRay **arr_entity_refs;
+    DRay **arr_entity_refs; // ecs_entity_t
 	int width;
 	int height;
 	int tile_width;

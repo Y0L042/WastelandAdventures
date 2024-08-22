@@ -179,6 +179,19 @@ int gridposition_move(
 				break;
 			}
 		}
+		
+		/* Coll_layer needs to be recalculated */
+		grid->arr_coll_layers[gp->x][gp->y] = 0b0; // Clean coll layer
+		for (int i = 0; i < grid->arr_entity_refs[gp->x][gp->y].count; i++)
+		{
+			/* Get entity coll layer TODO optimize this! */
+			ecs_entity_t ent = dray_get_value(&grid->arr_entity_refs[gp->x][gp->y], i, ecs_entity_t);
+			const GridPosition *gp = ecs_get(grid->world, ent, GridPosition);
+			int ent_coll = gp->coll_layer;
+
+			/* Recalculate layer */
+			grid->arr_coll_layers[gp->x][gp->y] = grid->arr_coll_layers[gp->x][gp->y] | ent_coll;
+		}
 
 		/* Add layer */
 	   	grid->arr_coll_layers[new_x][new_y] = grid->arr_coll_layers[new_x][new_y] | coll_layer;
