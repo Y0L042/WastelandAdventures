@@ -137,7 +137,22 @@ void ready()
 			g_ent_player,
 			spawn_x_dog, spawn_y_dog
 		);
+	
+	Glyph ghost = {
+			.source_tile_x = 13,
+			.source_tile_y = 6,
+			.tileset = &tileset,
+			.color = GREEN
+		};
 
+	ent_glyph_ghost_create(
+			g_world,
+			&grid_worldspace,
+			&tileset,
+			ghost,
+			10.0,
+			spawn_x, spawn_y
+	);
 
 	log_debug("ready() - complete");
 }
@@ -168,6 +183,7 @@ void physics_update(double delta)
 void draw(double delta)
 {
 	grid_draw(&grid_worldspace);
+	handler_glyph_fade(g_world, delta);
  	handler_glyph_draw(g_world);
 
 

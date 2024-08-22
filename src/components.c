@@ -5,6 +5,7 @@ ECS_COMPONENT_DECLARE(Velocity);
 ECS_COMPONENT_DECLARE(GridPosition);
 ECS_COMPONENT_DECLARE(GridVelocity);
 ECS_COMPONENT_DECLARE(Glyph);
+ECS_COMPONENT_DECLARE(GlyphFade);
 ECS_COMPONENT_DECLARE(CameraComponent);
 
 ECS_COMPONENT_DECLARE(TurnComponent);
@@ -28,6 +29,7 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, GridPosition);
 	ECS_COMPONENT_DEFINE(world, GridVelocity);
 	ECS_COMPONENT_DEFINE(world, Glyph);
+	ECS_COMPONENT_DEFINE(world, GlyphFade);
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
 
     ECS_COMPONENT_DEFINE(world, TurnComponent);
@@ -63,8 +65,8 @@ void handler_glyph_draw(ecs_world_t *world)
 {
     ecs_query_t *query_glyph_draw = ecs_query(world, {
         .terms = {
-            {ecs_id(Glyph) },
-            {ecs_id(Position) }
+            { ecs_id(Glyph) },
+            { ecs_id(Position) }
         }
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_glyph_draw);
@@ -82,6 +84,34 @@ void handler_glyph_draw(ecs_world_t *world)
 	ecs_query_fini(query_glyph_draw);
 }
 
+void handler_glyph_fade(ecs_world_t *world, double delta)
+{
+    ecs_query_t *query_glyph_fade = ecs_query(world, {
+        .terms = {
+            { ecs_id(Glyph) },
+			{ ecs_id(GlyphFade) }
+        }
+    }); 
+    ecs_iter_t it = ecs_query_iter(world, query_glyph_fade);
+    while (ecs_query_next(&it))
+    {
+        Glyph *g = ecs_field(&it, Glyph, 0);
+		GlyphFade *gf = ecs_field(&it, GlyphFade, 1);
+
+        for (int i = 0; i < it.count; i++)
+        {
+			double fade_perc = gf[i].time_left / gf[i].initial_time;
+			g[i].color.a = g[i]._init_color.a * fade_perc;
+			gf[i].time_left -= delta;
+
+			if ((fade_perc * 100.0) < 2.0) 
+			{
+				ecs_delete(it.world, it.entities[i]);
+			}
+        }
+    }
+	ecs_query_fini(query_glyph_fade);
+}
 
 void handler_camera_move(ecs_world_t *world)
 {

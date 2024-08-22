@@ -37,6 +37,7 @@ void glyph_initialize(
 	glyph->source_tile_y = source_tile_y;
 	glyph->tileset = tileset;
 	glyph->color = color;
+	glyph->_init_color = color;
 }
 
 void glyph_free(Glyph *glyph)

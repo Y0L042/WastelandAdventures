@@ -55,4 +55,13 @@ void ent_wall_perm_create(
         int grid_x, int grid_y
     );
 
+void ent_glyph_ghost_create(
+		ecs_world_t *world,
+		Grid *grid,
+		Tileset *tileset,
+		Glyph glyph,
+		double time,
+		int grid_x, int grid_y
+	);
+
 #endif // ENTITIES_H

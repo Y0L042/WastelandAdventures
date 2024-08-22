@@ -36,9 +36,13 @@ typedef struct Glyph {
     int source_tile_y; // y position in the tileset
 	Tileset *tileset;
 	Color color;
+	Color _init_color;
 } Glyph;
 
-
+typedef struct GlyphFade {
+	double initial_time;
+	double time_left;
+} GlyphFade;
 
 void glyph_initialize(
 		Glyph *glyph, 

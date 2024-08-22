@@ -22,6 +22,7 @@ typedef Vector2 GridVelocity;
 extern ECS_COMPONENT_DECLARE(GridVelocity);
 
 extern ECS_COMPONENT_DECLARE(Glyph);
+extern ECS_COMPONENT_DECLARE(GlyphFade);
 
 typedef struct CameraComponent{
 	Camera2D camera;
@@ -65,6 +66,7 @@ void create_components(ecs_world_t *world);
 void create_queries(ecs_world_t *world);
 
 void handler_glyph_draw(ecs_world_t *world);
+void handler_glyph_fade(ecs_world_t *world, double delta);
 void handler_camera_move(ecs_world_t *world);
 void handler_grid_move(ecs_world_t *world);
 void handler_player_input(ecs_world_t *world);
