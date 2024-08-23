@@ -141,8 +141,8 @@ void ent_glyph_ghost_create(
 	ecs_entity_t ent_glyph_ghost = ecs_new(world);
 	ecs_set(world, ent_glyph_ghost, Position, { .x = world_x, .y = world_y });
 	ecs_set(world, ent_glyph_ghost, Glyph, {
-		   .source_tile_x = glyph->source_tile_x,
-		   .source_tile_y = glyph->source_tile_y,
+		   .source_tile_x = 11, //glyph->source_tile_x,
+		   .source_tile_y = 13, //glyph->source_tile_y,
 		   .tileset = glyph->tileset,
 		   .color = glyph->color
 		});

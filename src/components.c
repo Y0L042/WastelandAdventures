@@ -114,7 +114,7 @@ void handler_glyph_ghost_spawn(ecs_world_t *world)
         for (int i = 0; i < it.count; i++)
         {
 			log_info("Ghost created");
-			ent_glyph_ghost_create(it.world, &g[i], gg[i].fade_time, p[i].x, p[i].y);
+			ent_glyph_ghost_create(it.world, &g[i], gg[i].fade_time, gg[i].x, gg[i].y);
 			ecs_remove(it.world, it.entities[i], LeaveGlyphGhost);
         }
     }
@@ -140,7 +140,7 @@ void handler_glyph_fade(ecs_world_t *world, double delta)
         {
 			double fade_perc = gf[i].time_left / gf[i].initial_time;
 			//g[i].color.a = ((double)g[i]._init_color.a) * fade_perc;
-			g[i].color.a = 255 / 2;
+			g[i].color.a = 255 / 2.5;
 			gf[i].time_left -= delta;
 
 			if ((fade_perc * 100.0) < 2.0) 
@@ -219,7 +219,7 @@ void handler_grid_move(ecs_world_t *world)
 				ecs_remove(it.world, it.entities[i], GridVelocity);
 				continue; 
 			}
-            
+           	int old_x, old_y; 
             Grid *grid = gp[i].grid;
 			if (grid) 
 			{
@@ -231,7 +231,8 @@ void handler_grid_move(ecs_world_t *world)
 						gp[i].y + gv[i].y, 
 						0						
 					);
-                
+               	old_x = p[i].x;
+				old_y = p[i].y;
 				p[i].x = gp[i].x * grid->tile_width;
 				p[i].y = gp[i].y * grid->tile_height;
 			}
@@ -250,7 +251,8 @@ void handler_grid_move(ecs_world_t *world)
 			{
 				log_info("has ghosting");
 //				GhostWhenMoving *g = ecs_field(&it, GhostWhenMoving, 5);
-				ecs_set(it.world, it.entities[i], LeaveGlyphGhost, { .fade_time= 2.5 });
+				ecs_set(it.world, it.entities[i], LeaveGlyphGhost, { 
+						.fade_time = 1.5, .x = old_x, .y = old_y });
 			}
 		}
 	}

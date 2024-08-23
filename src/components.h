@@ -23,7 +23,7 @@ extern ECS_COMPONENT_DECLARE(GridVelocity);
 
 extern ECS_COMPONENT_DECLARE(Glyph);
 extern ECS_COMPONENT_DECLARE(GlyphFade);
-typedef struct LeaveGlyphGhost { int fade_time; } LeaveGlyphGhost;
+typedef struct LeaveGlyphGhost { int fade_time; int x; int y; } LeaveGlyphGhost;
 extern ECS_COMPONENT_DECLARE(LeaveGlyphGhost);
 typedef struct GhostWhenMoving { int fade_time; } GhostWhenMoving;
 extern ECS_COMPONENT_DECLARE(GhostWhenMoving);
