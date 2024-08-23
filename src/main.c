@@ -138,22 +138,6 @@ void ready()
 			spawn_x_dog, spawn_y_dog
 		);
 	
-	Glyph ghost = {
-			.source_tile_x = 13,
-			.source_tile_y = 6,
-			.tileset = &tileset,
-			.color = GREEN
-		};
-
-	ent_glyph_ghost_create(
-			g_world,
-			&grid_worldspace,
-			&tileset,
-			ghost,
-			10.0,
-			spawn_x, spawn_y
-	);
-
 	log_debug("ready() - complete");
 }
 
@@ -167,14 +151,12 @@ void update(double delta)
 
 void physics_update(double delta)
 {
-
-
-
 //	log_debug("physics_update() - start");
     handler_player_input(g_world);
 	handler_grid_move(g_world);
-	handler_camera_move(g_world);
 	handler_pathfinding(g_world);
+	handler_glyph_ghost_spawn(g_world);
+	handler_camera_move(g_world);
 	handler_turncounter_increment(g_world);
 
 //	log_debug("physics_update() - end");

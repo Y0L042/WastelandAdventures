@@ -101,6 +101,7 @@ void ent_dog_create(
 	//turnmanager_disable_tc(tm, *ent_dog);
 	cmp_add_PathComponent(world, *ent_dog, grid);
     ecs_set(world, *ent_dog, NPCTarget, { .target = entity_target });
+	ecs_set(world, *ent_dog, GhostWhenMoving, { .fade_time = 5 });
 }
 
 void ent_wall_perm_create(
@@ -132,22 +133,18 @@ void ent_wall_perm_create(
 
 void ent_glyph_ghost_create(
 		ecs_world_t *world,
-		Grid *grid,
-		Tileset *tileset,
-		Glyph glyph,
+		Glyph *glyph,
 		double time,
-		int grid_x, int grid_y
+		int world_x, int world_y
 	)
 {
 	ecs_entity_t ent_glyph_ghost = ecs_new(world);
-	int world_x, world_y;
-	grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
 	ecs_set(world, ent_glyph_ghost, Position, { .x = world_x, .y = world_y });
 	ecs_set(world, ent_glyph_ghost, Glyph, {
-		   .source_tile_x = glyph.source_tile_x,
-		   .source_tile_y = glyph.source_tile_y,
-		   .tileset = glyph.tileset,
-		   .color = glyph.color
+		   .source_tile_x = glyph->source_tile_x,
+		   .source_tile_y = glyph->source_tile_y,
+		   .tileset = glyph->tileset,
+		   .color = glyph->color
 		});
 	ecs_set(world, ent_glyph_ghost, GlyphFade, { 
 			.initial_time = time, 

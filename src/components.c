@@ -6,6 +6,8 @@ ECS_COMPONENT_DECLARE(GridPosition);
 ECS_COMPONENT_DECLARE(GridVelocity);
 ECS_COMPONENT_DECLARE(Glyph);
 ECS_COMPONENT_DECLARE(GlyphFade);
+ECS_COMPONENT_DECLARE(LeaveGlyphGhost);
+ECS_COMPONENT_DECLARE(GhostWhenMoving);
 ECS_COMPONENT_DECLARE(CameraComponent);
 
 ECS_COMPONENT_DECLARE(TurnComponent);
@@ -30,6 +32,8 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, GridVelocity);
 	ECS_COMPONENT_DEFINE(world, Glyph);
 	ECS_COMPONENT_DEFINE(world, GlyphFade);
+	ECS_COMPONENT_DEFINE(world, LeaveGlyphGhost);
+	ECS_COMPONENT_DEFINE(world, GhostWhenMoving);
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
 
     ECS_COMPONENT_DEFINE(world, TurnComponent);
@@ -84,6 +88,40 @@ void handler_glyph_draw(ecs_world_t *world)
 	ecs_query_fini(query_glyph_draw);
 }
 
+/* Forward Declaration */
+void ent_glyph_ghost_create(
+		ecs_world_t *world,
+		Glyph *glyph,
+		double time,
+		int world_x, int world_y
+	);
+void handler_glyph_ghost_spawn(ecs_world_t *world)
+{
+    ecs_query_t *query_glyph_ghowst_spawn = ecs_query(world, {
+        .terms = {
+            { ecs_id(LeaveGlyphGhost) },
+            { ecs_id(Glyph) },
+            { ecs_id(Position) }
+        }
+    }); 
+    ecs_iter_t it = ecs_query_iter(world, query_glyph_ghowst_spawn);
+    while (ecs_query_next(&it))
+    {
+        LeaveGlyphGhost *gg = ecs_field(&it, LeaveGlyphGhost, 0);
+        Glyph *g = ecs_field(&it, Glyph, 1);
+        Position *p = ecs_field(&it, Position, 2);
+
+        for (int i = 0; i < it.count; i++)
+        {
+			log_info("Ghost created");
+			ent_glyph_ghost_create(it.world, &g[i], gg[i].fade_time, p[i].x, p[i].y);
+			ecs_remove(it.world, it.entities[i], LeaveGlyphGhost);
+        }
+    }
+	ecs_query_fini(query_glyph_ghowst_spawn);
+
+}
+
 void handler_glyph_fade(ecs_world_t *world, double delta)
 {
     ecs_query_t *query_glyph_fade = ecs_query(world, {
@@ -101,7 +139,8 @@ void handler_glyph_fade(ecs_world_t *world, double delta)
         for (int i = 0; i < it.count; i++)
         {
 			double fade_perc = gf[i].time_left / gf[i].initial_time;
-			g[i].color.a = g[i]._init_color.a * fade_perc;
+			//g[i].color.a = ((double)g[i]._init_color.a) * fade_perc;
+			g[i].color.a = 255 / 2;
 			gf[i].time_left -= delta;
 
 			if ((fade_perc * 100.0) < 2.0) 
@@ -139,6 +178,8 @@ void handler_camera_move(ecs_world_t *world)
 				Vector2 current_target = cc[i].camera.target;
 				Vector2 desired_target = (Vector2){ target_pos->x, target_pos->y };
 				cc[i].camera.target = Vector2Lerp(current_target, desired_target, lerp_factor);
+				//cc[i].camera.target.x = trunc(cc[i].camera.target.x);
+				//cc[i].camera.target.y = trunc(cc[i].camera.target.y);
 			}
 			else
 			{
@@ -157,7 +198,8 @@ void handler_grid_move(ecs_world_t *world)
             { ecs_id(GridVelocity) },
             { ecs_id(Position) },
 			{ ecs_id(TAG_TCEnable) },
-            { ecs_id(TurnComponent) }
+            { ecs_id(TurnComponent) },
+			{ ecs_id(GhostWhenMoving), .oper = EcsOptional }
         },
 		.cache_kind = EcsQueryCacheNone
     }); 
@@ -203,6 +245,13 @@ void handler_grid_move(ecs_world_t *world)
 			gv[i].x = 0;
 			gv[i].y = 0;
             ecs_remove(it.world, it.entities[i], GridVelocity);
+
+			if (ecs_field_is_set(&it, 5)) 
+			{
+				log_info("has ghosting");
+//				GhostWhenMoving *g = ecs_field(&it, GhostWhenMoving, 5);
+				ecs_set(it.world, it.entities[i], LeaveGlyphGhost, { .fade_time= 2.5 });
+			}
 		}
 	}
 	ecs_query_fini(query_grid_move);

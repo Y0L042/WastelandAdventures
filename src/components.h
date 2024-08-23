@@ -23,6 +23,10 @@ extern ECS_COMPONENT_DECLARE(GridVelocity);
 
 extern ECS_COMPONENT_DECLARE(Glyph);
 extern ECS_COMPONENT_DECLARE(GlyphFade);
+typedef struct LeaveGlyphGhost { int fade_time; } LeaveGlyphGhost;
+extern ECS_COMPONENT_DECLARE(LeaveGlyphGhost);
+typedef struct GhostWhenMoving { int fade_time; } GhostWhenMoving;
+extern ECS_COMPONENT_DECLARE(GhostWhenMoving);
 
 typedef struct CameraComponent{
 	Camera2D camera;
@@ -66,6 +70,7 @@ void create_components(ecs_world_t *world);
 void create_queries(ecs_world_t *world);
 
 void handler_glyph_draw(ecs_world_t *world);
+void handler_glyph_ghost_spawn(ecs_world_t *world);
 void handler_glyph_fade(ecs_world_t *world, double delta);
 void handler_camera_move(ecs_world_t *world);
 void handler_grid_move(ecs_world_t *world);
