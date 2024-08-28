@@ -12,6 +12,6 @@ extern const int g_SCREEN_WIDTH;
 extern const int g_SCREEN_HEIGHT;
 extern const Color g_BG_COLOR;
 
-extern Grid grid_worldspace;
+extern ecs_world_t *g_world;
 
 #endif // MAIN_H

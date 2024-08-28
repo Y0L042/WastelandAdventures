@@ -140,10 +140,10 @@ void handler_glyph_fade(ecs_world_t *world, double delta)
         {
 			double fade_perc = gf[i].time_left / gf[i].initial_time;
 			//g[i].color.a = ((double)g[i]._init_color.a) * fade_perc;
-			g[i].color.a = 255 / 2.5;
+			g[i].color.a = (255 / 2.5) * fade_perc;
 			gf[i].time_left -= delta;
 
-			if ((fade_perc * 100.0) < 2.0) 
+			if ((fade_perc * 100.0) < 0.25) 
 			{
 				ecs_delete(it.world, it.entities[i]);
 			}
@@ -213,6 +213,9 @@ void handler_grid_move(ecs_world_t *world)
 
 		for (int i = 0; i < it.count; i++)
 		{
+			int vel_x = gv[i].x;
+			int vel_y = gv[i].y;
+
 			if (gv[i].x == 0 && gv[i].y == 0) 
 			{
 				turnmanager_end_turn(tc[i].tc_d->turn_manager, 50);
@@ -247,8 +250,9 @@ void handler_grid_move(ecs_world_t *world)
 			gv[i].y = 0;
             ecs_remove(it.world, it.entities[i], GridVelocity);
 
-			if (ecs_field_is_set(&it, 5)) 
+			if (ecs_field_is_set(&it, 5) && !(vel_x ==0 && vel_y == 0)) 
 			{
+				printf("%d %d\n", vel_x, vel_y);
 				log_info("has ghosting");
 //				GhostWhenMoving *g = ecs_field(&it, GhostWhenMoving, 5);
 				ecs_set(it.world, it.entities[i], LeaveGlyphGhost, { 
