@@ -47,6 +47,11 @@ SM_ERR sm_switch_state(SM_Machine *fsm, const char *state_name)
 	return SM_ERR_NAME_NOT_FOUND;
 }
 
+void sm_switch_previous_state(SM_Machine *fsm)
+{
+	sm_switch_state_pointer(fsm, fsm->_sm_previous_state);
+}
+
 void sm_switch_state_pointer(SM_Machine *fsm, SM_State *new_state)
 {
 	if (fsm->_sm_current_state != NULL && fsm->_sm_current_state->state_exit != NULL)
@@ -95,3 +100,15 @@ SM_ERR sm_execute_state_draw(SM_Machine *fsm, double delta)
 
 	return SM_ERR_NO_CALLBACK;
 }
+
+SM_ERR sm_execute_state_handle_ui(SM_Machine *fsm, double delta)
+{
+	if (fsm->_sm_current_state != NULL && fsm->_sm_current_state->state_handle_ui != NULL)
+	{
+		fsm->_sm_current_state->state_handle_ui(delta);
+		return SM_ERR_OK;
+	}
+
+	return SM_ERR_NO_CALLBACK;
+}
+

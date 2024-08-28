@@ -168,6 +168,8 @@ void handler_camera_move(ecs_world_t *world)
 
 		for (int i = 0; i < it.count; i++)
 		{
+			if (!ecs_is_alive(it.world, cc[i].target_entity)) { continue; }
+
 			const Position *target_pos = ecs_get_mut(
 					world, 
 					cc[i].target_entity, 

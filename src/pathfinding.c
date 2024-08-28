@@ -154,12 +154,6 @@ void pathfind_astar(DRay *path, Grid *grid, int from_x, int from_y, int to_x, in
 				dray_add_value(path, pos, Vector2);
 			}
 			log_info("PATHFIND PATH POS: { %.f, %.f }", pos.x, pos.y);
-			DrawCircle(
-					pos.x * grid->tile_width, 
-					pos.y * grid->tile_height, 
-					20, 
-					YELLOW
-				);
 		} 
 		GRID_FREE_2D(nodemap);	
 

@@ -14,13 +14,13 @@ ifeq ($(OS), Linux)
     TARGET := bin/main
     PLATFORM := linux
     LIBRARIES := -lraylib -lcjson -lGL -lm -lpthread -ldl -lrt -lX11
-    CFLAGS := -O2 -g -s -std=gnu99 $(foreach path, $(INCLUDE_PATHS), -I$(path))
+    CFLAGS_BASE := -O2 -g -s -std=gnu99 $(foreach path, $(INCLUDE_PATHS), -I$(path))
     LDFLAGS := $(foreach path, $(LIBRARY_PATHS), -L$(path)) $(LIBRARIES)
 else
     TARGET := bin/main.exe
 	PLATFORM := windows
     LIBRARIES := -lraylib -lcjson -lgdi32 -lwinmm -lWs2_32
-    CFLAGS := -O2 -g -s -fno-asynchronous-unwind-tables $(foreach path, $(INCLUDE_PATHS), -I$(path)) -std=gnu99
+    CFLAGS_BASE := -O2 -g -s -fno-asynchronous-unwind-tables $(foreach path, $(INCLUDE_PATHS), -I$(path)) -std=gnu99
     LDFLAGS := $(foreach path, $(LIBRARY_PATHS), -L$(path)) $(LIBRARIES)
 endif
 
@@ -30,11 +30,19 @@ OBJ = $(OBJ_C)
 
 OBJCONV = objconv
 
+# Additional CFLAGS based on target
+CFLAGS_RUN := $(CFLAGS_BASE) -DDEBUG
+CFLAGS_RELEASE := $(CFLAGS_BASE) -DRELEASE
+
 # Targets
 all: $(TARGET)  # Main target for normal C build
 
+run: CFLAGS=$(CFLAGS_RUN)
 run: $(TARGET)  # Target to run the C executable
 	./$(TARGET)
+
+release: CFLAGS=$(CFLAGS_RELEASE)
+release: $(TARGE)
 
 clean: clean_bin clean_bin_int clean_asm  # Target to clean all build directories
 

@@ -13,6 +13,7 @@
 #include "entities.h"
 
 #include "state_mainmenu.h"
+#include "state_pausemenu.h"
 #include "state_gameplayloop.h"
 
 #include "grid.h"
@@ -28,10 +29,13 @@ const Color g_BG_COLOR = BLACK;
 /* Game States */
 SM_Machine game_fsm;
 SM_State state_mainmenu;
+SM_State state_pausemenu;
 SM_State state_gameplayloop;
 
 ecs_world_t *g_world;
 ecs_entity_t ent_screen_center;
+
+int game_should_quit = 0;
 
 void initialize();
 void ready();
@@ -39,6 +43,7 @@ void handle_input();
 void update(double delta);
 void physics_update(double delta);
 void draw(double delta);
+void handle_ui(double delta);
 void quit();
 
 
@@ -55,7 +60,7 @@ void quit();
 	double frame_time;
 	ready();
 	ecs_ref_t cc_ref = ecs_ref_init(g_world, g_ent_camera, CameraComponent);
-	while (!WindowShouldClose())    
+	while (!game_should_quit)    
 	{
 		frame_time = GetFrameTime();
 		handle_input();
@@ -63,12 +68,15 @@ void quit();
 		physics_update(frame_time);
 
 		BeginDrawing();
+			ClearBackground(g_BG_COLOR);
+			handle_ui(frame_time);
+
 			const CameraComponent *cc = ecs_ref_get(g_world, &cc_ref, CameraComponent);
 			Camera2D c = cc->camera;
 			BeginMode2D(c);
-			ClearBackground(g_BG_COLOR);
 			draw(frame_time);
 			EndMode2D();
+
 			DrawFPS(10, 10);
 		EndDrawing();
 	}
@@ -87,6 +95,9 @@ void initialize()
 
 	sm_register_state(&game_fsm, &state_mainmenu, "STATE_MAINMENU");
 	state_mainmenu_register();
+
+	sm_register_state(&game_fsm, &state_pausemenu, "STATE_PAUSEMENU");
+	state_pausemenu_register();
 
 	sm_register_state(&game_fsm, &state_gameplayloop, "STATE_GAMEPLAYLOOP");
 	state_gameplayloop_register();
@@ -111,7 +122,19 @@ void ready()
 
 void handle_input()
 {
-	
+	int _quit_game = 0;
+
+#ifdef DEBUG 
+	_quit_game = IsKeyPressed(KEY_F4);
+#endif
+#ifdef RELEASE 
+	_quit_game = IsKeyPressed(KEY_LEFT_ALT) && IsKeyPressed(KEY_F4);
+#endif
+
+	if (_quit_game)
+	{
+		quit_game();
+	}
 }
 
 void update(double delta)
@@ -124,6 +147,11 @@ void physics_update(double delta)
 	sm_execute_state_physics_update(&game_fsm, delta);
 }
 
+void handle_ui(double delta)
+{
+	sm_execute_state_handle_ui(&game_fsm, delta);
+};
+
 void draw(double delta)
 {
 	sm_execute_state_draw(&game_fsm, delta);
@@ -131,8 +159,12 @@ void draw(double delta)
 
 void quit()
 {
-
+	ecs_fini(g_world);
 }
 
+void quit_game(void)
+{
+	game_should_quit = 1;
+}
 
 

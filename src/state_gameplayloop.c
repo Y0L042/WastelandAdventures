@@ -23,6 +23,8 @@ const int WORLDSPACE_SIZE_Y = 25;
 const int TILE_SIZE_X = 25;
 const int TILE_SIZE_Y = 25;
 
+static int gameplayloop_initialized = 0;
+
 int spawn_x, spawn_y;
 int spawn_x_dog, spawn_y_dog;
 
@@ -31,10 +33,11 @@ Tileset tileset;
 Glyph player_glyph;
 TurnManager turnmanager;
 
+void _state_gameplayloop_initialize();
 void _state_gameplayloop_enter();
-void _state_gameplayloop_handle_input();
 void _state_gameplayloop_update(double delta);
 void _state_gameplayloop_physics_update(double delta);
+void _state_gameplayloop_handle_ui(double delta);
 void _state_gameplayloop_draw(double delta);
 void _state_gameplayloop_exit();
 
@@ -45,14 +48,14 @@ void state_gameplayloop_register()
 	state_gameplayloop.state_enter = _state_gameplayloop_enter;
 	state_gameplayloop.state_update = _state_gameplayloop_update;
 	state_gameplayloop.state_physics_update = _state_gameplayloop_physics_update;
+	state_gameplayloop.state_handle_ui = _state_gameplayloop_handle_ui;
 	state_gameplayloop.state_draw = _state_gameplayloop_draw;
 	state_gameplayloop.state_exit = _state_gameplayloop_exit;
 }
 
-void _state_gameplayloop_enter()
+void _state_gameplayloop_initialize()
 {
-	log_debug("ready() - start");
-
+	gameplayloop_initialized = 1;
 
 	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
 
@@ -90,18 +93,25 @@ void _state_gameplayloop_enter()
 			g_ent_player,
 			spawn_x_dog, spawn_y_dog
 		);
+}
+
+void _state_gameplayloop_enter()
+{
+	log_debug("ready() - start");
+
+	if (!gameplayloop_initialized) { _state_gameplayloop_initialize(); }
 	
 	log_debug("ready() - complete");
 }
 
-void _state_gameplayloop_handle_input()
-{
-
-}
 
 void _state_gameplayloop_update(double delta)
 {
-
+	if (IsKeyPressed(KEY_ESCAPE))
+	{
+		/* TODO add state stack for pause/unpause */
+		sm_switch_state_pointer(&game_fsm, &state_pausemenu);
+	}
 }
 
 void _state_gameplayloop_physics_update(double delta)
@@ -115,6 +125,10 @@ void _state_gameplayloop_physics_update(double delta)
 	handler_turncounter_increment(g_world);
 
 //	log_debug("physics_update() - end");
+}
+
+void _state_gameplayloop_handle_ui(double delta)
+{
 }
 
 void _state_gameplayloop_draw(double delta)
@@ -145,7 +159,6 @@ void _state_gameplayloop_draw(double delta)
 
 void _state_gameplayloop_exit()
 {
-	ecs_fini(g_world);
 }
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)

@@ -21,6 +21,9 @@ extern ecs_entity_t ent_screen_center;
 /* Game States */
 extern SM_Machine game_fsm;
 extern SM_State state_mainmenu;
+extern SM_State state_pausemenu;
 extern SM_State state_gameplayloop;
+
+void quit_game(void);
 
 #endif // MAIN_H
