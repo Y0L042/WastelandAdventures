@@ -9,4 +9,6 @@ extern const int WORLDSPACE_SIZE_Y;
 extern const int TILE_SIZE_X;
 extern const int TILE_SIZE_Y;
 
+void state_gameplayloop_register();
+
 #endif // STATE_GAMEPLAYLOOP_H

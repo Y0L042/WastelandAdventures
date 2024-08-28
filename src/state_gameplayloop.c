@@ -31,23 +31,25 @@ Tileset tileset;
 Glyph player_glyph;
 TurnManager turnmanager;
 
-void _state_gameplayloop_initialize();
-void _state_gameplayloop_ready();
+void _state_gameplayloop_enter();
 void _state_gameplayloop_handle_input();
 void _state_gameplayloop_update(double delta);
 void _state_gameplayloop_physics_update(double delta);
 void _state_gameplayloop_draw(double delta);
-void _state_gameplayloop_quit();
+void _state_gameplayloop_exit();
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset);
 
-
-void _state_gameplayloop_initialize()
-{	
-
+void state_gameplayloop_register()
+{
+	state_gameplayloop.state_enter = _state_gameplayloop_enter;
+	state_gameplayloop.state_update = _state_gameplayloop_update;
+	state_gameplayloop.state_physics_update = _state_gameplayloop_physics_update;
+	state_gameplayloop.state_draw = _state_gameplayloop_draw;
+	state_gameplayloop.state_exit = _state_gameplayloop_exit;
 }
 
-void _state_gameplayloop_ready()
+void _state_gameplayloop_enter()
 {
 	log_debug("ready() - start");
 
@@ -141,7 +143,7 @@ void _state_gameplayloop_draw(double delta)
 	DrawCircleLines(p->x + h_tile_size, p->y + h_tile_size, h_tile_size * 1.25f, color);
 }
 
-void _state_gameplayloop_quit()
+void _state_gameplayloop_exit()
 {
 	ecs_fini(g_world);
 }

@@ -12,18 +12,26 @@
 #include "components.h"
 #include "entities.h"
 
+#include "state_mainmenu.h"
+#include "state_gameplayloop.h"
+
 #include "grid.h"
 #include "glyph.h"
 #include "pathfinding.h"
 #include "map_generator.h"
 
-#include <stdio.h>
 
 const int g_SCREEN_WIDTH = 1280;
 const int g_SCREEN_HEIGHT = 720;
 const Color g_BG_COLOR = BLACK;
 
+/* Game States */
+SM_Machine game_fsm;
+SM_State state_mainmenu;
+SM_State state_gameplayloop;
+
 ecs_world_t *g_world;
+ecs_entity_t ent_screen_center;
 
 void initialize();
 void ready();
@@ -75,35 +83,50 @@ void quit();
 
 void initialize()
 {	
+	sm_create_state_machine(&game_fsm, "MAIN_FSM");	
+
+	sm_register_state(&game_fsm, &state_mainmenu, "STATE_MAINMENU");
+	state_mainmenu_register();
+
+	sm_register_state(&game_fsm, &state_gameplayloop, "STATE_GAMEPLAYLOOP");
+	state_gameplayloop_register();
 }
 
 void ready()
 {
 	g_world = ecs_init();
 	create_components(g_world);
+
+	ent_screen_center = ecs_new(g_world);
+	ecs_set(g_world, ent_screen_center, Position, { .x = g_SCREEN_WIDTH/2, .y = g_SCREEN_HEIGHT/2 });
+
 	ent_camera_create(
 			&g_ent_camera, 
 			g_world,
-			-1 // No player exists yet.
+			ent_screen_center
 		);
+
+	sm_switch_state_pointer(&game_fsm, &state_mainmenu);
 }
 
 void handle_input()
 {
+	
 }
 
 void update(double delta)
 {
+	sm_execute_state_update(&game_fsm, delta);
 }
 
 void physics_update(double delta)
 {
-
+	sm_execute_state_physics_update(&game_fsm, delta);
 }
 
 void draw(double delta)
 {
-
+	sm_execute_state_draw(&game_fsm, delta);
 }
 
 void quit()
