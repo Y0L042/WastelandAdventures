@@ -4,6 +4,7 @@
 #include <raygui.h>
 
 #include "main.h"
+#include "state_gameplayloop.h"
 #include "statemachine.h"
 
 void _state_pausemenu_enter();
@@ -58,6 +59,8 @@ void _state_pausemenu_handle_ui(double delta)
 	}
 	if (GuiButton((Rectangle){ mid_x-60, mid_y+50 + 40, 120, 30 }, "EXIT TO MAIN MENU")) 
 	{
+		state_gameplayloop_reset();
+		clear_ecs_world();	
 		sm_switch_state(&game_fsm, "STATE_MAINMENU");
 	}
 	if (GuiButton((Rectangle){ mid_x-60, mid_y+50 + 40*2, 120, 30 }, "QUIT")) 

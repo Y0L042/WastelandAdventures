@@ -27,7 +27,7 @@ static int gameplayloop_initialized = 0;
 
 int spawn_x, spawn_y;
 int spawn_x_dog, spawn_y_dog;
-
+ecs_ref_t cc_ref;  
 Grid grid_worldspace;
 Tileset tileset;
 Glyph player_glyph;
@@ -55,6 +55,9 @@ void state_gameplayloop_register()
 
 void _state_gameplayloop_initialize()
 {
+	create_ecs_world();
+	cc_ref = ecs_ref_init(g_world, g_ent_camera, CameraComponent);
+
 	gameplayloop_initialized = 1;
 
 	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
@@ -159,6 +162,11 @@ void _state_gameplayloop_draw(double delta)
 
 void _state_gameplayloop_exit()
 {
+}
+
+void state_gameplayloop_reset(void)
+{
+	gameplayloop_initialized = 0;
 }
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)

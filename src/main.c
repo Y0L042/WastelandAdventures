@@ -32,6 +32,7 @@ SM_State state_mainmenu;
 SM_State state_pausemenu;
 SM_State state_gameplayloop;
 
+static int is_ecs_world_created = 0;
 ecs_world_t *g_world;
 ecs_entity_t ent_screen_center;
 
@@ -59,7 +60,6 @@ void quit();
 	SetTargetFPS(60);       
 	double frame_time;
 	ready();
-	ecs_ref_t cc_ref = ecs_ref_init(g_world, g_ent_camera, CameraComponent);
 	while (!game_should_quit)    
 	{
 		frame_time = GetFrameTime();
@@ -69,14 +69,20 @@ void quit();
 
 		BeginDrawing();
 			ClearBackground(g_BG_COLOR);
+
+			if (is_ecs_world_created)
+			{
+				const CameraComponent *cc = ecs_ref_get(g_world, &cc_ref, CameraComponent);
+				if (cc != NULL)
+				{
+					Camera2D c = cc->camera;
+					BeginMode2D(c);
+						draw(frame_time);
+					EndMode2D();
+				}
+			}
+
 			handle_ui(frame_time);
-
-			const CameraComponent *cc = ecs_ref_get(g_world, &cc_ref, CameraComponent);
-			Camera2D c = cc->camera;
-			BeginMode2D(c);
-			draw(frame_time);
-			EndMode2D();
-
 			DrawFPS(10, 10);
 		EndDrawing();
 	}
@@ -105,18 +111,6 @@ void initialize()
 
 void ready()
 {
-	g_world = ecs_init();
-	create_components(g_world);
-
-	ent_screen_center = ecs_new(g_world);
-	ecs_set(g_world, ent_screen_center, Position, { .x = g_SCREEN_WIDTH/2, .y = g_SCREEN_HEIGHT/2 });
-
-	ent_camera_create(
-			&g_ent_camera, 
-			g_world,
-			ent_screen_center
-		);
-
 	sm_switch_state_pointer(&game_fsm, &state_mainmenu);
 }
 
@@ -159,7 +153,7 @@ void draw(double delta)
 
 void quit()
 {
-	ecs_fini(g_world);
+
 }
 
 void quit_game(void)
@@ -167,4 +161,33 @@ void quit_game(void)
 	game_should_quit = 1;
 }
 
+void create_ecs_world(void)
+{
+	if (is_ecs_world_created) { return; }
+	is_ecs_world_created = 1;
+	g_world = ecs_init();
+	create_components(g_world);
+
+	ent_screen_center = ecs_new(g_world);
+	ecs_set(g_world, ent_screen_center, Position, { .x = g_SCREEN_WIDTH/2, .y = g_SCREEN_HEIGHT/2 });
+
+	ent_camera_create(
+			&g_ent_camera, 
+			g_world,
+			ent_screen_center
+		);
+}
+
+void clear_ecs_world(void)
+{
+	ecs_fini(g_world);
+	is_ecs_world_created = 0;
+	g_world = NULL;
+}
+
+void restart_ecs_world(void)
+{
+	clear_ecs_world();
+	create_ecs_world();
+}
 
