@@ -31,6 +31,8 @@ void grid_draw(Grid *grid)
         for (int x = 0; x < grid->width; x++)
         {
             Color clr;
+			clr = (Color){ 245, 245, 245, 15 };
+			/*
             if (grid_test_place(grid, grid->arr_coll_layers[x][y], x, y) != 0)
             {
                 clr = RED;
@@ -39,11 +41,12 @@ void grid_draw(Grid *grid)
             {
                 clr = (Color){ 245, 245, 245, 50 };
             }
+			*/
             DrawRectangleLines(
-                    grid->tile_width * x, 
-                    grid->tile_height * y, 
-                    grid->tile_width, 
-                    grid->tile_height, 
+                    grid->tile_width * x+1, 
+                    grid->tile_height * y+1, 
+                    grid->tile_width+1, 
+                    grid->tile_height+1, 
                     clr
                 );
         }

@@ -119,7 +119,6 @@ void handler_glyph_ghost_spawn(ecs_world_t *world)
         }
     }
 	ecs_query_fini(query_glyph_ghowst_spawn);
-
 }
 
 void handler_glyph_fade(ecs_world_t *world, double delta)

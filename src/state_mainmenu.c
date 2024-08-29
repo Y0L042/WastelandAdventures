@@ -6,6 +6,7 @@
 #include "main.h"
 #include "statemachine.h"
 
+
 void _state_mainmenu_enter();
 void _state_mainmenu_update(double delta);
 void _state_mainmenu_physics_update(double delta);
@@ -25,7 +26,6 @@ void state_mainmenu_register()
 
 void _state_mainmenu_enter()
 {
-
 }
 
 void _state_mainmenu_update(double delta)

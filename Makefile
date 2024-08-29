@@ -35,6 +35,7 @@ CFLAGS_RUN := $(CFLAGS_BASE) -DDEBUG
 CFLAGS_RELEASE := $(CFLAGS_BASE) -DRELEASE
 
 # Targets
+all: CFLAGS=$(CFLAGS_RUN)
 all: $(TARGET)  # Main target for normal C build
 
 run: CFLAGS=$(CFLAGS_RUN)
@@ -42,7 +43,7 @@ run: $(TARGET)  # Target to run the C executable
 	./$(TARGET)
 
 release: CFLAGS=$(CFLAGS_RELEASE)
-release: $(TARGE)
+release: $(TARGET)
 
 clean: clean_bin clean_bin_int clean_asm  # Target to clean all build directories
 

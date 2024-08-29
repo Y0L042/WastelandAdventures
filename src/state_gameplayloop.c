@@ -30,7 +30,7 @@ int spawn_x_dog, spawn_y_dog;
 ecs_ref_t cc_ref;  
 Grid grid_worldspace;
 Tileset tileset;
-Glyph player_glyph;
+Tileset cool_tileset;
 TurnManager turnmanager;
 
 void _state_gameplayloop_initialize();
@@ -61,6 +61,13 @@ void _state_gameplayloop_initialize()
 	gameplayloop_initialized = 1;
 
 	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
+	tileset_initialize(
+			&cool_tileset, 
+			"./assets/urizen_onebit_tileset__v1d1.png", 
+			13, 13, 
+			TILE_SIZE_X, TILE_SIZE_Y, 
+			RAYWHITE
+		);
 
 	turnmanager_initialize(&turnmanager, g_world);
 
@@ -73,14 +80,14 @@ void _state_gameplayloop_initialize()
             TILE_SIZE_Y
         );
 
-    create_walls(g_world, &grid_worldspace, &tileset);
+    create_walls(g_world, &grid_worldspace, &cool_tileset);
 
 	ent_player_create(
 			&g_ent_player, 
 			g_world, 
 			&turnmanager, 
 			&grid_worldspace, 
-			&tileset,
+			&cool_tileset,
             spawn_x, spawn_y
 		);
 
@@ -92,7 +99,7 @@ void _state_gameplayloop_initialize()
 			g_world,
 			&turnmanager,
 			&grid_worldspace,
-			&tileset,
+			&cool_tileset,
 			g_ent_player,
 			spawn_x_dog, spawn_y_dog
 		);
@@ -121,9 +128,9 @@ void _state_gameplayloop_physics_update(double delta)
 {
 //	log_debug("physics_update() - start");
     handler_player_input(g_world);
+	handler_glyph_ghost_spawn(g_world);
 	handler_grid_move(g_world);
 	handler_pathfinding(g_world);
-	handler_glyph_ghost_spawn(g_world);
 	handler_camera_move(g_world);
 	handler_turncounter_increment(g_world);
 
@@ -141,7 +148,7 @@ void _state_gameplayloop_draw(double delta)
  	handler_glyph_draw(g_world);
 
 
-
+	/*
 	Color color;
 	const TurnComponent *player_tc = ecs_get(g_world, g_ent_player, TurnComponent);
 	TurnComponentData *player_tc_d = player_tc->tc_d;
@@ -158,6 +165,7 @@ void _state_gameplayloop_draw(double delta)
 	float h_tile_size = (TILE_SIZE_X / 2) + 1;
 	const Position *p = ecs_get(g_world, g_ent_player, Position);
 	DrawCircleLines(p->x + h_tile_size, p->y + h_tile_size, h_tile_size * 1.25f, color);
+	*/
 }
 
 void _state_gameplayloop_exit()

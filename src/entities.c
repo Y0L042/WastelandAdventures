@@ -1,5 +1,7 @@
 #include "entities.h"
 
+#include "maths.h"
+
 ecs_entity_t g_ent_player;
 ecs_entity_t g_ent_camera;
 ecs_entity_t g_ent_dog;
@@ -60,8 +62,8 @@ void ent_player_create(
 		);
 
     ecs_set(world, *ent_player, Glyph, { 
-			.source_tile_x = 0, 
-			.source_tile_y = 4,
+			.source_tile_x = 27,//0, 
+			.source_tile_y = 0,//4,
 			.tileset = tileset,
 			.color = RAYWHITE
 		}); 
@@ -85,8 +87,8 @@ void ent_dog_create(
     grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
 	ecs_set(world, *ent_dog, Position, { .x = world_x, .y = world_y });
 	ecs_set(world, *ent_dog, Glyph, {
-			.source_tile_x = 13,
-			.source_tile_y = 6,
+			.source_tile_x = 10,//13,
+			.source_tile_y = 20,//6,
 			.tileset = tileset,
 			.color = BROWN
 		});
@@ -123,9 +125,10 @@ void ent_wall_perm_create(
 			ENT_WALL_PERM_COLL_LAYER,
 			ENT_WALL_PERM_COLL_MASK
 		);
+   int rand_x = maths_randbetween_int(0, 1);
    ecs_set(world, *ent_wall_perm, Glyph, {
-           .source_tile_x = 11,
-           .source_tile_y = 13,
+           .source_tile_x = 0 + rand_x,//11,
+           .source_tile_y = 2,//13,
            .tileset = tileset,
 		   .color = LIGHTGRAY
         });
@@ -141,8 +144,8 @@ void ent_glyph_ghost_create(
 	ecs_entity_t ent_glyph_ghost = ecs_new(world);
 	ecs_set(world, ent_glyph_ghost, Position, { .x = world_x, .y = world_y });
 	ecs_set(world, ent_glyph_ghost, Glyph, {
-		   .source_tile_x = 11, //glyph->source_tile_x,
-		   .source_tile_y = 13, //glyph->source_tile_y,
+		   .source_tile_x =  glyph->source_tile_x,//11,
+		   .source_tile_y =  glyph->source_tile_y,//13,
 		   .tileset = glyph->tileset,
 		   .color = glyph->color
 		});
