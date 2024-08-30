@@ -151,6 +151,33 @@ void _state_gameplayloop_draw(double delta)
 	handler_glyph_fade(g_world, delta);
  	handler_glyph_draw(g_world);
 
+	static int rad = 5;
+	static char mode = 's';
+	if (IsKeyPressed(KEY_W)) { rad++; }
+	if (IsKeyPressed(KEY_S)) { rad--; }
+	if (IsKeyPressed(KEY_SPACE)) { mode = mode == 's' ? 'c' : 's'; }
+	const GridPosition *gp = ecs_get(g_world, g_ent_player, GridPosition);
+	if (gp != NULL)
+	{
+		int x = gp->x;
+		int y = gp->y;
+		float h_tile_size = (TILE_SIZE_X / 2) + 1;
+		DRay area;
+		dray_init_values(&area, Vector2);
+		grid_get_coords_in_radius(&grid_worldspace, x, y, rad, mode, &area);
+
+		int world_x, world_y;
+		grid_pos_to_world_pos(&grid_worldspace, x, y, &world_x, &world_y);
+		DrawCircleLines(world_x + h_tile_size, 
+				world_y + h_tile_size, h_tile_size*2*rad, BLUE);
+
+		for (int i = 0; i < area.count; i++)
+		{
+			Vector2 coord = dray_get_value(&area, i, Vector2);
+			grid_pos_to_world_pos(&grid_worldspace, coord.x, coord.y, &world_x, &world_y);
+			DrawRectangleLines(world_x, world_y, h_tile_size*2, h_tile_size*2, GREEN);
+		}
+	}
 
 	/*
 	Color color;

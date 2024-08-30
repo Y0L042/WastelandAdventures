@@ -4,16 +4,13 @@
 
 ## InProgress
 
-- [ ] IMP collision and mask layers
-- [ ] ADD floor traps 
-
+- [ ] ADD DoDamage/GetHurt system, test with FloorTraps
 
 
 ## ToDo
 
 - [ ] ADD WastelandAdventures cool title
 - [ ] FIX Pathfinding getting softlocked fix 
-- [ ] IMP keybindings for menus
 - [ ] ADD stairs to new level
 - [ ] ADD game over screen
 
@@ -24,6 +21,9 @@
 - [x] ADD basic menu system
 - [x] ADD health component 
 - [x] ADD health ui
+- [x] IMP collision and mask layers
+- [x] ADD floor traps 
+- [x] IMP keybindings for menus
 
 
 

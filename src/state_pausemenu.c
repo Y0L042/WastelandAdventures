@@ -14,6 +14,8 @@ void _state_pausemenu_handle_ui(double delta);
 void _state_pausemenu_draw(double delta);
 void _state_pausemenu_exit();
 
+void _state_pausemenu_gotomainmenu();
+
 void state_pausemenu_register()
 {
 	state_pausemenu.state_enter = _state_pausemenu_enter;
@@ -36,7 +38,20 @@ void _state_pausemenu_update(double delta)
 
 void _state_pausemenu_physics_update(double delta)
 {
+	if (IsKeyPressed(KEY_SPACE))
+	{
+		sm_switch_state(&game_fsm, "STATE_GAMEPLAYLOOP");
+	}
+	
+	if (IsKeyPressed(KEY_M))
+	{
+		_state_pausemenu_gotomainmenu();
+	}
 
+	if (IsKeyPressed(KEY_Q))
+	{
+		quit_game();
+	}
 }
 
 void _state_pausemenu_handle_ui(double delta)
@@ -52,9 +67,7 @@ void _state_pausemenu_handle_ui(double delta)
 
 	if (GuiButton((Rectangle){ mid_x-60, mid_y+50 + 40, 120, 30 }, "EXIT TO MAIN MENU")) 
 	{
-		state_gameplayloop_reset();
-		clear_ecs_world();	
-		sm_switch_state(&game_fsm, "STATE_MAINMENU");
+		_state_pausemenu_gotomainmenu();
 	}
 
 	if (GuiButton((Rectangle){ mid_x-60, mid_y+50 + 40*3, 120, 30 }, "QUIT")) 
@@ -73,4 +86,10 @@ void _state_pausemenu_exit()
 
 }
 
+void _state_pausemenu_gotomainmenu()
+{
+	state_gameplayloop_reset();
+	clear_ecs_world();	
+	sm_switch_state(&game_fsm, "STATE_MAINMENU");
+}
 

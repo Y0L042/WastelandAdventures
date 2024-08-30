@@ -64,6 +64,8 @@ void grid_pos_to_world_pos(
         int *world_y
     );
 int grid_test_outofbounds(Grid *grid, int x_coord, int y_coord);
+/* Accepts grid, x, y, rad, and DRay of Vector2 */
+void grid_get_coords_in_radius(Grid *grid, int x, int y, int rad, char mode, DRay *coords);
 
 void gridposition_initialize(
 		GridPosition *gp,
@@ -74,6 +76,7 @@ void gridposition_initialize(
     );
 int gridposition_move(GridPosition *gp, int new_x, int new_y, int ignore_coll);
 int gridposition_delete(GridPosition *gp);
+
 
 void _grid_alloc_arr_coll_layers(
         int ***grid_arr_coll_layers, // Ptr to 2D arr

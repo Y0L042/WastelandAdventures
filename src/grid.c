@@ -138,6 +138,30 @@ void grid_create_gridposition(
 	dray_add_value(&grid->arr_entity_refs[x][y], entity, ecs_entity_t);
 }
 
+void grid_get_coords_in_radius(Grid *grid, int x, int y, int rad, char mode, DRay *coords)
+{
+	//float h_tile_w = grid->tile_width / 2;
+	//float h_tile_h = grid->tile_height / 2;
+	for (int _x = x-rad; _x <= x+rad; _x++)
+	{
+		for (int _y = y-rad; _y <= y+rad; _y++)
+		{
+			if (grid_test_outofbounds(grid, _x, _y) != 0) { continue; }
+
+			if (mode == 'c')
+			{
+				float dx2 = (_x - x) * (_x - x);
+				float dy2 = (_y - y) * (_y - y);
+				float dc2 = dx2 + dy2;
+				if (dc2 > (rad*rad)) { continue; }
+			}
+
+			Vector2 _pos = { _x, _y };
+			dray_add_value(coords, _pos, Vector2);
+		}
+	}
+}
+
 void gridposition_initialize(
 		GridPosition *gp,
 		int x, int y,

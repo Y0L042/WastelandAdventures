@@ -9,20 +9,18 @@ ECS_COMPONENT_DECLARE(GlyphFade);
 ECS_COMPONENT_DECLARE(LeaveGlyphGhost);
 ECS_COMPONENT_DECLARE(GhostWhenMoving);
 ECS_COMPONENT_DECLARE(CameraComponent);
-
 ECS_COMPONENT_DECLARE(TurnComponent);
 ECS_COMPONENT_DECLARE(TAG_TCEnable);
 ECS_COMPONENT_DECLARE(TurnCountComponent);
 ECS_COMPONENT_DECLARE(TurnEnter);
 ECS_COMPONENT_DECLARE(TurnProcess);
 ECS_COMPONENT_DECLARE(TurnExit);
-
 ECS_COMPONENT_DECLARE(PathComponent);
 ECS_COMPONENT_DECLARE(NPCTarget);
 ECS_COMPONENT_DECLARE(TAG_Player);
-
 ECS_COMPONENT_DECLARE(HealthComponent);
-
+ECS_COMPONENT_DECLARE(TAG_EntEnabled);
+ECS_COMPONENT_DECLARE(TAG_EntDisabled);
 ECS_COMPONENT_DECLARE(TAG_TurnActive);
 ECS_COMPONENT_DECLARE(TAG_TurnIdle);
 
@@ -37,20 +35,18 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, LeaveGlyphGhost);
 	ECS_COMPONENT_DEFINE(world, GhostWhenMoving);
 	ECS_COMPONENT_DEFINE(world, CameraComponent);
-
     ECS_COMPONENT_DEFINE(world, TurnComponent);
  	ECS_COMPONENT_DEFINE(world, TAG_TCEnable);
 	ECS_COMPONENT_DEFINE(world, TurnCountComponent);
 	ECS_COMPONENT_DEFINE(world, TurnEnter);
 	ECS_COMPONENT_DEFINE(world, TurnProcess);
 	ECS_COMPONENT_DEFINE(world, TurnExit);
-
     ECS_COMPONENT_DEFINE(world, NPCTarget);
     ECS_COMPONENT_DEFINE(world, TAG_Player);
 	ECS_COMPONENT_DEFINE(world, PathComponent);
-
 	ECS_COMPONENT_DEFINE(world, HealthComponent);
-	
+	ECS_COMPONENT_DEFINE(world, TAG_EntEnabled);
+	ECS_COMPONENT_DEFINE(world, TAG_EntDisabled);
     ECS_COMPONENT_DEFINE(world, TAG_TurnActive);
     ECS_COMPONENT_DEFINE(world, TAG_TurnIdle);
 }
@@ -59,15 +55,10 @@ void create_components(ecs_world_t *world)
 
 void create_queries(ecs_world_t *world)
 {
-    //ecs_query_t query_draw_glyph;
-    //query_draw_glyph = ecs_query_init(world, &(ecs_query_desc_t) {
-    //    .terms = {
-    //        {ecs_id(Glyph) },
-    //        {ecs_id(Position) },
-    //        { 0 }  
-    //    }
-    //}); 
+
 }
+
+
 
 void handler_glyph_draw(ecs_world_t *world)
 {
@@ -91,6 +82,8 @@ void handler_glyph_draw(ecs_world_t *world)
     }
 	ecs_query_fini(query_glyph_draw);
 }
+
+
 
 /* Forward Declaration */
 void ent_glyph_ghost_create(
@@ -125,6 +118,8 @@ void handler_glyph_ghost_spawn(ecs_world_t *world)
 	ecs_query_fini(query_glyph_ghowst_spawn);
 }
 
+
+
 void handler_glyph_fade(ecs_world_t *world, double delta)
 {
     ecs_query_t *query_glyph_fade = ecs_query(world, {
@@ -154,6 +149,8 @@ void handler_glyph_fade(ecs_world_t *world, double delta)
     }
 	ecs_query_fini(query_glyph_fade);
 }
+
+
 
 void handler_camera_move(ecs_world_t *world)
 {
@@ -194,6 +191,8 @@ void handler_camera_move(ecs_world_t *world)
 	}
 	ecs_query_fini(query_camera_move);
 }
+
+
 
 void handler_grid_move(ecs_world_t *world)
 {
@@ -268,6 +267,8 @@ void handler_grid_move(ecs_world_t *world)
 	ecs_query_fini(query_grid_move);
 }
 
+
+
 void handler_player_input(ecs_world_t *world)
 {
     ecs_query_t *query_player_input = ecs_query(world, {
@@ -331,6 +332,8 @@ void handler_player_input(ecs_world_t *world)
 	}
 	ecs_query_fini(query_player_input);
 }
+
+
 
 void handler_pathfinding(ecs_world_t *world)
 {
@@ -399,6 +402,8 @@ void handler_pathfinding(ecs_world_t *world)
 	ecs_query_fini(query_pathfinding);
 }
 
+
+
 void handler_turncounter_increment(ecs_world_t *world)
 {
     ecs_query_t *query_turncounter_increment = ecs_query(world, {
@@ -428,6 +433,8 @@ void handler_turncounter_increment(ecs_world_t *world)
 	ecs_query_fini(query_turncounter_increment);
 }
 
+
+
 void handler_draw_health_ui(ecs_world_t *world)
 {
     ecs_query_t *query_draw_health_ui = ecs_query(world, {
@@ -452,4 +459,29 @@ void handler_draw_health_ui(ecs_world_t *world)
 	ecs_query_fini(query_draw_health_ui);
 }
 
+
+
+void handler_process_traps(ecs_world_t *world)
+{
+    ecs_query_t *query_process_traps = ecs_query(world, {
+        .terms = {
+			{ ecs_id(TAG_Player) },
+            { ecs_id(HealthComponent) }
+        },
+    }); 
+
+    ecs_iter_t it = ecs_query_iter(world, query_process_traps);
+	while (ecs_query_next(&it))
+	{
+		HealthComponent *hc = ecs_field(&it, HealthComponent, 1);
+
+		for (int i = 0; i < it.count; i++)
+		{
+			char healthText[50];
+			sprintf(healthText, "Health: %d", hc[i].health);
+			DrawText(healthText, 20, 40, 22, RED);
+		}
+	}
+	ecs_query_fini(query_process_traps);
+}
 

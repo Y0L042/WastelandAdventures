@@ -39,6 +39,11 @@ void _state_mainmenu_physics_update(double delta)
 	{
 		sm_switch_state(&game_fsm, "STATE_GAMEPLAYLOOP");
 	}
+	
+	if (IsKeyPressed(KEY_Q))
+	{
+		quit_game();
+	}
 }
 
 void _state_mainmenu_handle_ui(double delta)

@@ -45,6 +45,7 @@ void ent_camera_create(
 	)
 {
 	*ent_camera = ecs_new(world);
+	ecs_add(world, *ent_camera, TAG_EntEnabled);
 	
 	Camera2D new_camera = { 
 			(Vector2){ (g_SCREEN_WIDTH / 2), (g_SCREEN_HEIGHT / 2) },
@@ -71,6 +72,8 @@ void ent_player_create(
 //    log_debug("ent_player_create START");
 	
     *ent_player = ecs_new(world);
+	ecs_add(world, *ent_player, TAG_EntEnabled);
+
     ecs_add(world, *ent_player, TAG_Player);
     int world_x, world_y;
     grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
@@ -107,6 +110,7 @@ void ent_dog_create(
 	)
 {
 	*ent_dog = ecs_new(world);
+	ecs_add(world, *ent_dog, TAG_EntEnabled);
     int world_x, world_y;
     grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
 	ecs_set(world, *ent_dog, Position, { .x = world_x, .y = world_y });
@@ -166,6 +170,7 @@ void ent_glyph_ghost_create(
 	)
 {
 	ecs_entity_t ent_glyph_ghost = ecs_new(world);
+	ecs_add(world, ent_glyph_ghost, TAG_EntEnabled);
 	ecs_set(world, ent_glyph_ghost, Position, { .x = world_x, .y = world_y });
 	ecs_set(world, ent_glyph_ghost, Glyph, {
 		   .source_tile_x =  glyph->source_tile_x,//11,
@@ -189,6 +194,7 @@ void ent_floor_trap_basic_create(
 	)
 {
     *ent_floortrap_basic = ecs_new(world);
+	ecs_add(world, *ent_floortrap_basic, TAG_EntEnabled);
     int world_x, world_y;
     grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
     ecs_set(world, *ent_floortrap_basic, Position, { .x = world_x, .y = world_y });
