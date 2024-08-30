@@ -6,13 +6,35 @@ ecs_entity_t g_ent_player;
 ecs_entity_t g_ent_camera;
 ecs_entity_t g_ent_dog;
 
-const int ENT_PLAYER_COLL_LAYER = 0b0011;
-const int ENT_PLAYER_COLL_MASK = 0b0001;
-const int ENT_DOG_COLL_LAYER = 0b0010;
-const int ENT_DOG_COLL_MASK = 0b0011;
-const int ENT_WALL_PERM_COLL_LAYER = 0b0001;
-const int ENT_WALL_PERM_COLL_MASK = 0b0000;
 
+#ifndef COLL_LAYERS_DEFINED
+#define COLL_LAYERS_DEFINED
+	#define COLL_LAYER_EMPTY 		0b00000000
+	#define COLL_LAYER_WORLD 		0b00000001
+	#define COLL_LAYER_PLAYER 		0b00000010
+	#define COLL_LAYER_FRIENDLIES 	0b00000100
+	#define COLL_LAYER_ENEMIES 		0b00001000
+	#define COLL_LAYER_TRAPS 		0b00010000
+	#define COLL_LAYER_1			0b00100000
+	#define COLL_LAYER_2			0b01000000
+	#define COLL_LAYER_3			0b10000000
+#endif // COLL_LAYERS_DEFINED
+
+
+const int ENT_PLAYER_COLL_LAYER = 	COLL_LAYER_PLAYER;
+const int ENT_PLAYER_COLL_MASK = 	COLL_LAYER_WORLD;
+
+const int ENT_DOG_COLL_LAYER = 	COLL_LAYER_FRIENDLIES;
+const int ENT_DOG_COLL_MASK = 	COLL_LAYER_PLAYER 
+								| COLL_LAYER_WORLD;
+
+const int ENT_WALL_PERM_COLL_LAYER = 	COLL_LAYER_WORLD;
+const int ENT_WALL_PERM_COLL_MASK = 	COLL_LAYER_EMPTY;
+
+const int ENT_FLOORTRAP_BASIC_COLL_LAYER = 	COLL_LAYER_TRAPS;
+const int ENT_FLOORTRAP_BASIC_COLL_MASK = 	COLL_LAYER_PLAYER 
+											| COLL_LAYER_FRIENDLIES 
+											| COLL_LAYER_ENEMIES;
 
 
 
@@ -68,6 +90,8 @@ void ent_player_create(
 			.color = RAYWHITE
 		}); 
 	turnmanager_create_turncomponent(tm, *ent_player);
+
+	ecs_set(world, *ent_player, HealthComponent, { .health = 100, ._initial_health = 100 });
     
 //    log_debug("ent_player_create END");
 }
@@ -154,4 +178,37 @@ void ent_glyph_ghost_create(
 			.time_left = time 
 		});
 }
+
+void ent_floor_trap_basic_create(
+		ecs_entity_t *ent_floortrap_basic,
+		ecs_world_t *world,
+		TurnManager *tm, 
+		Grid *grid,
+		Tileset *tileset,
+		int grid_x, int grid_y
+	)
+{
+    *ent_floortrap_basic = ecs_new(world);
+    int world_x, world_y;
+    grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
+    ecs_set(world, *ent_floortrap_basic, Position, { .x = world_x, .y = world_y });
+	grid_create_gridposition(
+			grid_x, grid_y,
+			grid, 
+			*ent_floortrap_basic,
+			ENT_FLOORTRAP_BASIC_COLL_LAYER,
+			ENT_FLOORTRAP_BASIC_COLL_MASK
+		);
+
+    ecs_set(world, *ent_floortrap_basic, Glyph, { 
+			.source_tile_x = 3, 
+			.source_tile_y = 2,
+			.tileset = tileset,
+			.color = { 255, 255, 255, 100 }
+		}); 
+
+	turnmanager_create_turncomponent(tm, *ent_floortrap_basic);
+	turnmanager_disable_tc(tm, *ent_floortrap_basic);
+}
+
 

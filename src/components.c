@@ -21,6 +21,8 @@ ECS_COMPONENT_DECLARE(PathComponent);
 ECS_COMPONENT_DECLARE(NPCTarget);
 ECS_COMPONENT_DECLARE(TAG_Player);
 
+ECS_COMPONENT_DECLARE(HealthComponent);
+
 ECS_COMPONENT_DECLARE(TAG_TurnActive);
 ECS_COMPONENT_DECLARE(TAG_TurnIdle);
 
@@ -46,6 +48,8 @@ void create_components(ecs_world_t *world)
     ECS_COMPONENT_DEFINE(world, NPCTarget);
     ECS_COMPONENT_DEFINE(world, TAG_Player);
 	ECS_COMPONENT_DEFINE(world, PathComponent);
+
+	ECS_COMPONENT_DEFINE(world, HealthComponent);
 	
     ECS_COMPONENT_DEFINE(world, TAG_TurnActive);
     ECS_COMPONENT_DEFINE(world, TAG_TurnIdle);
@@ -423,4 +427,29 @@ void handler_turncounter_increment(ecs_world_t *world)
 	}
 	ecs_query_fini(query_turncounter_increment);
 }
+
+void handler_draw_health_ui(ecs_world_t *world)
+{
+    ecs_query_t *query_draw_health_ui = ecs_query(world, {
+        .terms = {
+			{ ecs_id(TAG_Player) },
+            { ecs_id(HealthComponent) }
+        },
+    }); 
+
+    ecs_iter_t it = ecs_query_iter(world, query_draw_health_ui);
+	while (ecs_query_next(&it))
+	{
+		HealthComponent *hc = ecs_field(&it, HealthComponent, 1);
+
+		for (int i = 0; i < it.count; i++)
+		{
+			char healthText[50];
+			sprintf(healthText, "Health: %d", hc[i].health);
+			DrawText(healthText, 20, 40, 22, RED);
+		}
+	}
+	ecs_query_fini(query_draw_health_ui);
+}
+
 

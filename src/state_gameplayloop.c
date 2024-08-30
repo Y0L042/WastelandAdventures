@@ -42,6 +42,7 @@ void _state_gameplayloop_draw(double delta);
 void _state_gameplayloop_exit();
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset);
+void create_traps(ecs_world_t *world, TurnManager *tm, Grid *grid, Tileset *tileset);
 
 void state_gameplayloop_register()
 {
@@ -91,6 +92,8 @@ void _state_gameplayloop_initialize()
             spawn_x, spawn_y
 		);
 
+	create_traps(g_world, &turnmanager, &grid_worldspace, &cool_tileset);
+
 	CameraComponent *cc = ecs_get_mut(g_world, g_ent_camera, CameraComponent);
 	cc->target_entity = g_ent_player;
 
@@ -139,6 +142,7 @@ void _state_gameplayloop_physics_update(double delta)
 
 void _state_gameplayloop_handle_ui(double delta)
 {
+	handler_draw_health_ui(g_world);
 }
 
 void _state_gameplayloop_draw(double delta)
@@ -223,5 +227,49 @@ void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)
 	spawn_y_dog = spawnpos.y;
 
 	free(walkable_tiles);
+}
+
+void create_traps(ecs_world_t *world, TurnManager *tm, Grid *grid, Tileset *tileset)
+{
+	DRay walkable_tiles;
+	dray_init_values(&walkable_tiles, Vector2);
+	for (int _x = 0; _x < grid->width-1; _x++)
+	{
+		for (int _y = 0; _y < grid->height-1; _y++)
+		{
+			int grid_coll = grid->arr_coll_layers[_x][_y];
+			if (
+					((grid_coll & COLL_LAYER_WORLD) == 0)
+					&& ((grid_coll & COLL_LAYER_TRAPS) == 0)
+					&& ((grid_coll & COLL_LAYER_PLAYER) == 0)
+					&& ((grid_coll & COLL_LAYER_FRIENDLIES) == 0)
+					&& ((grid_coll & COLL_LAYER_ENEMIES) == 0)
+				)
+			{
+				Vector2 _p = { _x, _y };
+				dray_add_value(&walkable_tiles, _p, Vector2);
+			}
+		}
+	}
+	
+	
+	int spawn_count = maths_randbetween_int(4, 8);
+	for (int _i = 0; _i < spawn_count; _i++)
+	{
+		int rand_idx = maths_randbetween_int(0, walkable_tiles.count);
+		Vector2 spawnpos = dray_get_value(&walkable_tiles, rand_idx, Vector2);
+		log_info("TRAP SPAWNED AT { %.0f, %.0f }, opt %d", spawnpos.x, spawnpos.y, walkable_tiles.count);
+		ecs_entity_t trap;
+		ent_floor_trap_basic_create(
+				&trap,
+				world,
+				tm,
+				grid,
+				tileset,
+				spawnpos.x, spawnpos.y
+				);
+		dray_remove_idx(&walkable_tiles, rand_idx);
+	}
+
 }
 

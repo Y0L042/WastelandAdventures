@@ -18,3 +18,13 @@ int maths_randbetween_int(int min, int max)
 
     return x;
 }
+
+void binprintf(int v)
+{
+    unsigned int mask=1<<((sizeof(int)<<3)-1);
+    while(mask) {
+        printf("%d", (v&mask ? 1 : 0));
+        mask >>= 1;
+    }
+	printf("\n");
+}

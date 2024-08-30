@@ -50,7 +50,11 @@ typedef struct NPCTarget {
 } NPCTarget;
 extern ECS_COMPONENT_DECLARE(NPCTarget);
 
-
+typedef struct HealthComponent {
+	int health;
+	int _initial_health;
+} HealthComponent;
+extern ECS_COMPONENT_DECLARE(HealthComponent);
 
 typedef struct TAG_Player{ int empty; } TAG_Player;
 extern ECS_COMPONENT_DECLARE(TAG_Player);
@@ -77,5 +81,6 @@ void handler_grid_move(ecs_world_t *world);
 void handler_player_input(ecs_world_t *world);
 void handler_pathfinding(ecs_world_t *world);
 void handler_turncounter_increment(ecs_world_t *world);
+void handler_draw_health_ui(ecs_world_t *world);
 
 #endif // COMPONENTS_H

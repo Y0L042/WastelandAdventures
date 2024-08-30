@@ -36,13 +36,7 @@ void _state_pausemenu_update(double delta)
 
 void _state_pausemenu_physics_update(double delta)
 {
-	if (IsKeyPressed(KEY_ESCAPE))
-	{
-		/* TODO add state stack for pause/unpause */
-		/* TODO fix KEY_ESCAPE pressed being carried over from gameplayloop */
-		//sm_switch_state(&game_fsm, "STATE_GAMEPLAYLOOP");
-		//sm_switch_previous_state(&game_fsm);
-	}
+
 }
 
 void _state_pausemenu_handle_ui(double delta)
@@ -53,17 +47,17 @@ void _state_pausemenu_handle_ui(double delta)
 	DrawText("Pause Menu", mid_x-80, mid_y-16  , 24, RAYWHITE); 
 	if (GuiButton((Rectangle){ mid_x-60, mid_y+50, 120, 30 }, "#131#CONTINUE")) 
 	{
-		/* TODO add state stack for pause/unpause */
-		//sm_switch_state(&game_fsm, "STATE_GAMEPLAYLOOP");
 		sm_switch_previous_state(&game_fsm);
 	}
+
 	if (GuiButton((Rectangle){ mid_x-60, mid_y+50 + 40, 120, 30 }, "EXIT TO MAIN MENU")) 
 	{
 		state_gameplayloop_reset();
 		clear_ecs_world();	
 		sm_switch_state(&game_fsm, "STATE_MAINMENU");
 	}
-	if (GuiButton((Rectangle){ mid_x-60, mid_y+50 + 40*2, 120, 30 }, "QUIT")) 
+
+	if (GuiButton((Rectangle){ mid_x-60, mid_y+50 + 40*3, 120, 30 }, "QUIT")) 
 	{
 		quit_game();
 	}
