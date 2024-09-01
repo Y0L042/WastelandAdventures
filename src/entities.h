@@ -14,6 +14,7 @@
 #ifndef COLL_LAYERS_DEFINED
 #define COLL_LAYERS_DEFINED
 	#define COLL_LAYER_EMPTY 		0b00000000
+	#define COLL_LAYER_ALL			0b11111111
 	#define COLL_LAYER_WORLD 		0b00000001
 	#define COLL_LAYER_PLAYER 		0b00000010
 	#define COLL_LAYER_FRIENDLIES 	0b00000100
@@ -76,6 +77,8 @@ void ent_glyph_ghost_create(
 		double time,
 		int world_x, int world_y
 	);
+
+void callback_floor_trap_basic_damage(ecs_world_t *world, DRay *entities);
 
 void ent_floor_trap_basic_create(
 		ecs_entity_t *ent_floortrap_basic,

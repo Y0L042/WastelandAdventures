@@ -162,6 +162,47 @@ void grid_get_coords_in_radius(Grid *grid, int x, int y, int rad, char mode, DRa
 	}
 }
 
+int grid_get_entities_in_area(Grid *grid, GridArea *ga, DRay *entities)
+{
+	DRay coords;
+	dray_init_values(&coords, Vector2);
+	grid_get_coords_in_radius(grid, ga->x, ga->y, ga->rad, ga->mode, &coords);
+	for (int i = 0; i < coords.count; i++)
+	{
+		Vector2 coord = dray_get_value(&coords, i, Vector2);
+		const int _x = (int)coord.x;
+		const int _y = (int)coord.y;
+	}
+
+	for (int i = 0; i < coords.count; i++)
+	{
+		Vector2 coord = dray_get_value(&coords, i, Vector2);
+		const int _x = (int)coord.x;
+		const int _y = (int)coord.y;
+
+		/* Check if tile contains a coll match */
+		if (grid->arr_coll_layers[_x][_y] & ga->area_mask)
+		{
+			/* Get specific matching entities */
+			DRay *grid_entities = grid_get_entities_at(grid, _x, _y);
+			for (int j = 0; j < grid_entities->count; j++)
+			{
+				// Check entity collision layer against mask
+				ecs_entity_t ent = dray_get_value(grid_entities, j, ecs_entity_t);
+				const GridPosition *gp = ecs_get(grid->world, ent, GridPosition);
+				if (gp == NULL) { continue; }
+				const size_t ent_coll = gp->coll_layer;
+				if (ent_coll & ga->area_mask)
+				{
+					dray_add_value(entities, ent, ecs_entity_t);
+				}
+			}
+		}
+	}
+	
+	return ( (entities->count > 0) ? 0 : -1);
+}
+
 void gridposition_initialize(
 		GridPosition *gp,
 		int x, int y,

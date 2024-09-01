@@ -35,6 +35,14 @@ typedef struct GridPosition {
 	int coll_layer, coll_mask;
 } GridPosition;
 
+typedef struct GridArea {
+	int x, y;
+	int rad;
+	int mode;
+	int area_mask;
+	void (*callback)(ecs_world_t *world, DRay *entities);
+} GridArea, VisionArea, TriggerArea;
+
 void grid_initialize(
         Grid *grid, 
         ecs_world_t *world, 
@@ -66,6 +74,9 @@ void grid_pos_to_world_pos(
 int grid_test_outofbounds(Grid *grid, int x_coord, int y_coord);
 /* Accepts grid, x, y, rad, and DRay of Vector2 */
 void grid_get_coords_in_radius(Grid *grid, int x, int y, int rad, char mode, DRay *coords);
+/* DRay<ecs_entity_t> */
+int grid_get_entities_in_area(Grid *grid, GridArea *ga, DRay *entities);
+
 
 void gridposition_initialize(
 		GridPosition *gp,

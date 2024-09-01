@@ -169,7 +169,7 @@ void turnmanager_end_turn(TurnManager *tm, int inc)
 		TurnComponentData *next_tc_d = tm->tc_datas.data[tm->active_tc_idx];
 		turncomponentdata_start_turn(next_tc_d);
 	}
-	turnmanager_print_turn_queue(tm);
+	//turnmanager_print_turn_queue(tm);
 }
 
 void turnmanager_print_turn_queue(TurnManager *tm)

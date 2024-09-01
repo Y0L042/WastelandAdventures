@@ -23,6 +23,9 @@ ECS_COMPONENT_DECLARE(TAG_EntEnabled);
 ECS_COMPONENT_DECLARE(TAG_EntDisabled);
 ECS_COMPONENT_DECLARE(TAG_TurnActive);
 ECS_COMPONENT_DECLARE(TAG_TurnIdle);
+ECS_COMPONENT_DECLARE(GridArea);
+ECS_COMPONENT_DECLARE(VisionArea);
+ECS_COMPONENT_DECLARE(TriggerArea);
 
 void create_components(ecs_world_t *world)
 {
@@ -49,6 +52,9 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, TAG_EntDisabled);
     ECS_COMPONENT_DEFINE(world, TAG_TurnActive);
     ECS_COMPONENT_DEFINE(world, TAG_TurnIdle);
+	ECS_COMPONENT_DEFINE(world, GridArea);
+	ECS_COMPONENT_DEFINE(world, VisionArea);
+	ECS_COMPONENT_DEFINE(world, TriggerArea);
 }
 
 
@@ -483,5 +489,76 @@ void handler_process_traps(ecs_world_t *world)
 		}
 	}
 	ecs_query_fini(query_process_traps);
+}
+
+void handler_process_triggerareas(ecs_world_t *world)
+{
+    ecs_query_t *query_process_triggerareas = ecs_query(world, {
+        .terms = {
+            { ecs_id(TriggerArea) },
+			{ ecs_id(GridPosition) },
+			{ ecs_id(TurnComponent) },
+			{ ecs_id(TAG_TurnActive) }
+        },
+    }); 
+
+    ecs_iter_t it = ecs_query_iter(world, query_process_triggerareas);
+	while (ecs_query_next(&it))
+	{
+		TriggerArea *ta = ecs_field(&it, TriggerArea, 0);
+		GridPosition *gpt = ecs_field(&it, GridPosition, 1);
+		TurnComponent *tc = ecs_field(&it, TurnComponent, 2);
+
+		for (int i = 0; i < it.count; i++)
+		{
+			Grid *grid = gpt->grid;
+
+			/* TEMP */
+			static int rad = 5;
+			static char mode = 's';
+			const GridPosition *gp = &gpt[i];
+			if (gp != NULL)
+			{
+				Grid *grid = gp->grid;
+				int x = ta[i].x;
+				int y = ta[i].y;
+				float h_tile_size = (25 / 2) + 1;
+				DRay area;
+				dray_init_values(&area, Vector2);
+				grid_get_coords_in_radius(grid, x, y, ta[i].rad, ta[i].mode, &area);
+
+				int world_x, world_y;
+				grid_pos_to_world_pos(grid, x, y, &world_x, &world_y);
+				DrawCircleLines(world_x + h_tile_size, 
+						world_y + h_tile_size, h_tile_size*2*ta[i].rad, BLUE);
+
+				for (int i = 0; i < area.count; i++)
+				{
+					Vector2 coord = dray_get_value(&area, i, Vector2);
+					grid_pos_to_world_pos(grid, coord.x, coord.y, &world_x, &world_y);
+					DrawRectangleLines(world_x, world_y, h_tile_size*2, h_tile_size*2, GREEN);
+				}
+			}
+			/* TEMP */
+
+			DRay entities;
+			dray_init_values(&entities, ecs_entity_t);
+			int success = grid_get_entities_in_area(grid, &ta[i], &entities) == 0;
+			printf("Success %d\n", success);
+			if (success)
+			{
+				log_info("enemy found!");
+			}
+
+			if (success && (ta[i].callback != NULL))
+			{
+				(*ta[i].callback)(it.world, &entities);
+			}
+
+			TurnManager *tm = tc[i].tc_d->turn_manager;
+			turnmanager_end_turn(tm, 100);
+		}
+	}
+	ecs_query_fini(query_process_triggerareas);
 }
 

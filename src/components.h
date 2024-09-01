@@ -64,6 +64,11 @@ typedef struct HealthComponent {
 } HealthComponent;
 extern ECS_COMPONENT_DECLARE(HealthComponent);
 
+/* Adds grid area/detection */
+extern ECS_COMPONENT_DECLARE(GridArea);
+extern ECS_COMPONENT_DECLARE(VisionArea);
+extern ECS_COMPONENT_DECLARE(TriggerArea);
+
 /* Used to enable/disable entity (gives more control than FLECS options) */
 typedef struct TAG_EntEnabled { int empty; } TAG_EntEnabled;
 extern ECS_COMPONENT_DECLARE(TAG_EntEnabled);
@@ -98,5 +103,6 @@ void handler_pathfinding(ecs_world_t *world);
 void handler_turncounter_increment(ecs_world_t *world);
 void handler_draw_health_ui(ecs_world_t *world);
 void handler_process_traps(ecs_world_t *world);
+void handler_process_triggerareas(ecs_world_t *world);
 
 #endif // COMPONENTS_H

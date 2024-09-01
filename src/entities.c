@@ -10,6 +10,7 @@ ecs_entity_t g_ent_dog;
 #ifndef COLL_LAYERS_DEFINED
 #define COLL_LAYERS_DEFINED
 	#define COLL_LAYER_EMPTY 		0b00000000
+	#define COLL_LAYER_ALL			0b11111111
 	#define COLL_LAYER_WORLD 		0b00000001
 	#define COLL_LAYER_PLAYER 		0b00000010
 	#define COLL_LAYER_FRIENDLIES 	0b00000100
@@ -184,6 +185,18 @@ void ent_glyph_ghost_create(
 		});
 }
 
+void callback_floor_trap_basic_damage(ecs_world_t *world, DRay *entities)
+{
+	for (int i = 0; i < entities->count; i++)
+	{
+		ecs_entity_t ent = dray_get_value(entities, i, ecs_entity_t);
+		if (ecs_get(world, ent, HealthComponent))
+		{
+			printf("Entity %d takes damage!\n", ent);
+		}
+	}
+}
+
 void ent_floor_trap_basic_create(
 		ecs_entity_t *ent_floortrap_basic,
 		ecs_world_t *world,
@@ -213,8 +226,17 @@ void ent_floor_trap_basic_create(
 			.color = { 255, 255, 255, 100 }
 		}); 
 
+	ecs_set(world, *ent_floortrap_basic, TriggerArea, {
+			.x = grid_x, .y = grid_y,
+			.rad = 0,
+			.mode = 's',
+			.area_mask = ENT_FLOORTRAP_BASIC_COLL_MASK,
+			.callback = callback_floor_trap_basic_damage
+		});
+
+
+
 	turnmanager_create_turncomponent(tm, *ent_floortrap_basic);
-	turnmanager_disable_tc(tm, *ent_floortrap_basic);
 }
 
 

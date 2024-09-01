@@ -147,6 +147,7 @@ void _state_gameplayloop_handle_ui(double delta)
 
 void _state_gameplayloop_draw(double delta)
 {
+	handler_process_triggerareas(g_world);
 	grid_draw(&grid_worldspace);
 	handler_glyph_fade(g_world, delta);
  	handler_glyph_draw(g_world);
