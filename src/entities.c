@@ -1,6 +1,7 @@
 #include "entities.h"
 
 #include "maths.h"
+#include "state_gameplayloop.h"
 
 ecs_entity_t g_ent_player;
 ecs_entity_t g_ent_camera;
@@ -61,6 +62,11 @@ void ent_camera_create(
 		});
 }
 
+void callback_player_ondeath(int health)
+{
+	state_gameplayloop_queue_gameover();
+}
+
 void ent_player_create(
 		ecs_entity_t *ent_player,
 		ecs_world_t *world, 
@@ -95,7 +101,11 @@ void ent_player_create(
 		}); 
 	turnmanager_create_turncomponent(tm, *ent_player);
 
-	ecs_set(world, *ent_player, HealthComponent, { .health = 100, ._initial_health = 100 });
+	ecs_set(world, *ent_player, HealthComponent, { 
+			.health = 100, 
+			._initial_health = 100,
+			.callback_ondeath = callback_player_ondeath
+		});
     
 //    log_debug("ent_player_create END");
 }
@@ -193,6 +203,7 @@ void callback_floor_trap_basic_damage(ecs_world_t *world, DRay *entities)
 		if (ecs_get(world, ent, HealthComponent))
 		{
 			printf("Entity %d takes damage!\n", ent);
+			ecs_set(world, ent, HurtComponent, { .hurt = 15 });
 		}
 	}
 }

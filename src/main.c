@@ -15,6 +15,7 @@
 #include "state_mainmenu.h"
 #include "state_pausemenu.h"
 #include "state_gameplayloop.h"
+#include "state_gameover_death.h"
 
 #include "grid.h"
 #include "glyph.h"
@@ -31,6 +32,7 @@ SM_Machine game_fsm;
 SM_State state_mainmenu;
 SM_State state_pausemenu;
 SM_State state_gameplayloop;
+SM_State state_gameover_death;
 
 static int is_ecs_world_created = 0;
 ecs_world_t *g_world;
@@ -107,6 +109,9 @@ void initialize()
 
 	sm_register_state(&game_fsm, &state_gameplayloop, "STATE_GAMEPLAYLOOP");
 	state_gameplayloop_register();
+
+	sm_register_state(&game_fsm, &state_gameover_death, "STATE_GAMEOVER_DEATH");
+	state_gameover_death_register();
 }
 
 void ready()

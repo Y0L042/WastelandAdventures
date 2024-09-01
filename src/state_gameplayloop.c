@@ -24,6 +24,7 @@ const int TILE_SIZE_X = 25;
 const int TILE_SIZE_Y = 25;
 
 static int gameplayloop_initialized = 0;
+static int gameover_queued = 0;
 
 int spawn_x, spawn_y;
 int spawn_x_dog, spawn_y_dog;
@@ -130,13 +131,17 @@ void _state_gameplayloop_update(double delta)
 void _state_gameplayloop_physics_update(double delta)
 {
 //	log_debug("physics_update() - start");
+
     handler_player_input(g_world);
 	handler_glyph_ghost_spawn(g_world);
 	handler_grid_move(g_world);
 	handler_pathfinding(g_world);
+	handler_process_hurt(g_world);
+	handler_process_death(g_world);
 	handler_camera_move(g_world);
 	handler_turncounter_increment(g_world);
 
+	if (gameover_queued) { state_gameplayloop_goto_gameover_death(); }
 //	log_debug("physics_update() - end");
 }
 
@@ -152,14 +157,16 @@ void _state_gameplayloop_draw(double delta)
 	handler_glyph_fade(g_world, delta);
  	handler_glyph_draw(g_world);
 
+	/*
 	static int rad = 5;
 	static char mode = 's';
 	if (IsKeyPressed(KEY_W)) { rad++; }
 	if (IsKeyPressed(KEY_S)) { rad--; }
 	if (IsKeyPressed(KEY_SPACE)) { mode = mode == 's' ? 'c' : 's'; }
-	const GridPosition *gp = ecs_get(g_world, g_ent_player, GridPosition);
-	if (gp != NULL)
+
+	if (ecs_is_alive(g_world, g_ent_player))
 	{
+		const GridPosition *gp = ecs_get(g_world, g_ent_player, GridPosition);
 		int x = gp->x;
 		int y = gp->y;
 		float h_tile_size = (TILE_SIZE_X / 2) + 1;
@@ -179,7 +186,7 @@ void _state_gameplayloop_draw(double delta)
 			DrawRectangleLines(world_x, world_y, h_tile_size*2, h_tile_size*2, GREEN);
 		}
 	}
-
+	*/	
 	/*
 	Color color;
 	const TurnComponent *player_tc = ecs_get(g_world, g_ent_player, TurnComponent);
@@ -207,6 +214,18 @@ void _state_gameplayloop_exit()
 void state_gameplayloop_reset(void)
 {
 	gameplayloop_initialized = 0;
+	gameover_queued = 0;
+}
+
+void state_gameplayloop_goto_gameover_death()
+{
+	state_gameplayloop_reset();	
+	sm_switch_state(&game_fsm, "STATE_GAMEOVER_DEATH");
+}
+
+void state_gameplayloop_queue_gameover()
+{
+	gameover_queued = 1;
 }
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset)

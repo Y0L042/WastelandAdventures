@@ -5,10 +5,12 @@
 - Add a callback var to GridAreas that gets called when they are triggered, 
   passing the entities along @20:23 Sat, 31 Aug 2024
   DONE @15:33 Sun, 01 Sep 2024
+- Add callbacks to HealthComponent for what to do when hurt and when dead @18:44
+  Sun, 01 Sep 2024
 
 ## InProgress
 
-- [ ] ADD DoDamage/GetHurt system, test with FloorTraps
+- [ ] ADD callbacks for onhurt and ondeath, add damage structures
 - [ ] ADD game over screen
 
 
@@ -32,6 +34,7 @@
 - [x] FIX Add COLL_ALL mask 
 - [x] ADD area detection and vision
 - [x] IMP Add callbacks to GridArea
+- [x] ADD DoDamage/GetHurt system, test with FloorTraps
 
 
 

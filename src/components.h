@@ -61,8 +61,22 @@ extern ECS_COMPONENT_DECLARE(NPCTarget);
 typedef struct HealthComponent {
 	int health;
 	int _initial_health;
+	void (*callback_onhurt)(int hurt);
+	void (*callback_ondeath)(int hurt);
 } HealthComponent;
 extern ECS_COMPONENT_DECLARE(HealthComponent);
+typedef struct DamageComponent {
+	int damage;
+} DamageComponent;
+extern ECS_COMPONENT_DECLARE(DamageComponent);
+typedef struct HurtComponent {
+	int hurt;
+} HurtComponent;
+extern ECS_COMPONENT_DECLARE(HurtComponent);
+typedef struct DeathComponent {
+	int empty;
+} DeathComponent;
+extern ECS_COMPONENT_DECLARE(DeathComponent);
 
 /* Adds grid area/detection */
 extern ECS_COMPONENT_DECLARE(GridArea);
@@ -78,6 +92,9 @@ extern ECS_COMPONENT_DECLARE(TAG_EntDisabled);
 /* Used to identify player entity */
 typedef struct TAG_Player { int empty; } TAG_Player;
 extern ECS_COMPONENT_DECLARE(TAG_Player);
+
+typedef struct EntDeletionQueued { int empty; } EntDeletionQueued;
+extern ECS_COMPONENT_DECLARE(EntDeletionQueued);
 
 
 /* Defines components with the active ecs_world_t. Must run just after creating
@@ -104,5 +121,9 @@ void handler_turncounter_increment(ecs_world_t *world);
 void handler_draw_health_ui(ecs_world_t *world);
 void handler_process_traps(ecs_world_t *world);
 void handler_process_triggerareas(ecs_world_t *world);
+void handler_process_hurt(ecs_world_t *world);
+void handler_process_death(ecs_world_t *world);
+
+void handler_process_entity_deletion(ecs_world_t *world);
 
 #endif // COMPONENTS_H

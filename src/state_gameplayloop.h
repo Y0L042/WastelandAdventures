@@ -14,5 +14,7 @@ extern ecs_ref_t cc_ref;
 
 void state_gameplayloop_register();
 void state_gameplayloop_reset(void);
+void state_gameplayloop_goto_gameover_death();
+void state_gameplayloop_queue_gameover();
 
 #endif // STATE_GAMEPLAYLOOP_H

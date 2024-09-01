@@ -26,6 +26,7 @@ extern SM_Machine game_fsm;
 extern SM_State state_mainmenu;
 extern SM_State state_pausemenu;
 extern SM_State state_gameplayloop;
+extern SM_State state_gameover_death;
 
 void quit_game(void);
 void create_ecs_world(void);

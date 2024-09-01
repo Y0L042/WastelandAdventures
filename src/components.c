@@ -26,6 +26,10 @@ ECS_COMPONENT_DECLARE(TAG_TurnIdle);
 ECS_COMPONENT_DECLARE(GridArea);
 ECS_COMPONENT_DECLARE(VisionArea);
 ECS_COMPONENT_DECLARE(TriggerArea);
+ECS_COMPONENT_DECLARE(DamageComponent);
+ECS_COMPONENT_DECLARE(HurtComponent);
+ECS_COMPONENT_DECLARE(DeathComponent);
+ECS_COMPONENT_DECLARE(EntDeletionQueued);
 
 void create_components(ecs_world_t *world)
 {
@@ -55,6 +59,10 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, GridArea);
 	ECS_COMPONENT_DEFINE(world, VisionArea);
 	ECS_COMPONENT_DEFINE(world, TriggerArea);
+	ECS_COMPONENT_DEFINE(world, DamageComponent);
+	ECS_COMPONENT_DEFINE(world, HurtComponent);
+	ECS_COMPONENT_DEFINE(world, DeathComponent);
+	ECS_COMPONENT_DEFINE(world, EntDeletionQueued);
 }
 
 
@@ -364,6 +372,7 @@ void handler_pathfinding(ecs_world_t *world)
 		for (int i = 0; i < it.count; i++)
 		{
 			Grid *grid = gp[i].grid;
+			if (!ecs_is_alive(world, target->target)) { continue; }
 			const GridPosition *gp_target = ecs_get(world, target->target, GridPosition);
 			if (gp_target == NULL) 
 			{ 
@@ -561,4 +570,90 @@ void handler_process_triggerareas(ecs_world_t *world)
 	}
 	ecs_query_fini(query_process_triggerareas);
 }
+
+void handler_process_hurt(ecs_world_t *world)
+{
+    ecs_query_t *query_process_hurt = ecs_query(world, {
+        .terms = {
+            { ecs_id(HealthComponent) },
+			{ ecs_id(HurtComponent) }
+        },
+    }); 
+
+    ecs_iter_t it = ecs_query_iter(world, query_process_hurt);
+	while (ecs_query_next(&it))
+	{
+		HealthComponent *healthc = ecs_field(&it, HealthComponent, 0);
+		HurtComponent *hurtc = ecs_field(&it, HurtComponent, 1);
+
+		for (int i = 0; i < it.count; i++)
+		{
+			healthc[i].health -= hurtc[i].hurt;
+			ecs_remove(it.world, it.entities[i], HurtComponent);
+
+			if (healthc[i].health < 0)
+			{
+				ecs_add(it.world, it.entities[i], DeathComponent);
+			}
+
+			if (healthc[i].callback_onhurt != NULL)
+			{
+				(*healthc[i].callback_onhurt)(hurtc[i].hurt);
+			}
+		}
+	}
+	ecs_query_fini(query_process_hurt);
+}
+
+
+
+void handler_process_death(ecs_world_t *world)
+{
+    ecs_query_t *query_process_death = ecs_query(world, {
+        .terms = {
+            { ecs_id(HealthComponent) },
+            { ecs_id(DeathComponent) }
+        },
+    }); 
+
+    ecs_iter_t it = ecs_query_iter(world, query_process_death);
+	while (ecs_query_next(&it))
+	{
+		HealthComponent *healthc = ecs_field(&it, HealthComponent, 0);
+
+		for (int i = 0; i < it.count; i++)
+		{
+			if (healthc[i].callback_ondeath != NULL)
+			{
+				(*healthc[i].callback_ondeath)(healthc[i].health);
+			}
+			
+			ecs_add(it.world, it.entities[i], EntDeletionQueued);
+		}
+	}
+	ecs_query_fini(query_process_death);
+}
+
+
+
+void handler_process_entity_deletion(ecs_world_t *world)
+{
+    ecs_query_t *query_process_entity_delection = ecs_query(world, {
+        .terms = {
+            { ecs_id(EntDeletionQueued) }
+        },
+    }); 
+
+    ecs_iter_t it = ecs_query_iter(world, query_process_entity_delection);
+	while (ecs_query_next(&it))
+	{
+
+		for (int i = 0; i < it.count; i++)
+		{
+			ecs_delete(it.world, it.entities[i]);
+		}
+	}
+	ecs_query_fini(query_process_entity_delection);
+}
+
 
