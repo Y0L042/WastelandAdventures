@@ -9,6 +9,7 @@
 #include "glyph.h"
 #include "turnbasedsystem.h"
 #include "pathfinding.h"
+#include "tween.h"
 
 /* Adds World position & velocity */
 typedef Vector2 Position;
@@ -96,6 +97,9 @@ extern ECS_COMPONENT_DECLARE(TAG_Player);
 typedef struct EntDeletionQueued { int empty; } EntDeletionQueued;
 extern ECS_COMPONENT_DECLARE(EntDeletionQueued);
 
+/* Tween Components */
+extern ECS_COMPONENT_DECLARE(TweenComponent);
+extern ECS_COMPONENT_DECLARE(TweenPropertyComponent);
 
 /* Defines components with the active ecs_world_t. Must run just after creating
  * world

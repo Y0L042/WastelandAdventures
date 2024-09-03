@@ -51,6 +51,10 @@ testdray : $(SRCDIR)/memory.h $(SRCDIR)/dray.c $(SRCDIR)/dray.h testdray.c | $(B
 	$(CC) $(CFLAGS) testdray.c $(SRCDIR)/dray.c $(SRCDIR)/memory.c -o $(BIN)/testdray $(LDFLAGS)
 	$(BIN)/testdray
 
+test_tweens : $(SRCDIR)/flecs.h $(SRCDIR)/flecs.c $(SRCDIR)/tween.c $(SRCDIR)/tween.h test_tweens.c | $(BIN)
+	$(CC) $(CFLAGS) test_tweens.c $(SRCDIR)/flecs.h $(SRCDIR)/flecs.c $(SRCDIR)/tween.h $(SRCDIR)/tween.c $(LDFLAGS)
+	$(BIN)/test_tweens
+
 clean_bin:
 	rm -f $(BIN)/*
 

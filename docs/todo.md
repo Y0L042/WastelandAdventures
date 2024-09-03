@@ -10,16 +10,21 @@
 
 ## InProgress
 
-- [ ] ADD callbacks for onhurt and ondeath, add damage structures
-- [ ] ADD game over screen
+- [ ] ADD stairs to new level
+- [ ] IMP damage, hurt, and health to be more versatile
 
 
 
 ## ToDo
 
-- [ ] ADD stairs to new level
 - [ ] ADD WastelandAdventures cool title
 - [ ] FIX Pathfinding getting softlocked fix 
+- [ ] FIX free DRays that gets created in structs X( (see if it fixes memleaks
+  when restarting game)
+- [ ] FIX crash that happens when continually restarting game
+- [ ] ADD VI move keys
+- [ ] ADD Tween system for easier animations
+- [ ] ADD multiple Tween easing methods
 
 
 
@@ -33,9 +38,13 @@
 - [x] IMP keybindings for menus
 - [x] FIX Add COLL_ALL mask 
 - [x] ADD area detection and vision
+
+ @19:52 Sun, 01 Sep 2024
+
 - [x] IMP Add callbacks to GridArea
 - [x] ADD DoDamage/GetHurt system, test with FloorTraps
-
+- [x] ADD callbacks for onhurt and ondeath, add damage structures
+- [x] ADD game over screen
 
 
 ## Roadmap

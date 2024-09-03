@@ -199,7 +199,8 @@ int grid_get_entities_in_area(Grid *grid, GridArea *ga, DRay *entities)
 			}
 		}
 	}
-	
+	dray_free(&coords);	
+
 	return ( (entities->count > 0) ? 0 : -1);
 }
 

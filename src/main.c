@@ -21,6 +21,7 @@
 #include "glyph.h"
 #include "pathfinding.h"
 #include "map_generator.h"
+#include "tween.h"
 
 
 const int g_SCREEN_WIDTH = 1280;

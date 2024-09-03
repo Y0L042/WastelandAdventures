@@ -30,6 +30,8 @@ ECS_COMPONENT_DECLARE(DamageComponent);
 ECS_COMPONENT_DECLARE(HurtComponent);
 ECS_COMPONENT_DECLARE(DeathComponent);
 ECS_COMPONENT_DECLARE(EntDeletionQueued);
+ECS_COMPONENT_DECLARE(TweenComponent);
+ECS_COMPONENT_DECLARE(TweenPropertyComponent);
 
 void create_components(ecs_world_t *world)
 {
@@ -63,6 +65,8 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, HurtComponent);
 	ECS_COMPONENT_DEFINE(world, DeathComponent);
 	ECS_COMPONENT_DEFINE(world, EntDeletionQueued);
+	ECS_COMPONENT_DEFINE(world, TweenComponent);
+	ECS_COMPONENT_DEFINE(world, TweenPropertyComponent);
 }
 
 
@@ -523,6 +527,7 @@ void handler_process_triggerareas(ecs_world_t *world)
 			Grid *grid = gpt->grid;
 
 			/* TEMP */
+			/*
 			static int rad = 5;
 			static char mode = 's';
 			const GridPosition *gp = &gpt[i];
@@ -548,6 +553,7 @@ void handler_process_triggerareas(ecs_world_t *world)
 					DrawRectangleLines(world_x, world_y, h_tile_size*2, h_tile_size*2, GREEN);
 				}
 			}
+			*/
 			/* TEMP */
 
 			DRay entities;

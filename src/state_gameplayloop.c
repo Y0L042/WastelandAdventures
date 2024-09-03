@@ -128,9 +128,28 @@ void _state_gameplayloop_update(double delta)
 	}
 }
 
+Tween test = 0;
+static int test_source = 0;
+TweenValueType value_type = TWEEN_VALUE_INT;
 void _state_gameplayloop_physics_update(double delta)
 {
 //	log_debug("physics_update() - start");
+	if (test == 0) 
+	{ 
+		test = tween_create(g_world);
+		tween_add_property(g_world, test, &test_source, 11, value_type, 2);
+	}
+	switch (value_type) {
+		case TWEEN_VALUE_INT:
+			if ( test_source < 11.0) { log_info("Test Tween Source: %d", test_source); }	
+			break;
+		case TWEEN_VALUE_FLOAT:
+			if ( test_source < 11.0) { log_info("Test Tween Source: %.1f", test_source); }	
+			break;
+		case TWEEN_VALUE_DOUBLE:
+			if ( test_source < 11.0) { log_info("Test Tween Source: %.2f", test_source); }	
+			break;
+	}
 
     handler_player_input(g_world);
 	handler_glyph_ghost_spawn(g_world);
@@ -140,6 +159,8 @@ void _state_gameplayloop_physics_update(double delta)
 	handler_process_death(g_world);
 	handler_camera_move(g_world);
 	handler_turncounter_increment(g_world);
+
+	handler_tween_add_property(g_world, delta);
 
 	if (gameover_queued) { state_gameplayloop_goto_gameover_death(); }
 //	log_debug("physics_update() - end");
@@ -317,6 +338,6 @@ void create_traps(ecs_world_t *world, TurnManager *tm, Grid *grid, Tileset *tile
 				);
 		dray_remove_idx(&walkable_tiles, rand_idx);
 	}
-
+	dray_free(&walkable_tiles);
 }
 
