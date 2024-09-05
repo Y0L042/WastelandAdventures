@@ -174,7 +174,7 @@ void quit_game(void)
 	game_should_quit = 1;
 }
 
-void create_ecs_world(void)
+void create_ecs_gameplay_world(void)
 {
 	if (is_ecs_gameplay_world_created) { return; }
 	is_ecs_gameplay_world_created = 1;
@@ -191,16 +191,16 @@ void create_ecs_world(void)
 		);
 }
 
-void clear_ecs_world(void)
+void clear_ecs_gameplay_world(void)
 {
 	ecs_fini(gameplay_world);
 	is_ecs_gameplay_world_created = 0;
 	gameplay_world = NULL;
 }
 
-void restart_ecs_world(void)
+void restart_ecs_gameplay_world(void)
 {
-	clear_ecs_world();
-	create_ecs_world();
+	clear_ecs_gameplay_world();
+	create_ecs_gameplay_world();
 }
 

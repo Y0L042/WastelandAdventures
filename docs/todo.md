@@ -10,8 +10,7 @@
 
 ## InProgress
 
-- [ ] ADD stairs to new level
-- [ ] IMP damage, hurt, and health to be more versatile
+- [ ] ADD enemy
 
 
 
@@ -25,6 +24,8 @@
 - [ ] ADD VI move keys
 - [ ] ADD Tween system for easier animations
 - [ ] ADD multiple Tween easing methods
+- [ ] ADD stairs to new level
+- [ ] IMP damage, hurt, and health to be more versatile
 
 
 
@@ -46,6 +47,9 @@
 - [x] ADD callbacks for onhurt and ondeath, add damage structures
 - [x] ADD game over screen
 
+ @12:59 Thu, 05 Sep 2024
+
+- [x] ADD timer and timer callbacks
 
 ## Roadmap
 

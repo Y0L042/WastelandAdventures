@@ -44,6 +44,7 @@ void _state_gameplayloop_exit();
 
 void create_walls(ecs_world_t *world, Grid *grid, Tileset *tileset);
 void create_traps(ecs_world_t *world, TurnManager *tm, Grid *grid, Tileset *tileset);
+void create_enemies(ecs_world_t *world, TurnManager *tm, Grid *grid, Tileset *tileset);
 
 void state_gameplayloop_register()
 {
@@ -57,7 +58,7 @@ void state_gameplayloop_register()
 
 void _state_gameplayloop_initialize()
 {
-	create_ecs_world();
+	create_ecs_gameplay_world();
 	cc_ref = ecs_ref_init(gameplay_world, g_ent_camera, CameraComponent);
 
 	gameplayloop_initialized = 1;
@@ -83,6 +84,7 @@ void _state_gameplayloop_initialize()
         );
 
     create_walls(gameplay_world, &grid_worldspace, &cool_tileset);
+	
 
 	ent_player_create(
 			&g_ent_player, 
@@ -94,6 +96,7 @@ void _state_gameplayloop_initialize()
 		);
 
 	create_traps(gameplay_world, &turnmanager, &grid_worldspace, &cool_tileset);
+	create_enemies(gameplay_world, &turnmanager, &grid_worldspace, &cool_tileset);
 
 	CameraComponent *cc = ecs_get_mut(gameplay_world, g_ent_camera, CameraComponent);
 	cc->target_entity = g_ent_player;
@@ -322,3 +325,45 @@ void create_traps(ecs_world_t *world, TurnManager *tm, Grid *grid, Tileset *tile
 	dray_free(&walkable_tiles);
 }
 
+void create_enemies(ecs_world_t *world, TurnManager *tm, Grid *grid, Tileset *tileset)
+{
+	DRay walkable_tiles;
+	dray_init_values(&walkable_tiles, Vector2);
+	for (int _x = 0; _x < grid->width-1; _x++)
+	{
+		for (int _y = 0; _y < grid->height-1; _y++)
+		{
+			int grid_coll = grid->arr_coll_layers[_x][_y];
+			if (
+					((grid_coll & COLL_LAYER_WORLD) == 0)
+					&& ((grid_coll & COLL_LAYER_TRAPS) == 0)
+					&& ((grid_coll & COLL_LAYER_PLAYER) == 0)
+					&& ((grid_coll & COLL_LAYER_FRIENDLIES) == 0)
+					&& ((grid_coll & COLL_LAYER_ENEMIES) == 0)
+				)
+			{
+				Vector2 _p = { _x, _y };
+				dray_add_value(&walkable_tiles, _p, Vector2);
+			}
+		}
+	}
+	
+	
+	int spawn_count = maths_randbetween_int(4, 8);
+	for (int _i = 0; _i < spawn_count; _i++)
+	{
+		int rand_idx = maths_randbetween_int(0, walkable_tiles.count - 1);
+		Vector2 spawnpos = dray_get_value(&walkable_tiles, rand_idx, Vector2);
+		ecs_entity_t enemy;
+		ent_kobold_create(
+				&enemy,
+				world,
+				tm,
+				grid,
+				tileset,
+				spawnpos.x, spawnpos.y
+				);
+		dray_remove_idx(&walkable_tiles, rand_idx);
+	}
+	dray_free(&walkable_tiles);
+}

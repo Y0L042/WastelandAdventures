@@ -38,7 +38,7 @@ void _state_gameover_death_initialize()
 void _state_gameover_death_enter()
 {
 	state_gameplayloop_reset();
-	clear_ecs_world();
+	clear_ecs_gameplay_world();
 }
 
 void _state_gameover_death_update(double delta)

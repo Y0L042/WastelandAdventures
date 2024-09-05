@@ -33,6 +33,9 @@ extern const int ENT_WALL_PERM_COLL_LAYER;
 extern const int ENT_WALL_PERM_COLL_MASK;
 extern const int ENT_FLOORTRAP_BASIC_COLL_LAYER;
 extern const int ENT_FLOORTRAP_BASIC_COLL_MASK;
+extern const int ENT_ENEMY_GROUND_COLL_LAYER;
+extern const int ENT_ENEMY_D_GROUND_COLL_MASK;
+extern const int ENT_ENEMY_S_GROUND_COLL_MASK;
 
 extern ecs_entity_t g_ent_player;
 extern ecs_entity_t g_ent_camera;
@@ -79,7 +82,6 @@ void ent_glyph_ghost_create(
 	);
 
 void callback_floor_trap_basic_damage(ecs_world_t *world, DRay *entities);
-
 void ent_floor_trap_basic_create(
 		ecs_entity_t *ent_floortrap_basic,
 		ecs_world_t *world,
@@ -88,4 +90,14 @@ void ent_floor_trap_basic_create(
 		Tileset *tileset,
 		int grid_x, int grid_y
 	);
+
+void ent_kobold_create(
+		ecs_entity_t *ent_kobold,
+		ecs_world_t *world,
+		TurnManager *tm,
+		Grid *grid,
+		Tileset *tileset,
+		int grid_x, int grid_y
+	);
+
 #endif // ENTITIES_H

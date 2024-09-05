@@ -162,11 +162,12 @@ void grid_get_coords_in_radius(Grid *grid, int x, int y, int rad, char mode, DRa
 	}
 }
 
-int grid_get_entities_in_area(Grid *grid, GridArea *ga, DRay *entities)
+int grid_get_entities_in_area(GridPosition *gps, GridArea *ga, DRay *entities)
 {
+	Grid *grid = gps->grid;
 	DRay coords;
 	dray_init_values(&coords, Vector2);
-	grid_get_coords_in_radius(grid, ga->x, ga->y, ga->rad, ga->mode, &coords);
+	grid_get_coords_in_radius(grid, gps->x, gps->y, ga->rad, ga->mode, &coords);
 	for (int i = 0; i < coords.count; i++)
 	{
 		Vector2 coord = dray_get_value(&coords, i, Vector2);

@@ -89,7 +89,7 @@ void _state_pausemenu_exit()
 void _state_pausemenu_gotomainmenu()
 {
 	state_gameplayloop_reset();
-	clear_ecs_world();	
+	clear_ecs_gameplay_world();	
 	sm_switch_state(&game_fsm, "STATE_MAINMENU");
 }
 

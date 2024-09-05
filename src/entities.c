@@ -26,11 +26,13 @@ ecs_entity_t g_ent_dog;
 
 
 const int ENT_PLAYER_COLL_LAYER = 	COLL_LAYER_PLAYER;
-const int ENT_PLAYER_COLL_MASK = 	COLL_LAYER_WORLD;
+const int ENT_PLAYER_COLL_MASK = 	COLL_LAYER_WORLD
+									| COLL_LAYER_ENEMIES;
 
 const int ENT_DOG_COLL_LAYER = 	COLL_LAYER_FRIENDLIES;
-const int ENT_DOG_COLL_MASK = 	COLL_LAYER_PLAYER 
-								| COLL_LAYER_WORLD;
+const int ENT_DOG_COLL_MASK = 	COLL_LAYER_WORLD 
+								| COLL_LAYER_PLAYER
+								| COLL_LAYER_ENEMIES;
 
 const int ENT_WALL_PERM_COLL_LAYER = 	COLL_LAYER_WORLD;
 const int ENT_WALL_PERM_COLL_MASK = 	COLL_LAYER_EMPTY;
@@ -40,6 +42,16 @@ const int ENT_FLOORTRAP_BASIC_COLL_MASK = 	COLL_LAYER_PLAYER
 											| COLL_LAYER_FRIENDLIES 
 											| COLL_LAYER_ENEMIES;
 
+/* S - smart, D - dumb */
+const int ENT_ENEMY_GROUND_COLL_LAYER = 	COLL_LAYER_ENEMIES;
+const int ENT_ENEMY_D_GROUND_COLL_MASK = 	COLL_LAYER_WORLD
+											| COLL_LAYER_PLAYER
+											| COLL_LAYER_FRIENDLIES;
+const int ENT_ENEMY_S_GROUND_COLL_MASK = 	COLL_LAYER_WORLD
+											| COLL_LAYER_PLAYER
+											| COLL_LAYER_FRIENDLIES
+											| COLL_LAYER_ENEMIES
+											| COLL_LAYER_TRAPS;
 
 
 void ent_camera_create(
@@ -262,7 +274,6 @@ void ent_floor_trap_basic_create(
 		}); 
 
 	ecs_set(world, *ent_floortrap_basic, TriggerArea, {
-			.x = grid_x, .y = grid_y,
 			.rad = 0,
 			.mode = 's',
 			.area_mask = ENT_FLOORTRAP_BASIC_COLL_MASK,
@@ -274,4 +285,51 @@ void ent_floor_trap_basic_create(
 	turnmanager_create_turncomponent(tm, *ent_floortrap_basic);
 }
 
+void ent_kobold_create(
+		ecs_entity_t *ent_kobold,
+		ecs_world_t *world,
+		TurnManager *tm,
+		Grid *grid,
+		Tileset *tileset,
+		int grid_x, int grid_y
+	)
+{
+	*ent_kobold = ecs_new(world);
+	ecs_add(world, *ent_kobold, TAG_EntEnabled);
+
+    int world_x, world_y;
+    grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
+    ecs_set(world, *ent_kobold, Position, { .x = world_x, .y = world_y });
+	grid_create_gridposition(
+			grid_x, grid_y,
+			grid, 
+			*ent_kobold,
+			ENT_ENEMY_GROUND_COLL_LAYER,
+			ENT_ENEMY_D_GROUND_COLL_MASK
+		);
+
+    ecs_set(world, *ent_kobold, Glyph, { 
+			.source_tile_x = 27, 
+			.source_tile_y = 2,
+			.tileset = tileset,
+			.color = GREEN
+		}); 
+	cmp_add_PathComponent(world, *ent_kobold, grid);
+	turnmanager_create_turncomponent(tm, *ent_kobold);
+	turnmanager_disable_tc(tm, *ent_kobold);
+
+	ecs_set(world, *ent_kobold, VisionArea, {
+			.rad = 3,
+			.mode = 'c',
+			.area_mask = ENT_ENEMY_D_GROUND_COLL_MASK,
+			.callback = NULL
+		});
+
+	ecs_set(world, *ent_kobold, HealthComponent, { 
+			.health = 100, 
+			._initial_health = 100,
+			.callback_ondeath = callback_player_ondeath,
+			.callback_onhurt = callback_player_onhurt
+		});
+}
 

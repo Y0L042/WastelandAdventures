@@ -36,7 +36,6 @@ typedef struct GridPosition {
 } GridPosition;
 
 typedef struct GridArea {
-	int x, y;
 	int rad;
 	int mode;
 	int area_mask;
@@ -75,7 +74,7 @@ int grid_test_outofbounds(Grid *grid, int x_coord, int y_coord);
 /* Accepts grid, x, y, rad, and DRay of Vector2 */
 void grid_get_coords_in_radius(Grid *grid, int x, int y, int rad, char mode, DRay *coords);
 /* DRay<ecs_entity_t> */
-int grid_get_entities_in_area(Grid *grid, GridArea *ga, DRay *entities);
+int grid_get_entities_in_area(GridPosition *gps, GridArea *ga, DRay *entities);
 
 
 void gridposition_initialize(

@@ -525,7 +525,7 @@ void handler_process_triggerareas(ecs_world_t *world)
 
 		for (int i = 0; i < it.count; i++)
 		{
-			Grid *grid = gpt->grid;
+			Grid *grid = gpt[i].grid;
 
 			/* TEMP */
 			/*
@@ -559,7 +559,7 @@ void handler_process_triggerareas(ecs_world_t *world)
 
 			DRay entities;
 			dray_init_values(&entities, ecs_entity_t);
-			int success = grid_get_entities_in_area(grid, &ta[i], &entities) == 0;
+			int success = grid_get_entities_in_area(&gpt[i], &ta[i], &entities) == 0;
 			if (success)
 			{
 				log_info("enemy found!");
