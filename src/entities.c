@@ -135,6 +135,7 @@ void ent_player_create(
 			.color = RAYWHITE
 		}); 
 	turnmanager_create_turncomponent(tm, *ent_player);
+	turnmanager_set_component_alias(tm, *ent_player, "PLAYER\0");
 
 	ecs_set(world, *ent_player, HealthComponent, { 
 			.health = 100, 
@@ -175,6 +176,7 @@ void ent_dog_create(
 			ENT_DOG_COLL_MASK
 		);
 	turnmanager_create_turncomponent(tm, *ent_dog);
+	turnmanager_set_component_alias(tm, *ent_dog, "PLR_DOG\0");
 	//turnmanager_disable_tc(tm, *ent_dog);
 	cmp_add_PathComponent(world, *ent_dog, grid);
     ecs_set(world, *ent_dog, NPCTarget, { .target = entity_target });
@@ -231,7 +233,7 @@ void ent_glyph_ghost_create(
 		});
 }
 
-void callback_floor_trap_basic_damage(ecs_world_t *world, DRay *entities)
+void callback_floor_trap_basic_damage(TriggerArea *ta, ecs_world_t *world, DRay *entities)
 {
 	for (int i = 0; i < entities->count; i++)
 	{
@@ -280,9 +282,21 @@ void ent_floor_trap_basic_create(
 			.callback = callback_floor_trap_basic_damage
 		});
 
-
-
 	turnmanager_create_turncomponent(tm, *ent_floortrap_basic);
+	turnmanager_set_component_alias(tm, *ent_floortrap_basic, "FLRTRAP_B\0");
+}
+
+void ent_kobold_set_target(VisionArea *va, ecs_world_t *world, DRay *targets)
+{
+	for (int i = 0; i < targets->count; i++)
+	{
+		ecs_entity_t ent = dray_get_value(targets, i, ecs_entity_t);
+/* 		Only target entities with health */
+		if (ecs_get(world, ent, HealthComponent))
+		{
+			ecs_set(world, va->gridarea_ent, NPCTarget, { .target = ent });
+		}
+	}
 }
 
 void ent_kobold_create(
@@ -315,14 +329,17 @@ void ent_kobold_create(
 			.color = GREEN
 		}); 
 	cmp_add_PathComponent(world, *ent_kobold, grid);
+	ecs_set(world, *ent_kobold, GhostWhenMoving, { .fade_time = 5 });
 	turnmanager_create_turncomponent(tm, *ent_kobold);
-	turnmanager_disable_tc(tm, *ent_kobold);
+	turnmanager_set_component_alias(tm, *ent_kobold, "KOBOLD\0");
+	// turnmanager_disable_tc(tm, *ent_kobold);
 
 	ecs_set(world, *ent_kobold, VisionArea, {
+			.gridarea_ent = *ent_kobold,
 			.rad = 3,
 			.mode = 'c',
-			.area_mask = ENT_ENEMY_D_GROUND_COLL_MASK,
-			.callback = NULL
+			.area_mask = ENT_ENEMY_S_GROUND_COLL_MASK,
+			.callback = ent_kobold_set_target
 		});
 
 	ecs_set(world, *ent_kobold, HealthComponent, { 

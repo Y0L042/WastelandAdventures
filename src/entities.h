@@ -81,7 +81,6 @@ void ent_glyph_ghost_create(
 		int world_x, int world_y
 	);
 
-void callback_floor_trap_basic_damage(ecs_world_t *world, DRay *entities);
 void ent_floor_trap_basic_create(
 		ecs_entity_t *ent_floortrap_basic,
 		ecs_world_t *world,

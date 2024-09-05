@@ -12,9 +12,10 @@
 
 #include "grid.h"
 #include "glyph.h"
-#include "pathfinding.h"
 #include "map_generator.h"
 #include "main.h"
+#include "timer.h"
+#include "tween.h"
 
 
 const int WORLDSPACE_SIZE_X = 25;
@@ -96,7 +97,7 @@ void _state_gameplayloop_initialize()
 		);
 
 	create_traps(gameplay_world, &turnmanager, &grid_worldspace, &cool_tileset);
-	create_enemies(gameplay_world, &turnmanager, &grid_worldspace, &cool_tileset);
+	// create_enemies(gameplay_world, &turnmanager, &grid_worldspace, &cool_tileset);
 
 	CameraComponent *cc = ecs_get_mut(gameplay_world, g_ent_camera, CameraComponent);
 	cc->target_entity = g_ent_player;
@@ -135,13 +136,20 @@ void _state_gameplayloop_physics_update(double delta)
 {
 //	log_debug("physics_update() - start");
 
-    handler_player_input(gameplay_world);
 	handler_glyph_ghost_spawn(gameplay_world);
-	handler_grid_move(gameplay_world);
+
+    handler_player_input(gameplay_world);
 	handler_pathfinding(gameplay_world);
+
+	handler_grid_move(gameplay_world);
+	handler_camera_move(gameplay_world);
+
+	handler_process_triggerareas(gameplay_world);
+	handler_process_visionareas(gameplay_world);
+
 	handler_process_hurt(gameplay_world);
 	handler_process_death(gameplay_world);
-	handler_camera_move(gameplay_world);
+
 	handler_turncounter_increment(gameplay_world);
 
 	handler_tween_add_property(gameplay_world, delta);
@@ -157,59 +165,9 @@ void _state_gameplayloop_handle_ui(double delta)
 
 void _state_gameplayloop_draw(double delta)
 {
-	handler_process_triggerareas(gameplay_world);
 	grid_draw(&grid_worldspace);
 	handler_glyph_fade(gameplay_world, delta);
  	handler_glyph_draw(gameplay_world);
-
-	/*
-	static int rad = 5;
-	static char mode = 's';
-	if (IsKeyPressed(KEY_W)) { rad++; }
-	if (IsKeyPressed(KEY_S)) { rad--; }
-	if (IsKeyPressed(KEY_SPACE)) { mode = mode == 's' ? 'c' : 's'; }
-
-	if (ecs_is_alive(gameplay_world, g_ent_player))
-	{
-		const GridPosition *gp = ecs_get(gameplay_world, g_ent_player, GridPosition);
-		int x = gp->x;
-		int y = gp->y;
-		float h_tile_size = (TILE_SIZE_X / 2) + 1;
-		DRay area;
-		dray_init_values(&area, Vector2);
-		grid_get_coords_in_radius(&grid_worldspace, x, y, rad, mode, &area);
-
-		int world_x, world_y;
-		grid_pos_to_world_pos(&grid_worldspace, x, y, &world_x, &world_y);
-		DrawCircleLines(world_x + h_tile_size, 
-				world_y + h_tile_size, h_tile_size*2*rad, BLUE);
-
-		for (int i = 0; i < area.count; i++)
-		{
-			Vector2 coord = dray_get_value(&area, i, Vector2);
-			grid_pos_to_world_pos(&grid_worldspace, coord.x, coord.y, &world_x, &world_y);
-			DrawRectangleLines(world_x, world_y, h_tile_size*2, h_tile_size*2, GREEN);
-		}
-	}
-	*/	
-	/*
-	Color color;
-	const TurnComponent *player_tc = ecs_get(gameplay_world, g_ent_player, TurnComponent);
-	TurnComponentData *player_tc_d = player_tc->tc_d;
-	int active = (player_tc_d->current_turn_state == TURNSTATE_ACTIVE) ? 1 : 0;
-	if (active == 0)
-	{
-		color = RED;
-	}
-	else
-	{
-		color = GREEN;
-	}
-
-	float h_tile_size = (TILE_SIZE_X / 2) + 1;
-	const Position *p = ecs_get(gameplay_world, g_ent_player, Position);
-	DrawCircleLines(p->x + h_tile_size, p->y + h_tile_size, h_tile_size * 1.25f, color);
-	*/
 }
 
 void _state_gameplayloop_exit()

@@ -14,6 +14,8 @@ void turncomponentdata_initialize(
     tc_d->entity_id = entity_id;
 	tc_d->turn_manager = tm;
 	tc_d->current_turn_state = TURNSTATE_IDLE;
+	sprintf(tc_d->alias, "%d", entity_id);
+	tc_d->alias[TURNCOMP_ALIAS_LEN-1] = '\0';
 	turncomponentdata_enable(tc_d);
 }
 
@@ -184,7 +186,11 @@ void turnmanager_print_turn_queue(TurnManager *tm)
 	{
 		TurnComponentData *tc_d = tm->tc_datas.data[i];
 		int initiative = tc_d->initiative;
-		printf("Entity:\t%d | %p\ti:%d\te:%d\n", (uint32_t)tc_d->entity_id, tc_d, initiative, tc_d->enable);
+		printf("Entity:\t%d\t| %s\t\ti:%d\te:%d\n", 
+				(uint32_t)tc_d->entity_id,
+				tc_d->alias, 
+				initiative,
+				tc_d->enable);
 	}
 	printf("TurnQueue End \n\n");
 }
@@ -205,6 +211,14 @@ void turnmanager_disable_tc(TurnManager *tm, ecs_entity_t entity)
 	turncomponentdata_disable(tc_d);
 }
 
+void turnmanager_set_component_alias(TurnManager *tm, ecs_entity_t entity, const char *alias)
+{
+	const TurnComponent *tc = ecs_get(tm->world, entity, TurnComponent);
+	TurnComponentData *tc_d = tc->tc_d;
+	strncpy(tc_d->alias, alias, TURNCOMP_ALIAS_LEN-1);
+	tc_d->alias[TURNCOMP_ALIAS_LEN-1] = '\0';
+}
+
 void turncounter_create(TurnManager *tm, ecs_world_t *world)
 {
 	tm->turn_counter = ecs_new(world);
@@ -213,7 +227,8 @@ void turncounter_create(TurnManager *tm, ecs_world_t *world)
 	ecs_ref_t *tcntr_ref = (ecs_ref_t *)malloc(sizeof(ecs_ref_t));
 	*tcntr_ref = ecs_ref_init(tm->world, tm->turn_counter, TurnCountComponent);
 	tm->turn_counter_ref = tcntr_ref;
-
 	TurnComponentData *tc_d = turnmanager_create_turncomponent(tm, tm->turn_counter);
     turncomponentdata_start_turn(tc_d);
+
+	turnmanager_set_component_alias(tm, tm->turn_counter, "TURN_COUNTER\0");
 }

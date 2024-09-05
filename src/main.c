@@ -29,7 +29,7 @@ ecs_world_t *global_world;
 
 const int g_SCREEN_WIDTH = 1280;
 const int g_SCREEN_HEIGHT = 720;
-const Color g_BG_COLOR = BLACK;
+const Color g_BG_COLOR = { 0, 0, 0, 255 };
 
 /* Game States */
 SM_Machine game_fsm;

@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WastelandAdventures", "WastelandAdventures.vcxproj", "{E91F9F77-5581-7C85-DEEE-C2374A4FB344}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Windows = Debug|Windows
+		Release|Windows = Release|Windows
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E91F9F77-5581-7C85-DEEE-C2374A4FB344}.Debug|Windows.ActiveCfg = Debug Windows|x64
+		{E91F9F77-5581-7C85-DEEE-C2374A4FB344}.Debug|Windows.Build.0 = Debug Windows|x64
+		{E91F9F77-5581-7C85-DEEE-C2374A4FB344}.Release|Windows.ActiveCfg = Release Windows|x64
+		{E91F9F77-5581-7C85-DEEE-C2374A4FB344}.Release|Windows.Build.0 = Release Windows|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

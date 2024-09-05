@@ -157,7 +157,8 @@ void grid_get_coords_in_radius(Grid *grid, int x, int y, int rad, char mode, DRa
 			}
 
 			Vector2 _pos = { _x, _y };
-			dray_add_value(coords, _pos, Vector2);
+			//dray_add_value(coords, _pos, Vector2);
+			dray_add_value(coords, _pos, Vector2); 
 		}
 	}
 }

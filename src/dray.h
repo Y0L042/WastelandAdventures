@@ -1,8 +1,9 @@
 #ifndef DRAY_H
 #define DRAY_H
 
+#include <stdlib.h>
+#include <stdio.h>
 #include "memory.h"
-#include "stdlib.h"
 
 /* DRAY_EMPTY_VALUE must be less than 128 (it must fit inside a char) */
 #define DRAY_EMPTY_VALUE 0b0101101

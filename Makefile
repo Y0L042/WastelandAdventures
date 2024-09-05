@@ -20,7 +20,7 @@ else
     TARGET := bin/main.exe
 	PLATFORM := windows
     LIBRARIES := -lraylib -lcjson -lgdi32 -lwinmm -lWs2_32
-    CFLAGS_BASE := -O2 -g -s -fno-asynchronous-unwind-tables $(foreach path, $(INCLUDE_PATHS), -I$(path)) -std=gnu99
+    CFLAGS_BASE := -g -s -fno-asynchronous-unwind-tables $(foreach path, $(INCLUDE_PATHS), -I$(path)) -std=gnu99
     LDFLAGS := $(foreach path, $(LIBRARY_PATHS), -L$(path)) $(LIBRARIES)
 endif
 
@@ -42,7 +42,7 @@ run: CFLAGS=$(CFLAGS_RUN)
 run: $(TARGET)  # Target to run the C executable
 	./$(TARGET)
 
-release: CFLAGS=$(CFLAGS_RELEASE)
+release: CFLAGS=$(CFLAGS_RELEASE) -O2
 release: $(TARGET)
 
 clean: clean_bin clean_bin_int clean_asm  # Target to clean all build directories

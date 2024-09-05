@@ -85,7 +85,9 @@ void handler_glyph_draw(ecs_world_t *world)
         .terms = {
             { ecs_id(Glyph) },
             { ecs_id(Position) }
-        }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_glyph_draw);
     while (ecs_query_next(&it))
@@ -118,7 +120,9 @@ void handler_glyph_ghost_spawn(ecs_world_t *world)
             { ecs_id(LeaveGlyphGhost) },
             { ecs_id(Glyph) },
             { ecs_id(Position) }
-        }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_glyph_ghowst_spawn);
     while (ecs_query_next(&it))
@@ -145,7 +149,9 @@ void handler_glyph_fade(ecs_world_t *world, double delta)
         .terms = {
             { ecs_id(Glyph) },
 			{ ecs_id(GlyphFade) }
-        }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_glyph_fade);
     while (ecs_query_next(&it))
@@ -177,7 +183,7 @@ void handler_camera_move(ecs_world_t *world)
         .terms = {
             { ecs_id(CameraComponent) }
         },
-		.cache_kind = EcsQueryCacheNone
+		.cache_kind = EcsQueryCacheAuto
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_camera_move);
 	while (ecs_query_next(&it))
@@ -224,7 +230,8 @@ void handler_grid_move(ecs_world_t *world)
             { ecs_id(TurnComponent) },
 			{ ecs_id(GhostWhenMoving), .oper = EcsOptional }
         },
-		.cache_kind = EcsQueryCacheNone
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_grid_move);
 	while (ecs_query_next(&it))
@@ -267,6 +274,8 @@ void handler_grid_move(ecs_world_t *world)
                 log_warn("Grid not found.");
             }
 
+			TurnComponentData *tc_d = tc[i].tc_d;
+			log_info("%s is moving", tc_d->alias);
             turnmanager_end_turn(tc[i].tc_d->turn_manager, 50);
 
 			gv[i].x = 0;
@@ -275,9 +284,6 @@ void handler_grid_move(ecs_world_t *world)
 
 			if (ecs_field_is_set(&it, 5) && !(vel_x ==0 && vel_y == 0)) 
 			{
-				printf("%d %d\n", vel_x, vel_y);
-			//	log_info("has ghosting");
-//				GhostWhenMoving *g = ecs_field(&it, GhostWhenMoving, 5);
 				ecs_set(it.world, it.entities[i], LeaveGlyphGhost, { 
 						.fade_time = 1.5, .x = old_x, .y = old_y });
 			}
@@ -296,7 +302,7 @@ void handler_player_input(ecs_world_t *world)
             { ecs_id(TAG_Player) },
 			{ ecs_id(TAG_TurnActive) }
         },
-		.cache_kind = EcsQueryCacheNone
+		.cache_kind = EcsQueryCacheAuto
     }); 
     ecs_iter_t it = ecs_query_iter(world, query_player_input);
 	while (ecs_query_next(&it))
@@ -365,7 +371,8 @@ void handler_pathfinding(ecs_world_t *world)
 			{ ecs_id(NPCTarget) },
 			{ ecs_id(GridVelocity), .oper = EcsNot }
         },
-		.cache_kind = EcsQueryCacheNone
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
     }); 
 	ecs_iter_t it = ecs_query_iter(world, query_pathfinding);
 	while(ecs_query_next(&it))
@@ -432,7 +439,7 @@ void handler_turncounter_increment(ecs_world_t *world)
 			{ ecs_id(TurnComponent) },
 			{ ecs_id(TAG_TurnActive) }
         },
-		.cache_kind = EcsQueryCacheNone
+		.cache_kind = EcsQueryCacheAuto
     }); 
 	//log_debug("DEBUG");
     ecs_iter_t it = ecs_query_iter(world, query_turncounter_increment);
@@ -447,7 +454,7 @@ void handler_turncounter_increment(ecs_world_t *world)
 			tcntc[i].count += 1;
 			//printf("TurnCount:\t%d\n", tcntc[i].count);
 			turnmanager_end_turn(tm, 100);
-			//turnmanager_print_turn_queue(tm);
+			// turnmanager_print_turn_queue(tm);
 		}
 	}
 	ecs_query_fini(query_turncounter_increment);
@@ -488,6 +495,7 @@ void handler_process_traps(ecs_world_t *world)
 			{ ecs_id(TAG_Player) },
             { ecs_id(HealthComponent) }
         },
+		.cache_kind = EcsQueryCacheAuto
     }); 
 
     ecs_iter_t it = ecs_query_iter(world, query_process_traps);
@@ -505,6 +513,8 @@ void handler_process_traps(ecs_world_t *world)
 	ecs_query_fini(query_process_traps);
 }
 
+
+
 void handler_process_triggerareas(ecs_world_t *world)
 {
     ecs_query_t *query_process_triggerareas = ecs_query(world, {
@@ -514,6 +524,8 @@ void handler_process_triggerareas(ecs_world_t *world)
 			{ ecs_id(TurnComponent) },
 			{ ecs_id(TAG_TurnActive) }
         },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
     }); 
 
     ecs_iter_t it = ecs_query_iter(world, query_process_triggerareas);
@@ -526,48 +538,17 @@ void handler_process_triggerareas(ecs_world_t *world)
 		for (int i = 0; i < it.count; i++)
 		{
 			Grid *grid = gpt[i].grid;
-
-			/* TEMP */
-			/*
-			static int rad = 5;
-			static char mode = 's';
-			const GridPosition *gp = &gpt[i];
-			if (gp != NULL)
-			{
-				Grid *grid = gp->grid;
-				int x = ta[i].x;
-				int y = ta[i].y;
-				float h_tile_size = (25 / 2) + 1;
-				DRay area;
-				dray_init_values(&area, Vector2);
-				grid_get_coords_in_radius(grid, x, y, ta[i].rad, ta[i].mode, &area);
-
-				int world_x, world_y;
-				grid_pos_to_world_pos(grid, x, y, &world_x, &world_y);
-				DrawCircleLines(world_x + h_tile_size, 
-						world_y + h_tile_size, h_tile_size*2*ta[i].rad, BLUE);
-
-				for (int i = 0; i < area.count; i++)
-				{
-					Vector2 coord = dray_get_value(&area, i, Vector2);
-					grid_pos_to_world_pos(grid, coord.x, coord.y, &world_x, &world_y);
-					DrawRectangleLines(world_x, world_y, h_tile_size*2, h_tile_size*2, GREEN);
-				}
-			}
-			*/
-			/* TEMP */
-
 			DRay entities;
 			dray_init_values(&entities, ecs_entity_t);
 			int success = grid_get_entities_in_area(&gpt[i], &ta[i], &entities) == 0;
 			if (success)
 			{
-				log_info("enemy found!");
+				// log_info("TriggerArea: enemy found!");
 			}
 
 			if (success && (ta[i].callback != NULL))
 			{
-				(*ta[i].callback)(it.world, &entities);
+				(*ta[i].callback)(&ta[i], it.world, &entities);
 			}
 
 			TurnManager *tm = tc[i].tc_d->turn_manager;
@@ -576,6 +557,54 @@ void handler_process_triggerareas(ecs_world_t *world)
 	}
 	ecs_query_fini(query_process_triggerareas);
 }
+
+
+
+void handler_process_visionareas(ecs_world_t *world)
+{
+    ecs_query_t *query_process_visionareas = ecs_query(world, {
+        .terms = {
+            { ecs_id(VisionArea) },
+			{ ecs_id(GridPosition) },
+			{ ecs_id(TurnComponent) },
+			{ ecs_id(TAG_TurnActive) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    ecs_iter_t it = ecs_query_iter(world, query_process_visionareas);
+	while (ecs_query_next(&it))
+	{
+		VisionArea *va = ecs_field(&it, VisionArea, 0);
+		GridPosition *gpt = ecs_field(&it, GridPosition, 1);
+		TurnComponent *tc = ecs_field(&it, TurnComponent, 2);
+
+		for (int i = 0; i < it.count; i++)
+		{
+			Grid *grid = gpt[i].grid;
+
+			DRay entities;
+			dray_init_values(&entities, ecs_entity_t);
+			int success = grid_get_entities_in_area(&gpt[i], &va[i], &entities) == 0;
+			if (success)
+			{
+				// log_info("VisionArea: enemy spotted!");
+			}
+
+			if (success && (va[i].callback != NULL))
+			{
+				(*va[i].callback)(&va[i], it.world, &entities);
+			}
+
+			TurnManager *tm = tc[i].tc_d->turn_manager;
+			turnmanager_end_turn(tm, 75);
+		}
+	}
+	ecs_query_fini(query_process_visionareas);
+}
+
+
 
 void handler_process_hurt(ecs_world_t *world)
 {

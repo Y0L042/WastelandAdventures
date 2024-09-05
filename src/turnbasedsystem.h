@@ -9,6 +9,8 @@
 
 #include "components.h"
 
+#define TURNCOMP_ALIAS_LEN 15
+
 enum TurnState {
 	TURNSTATE_ACTIVE,
 	TURNSTATE_IDLE
@@ -30,6 +32,7 @@ typedef struct TurnComponentData {
     ecs_world_t *world;
     ecs_entity_t entity_id;
 	ecs_ref_t *tc_ref;
+	char alias[TURNCOMP_ALIAS_LEN];
 } TurnComponentData;
 
 typedef struct TurnComponent {
@@ -75,6 +78,7 @@ void turnmanager_end_turn(TurnManager *tm, int inc);
 void turnmanager_print_turn_queue(TurnManager *tm);
 void turnmanager_enable_tc(TurnManager *tm, ecs_entity_t entity);
 void turnmanager_disable_tc(TurnManager *tm, ecs_entity_t entity);
+void turnmanager_set_component_alias(TurnManager *tm, ecs_entity_t entity, const char *alias);
 
 void turncounter_create(TurnManager *tm, ecs_world_t *world);
 

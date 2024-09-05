@@ -26,7 +26,7 @@ extern ECS_COMPONENT_DECLARE(GridVelocity);
 /* Adds glyph and visual-related components */
 extern ECS_COMPONENT_DECLARE(Glyph);
 extern ECS_COMPONENT_DECLARE(GlyphFade);
-typedef struct LeaveGlyphGhost { int fade_time; int x; int y; } LeaveGlyphGhost;
+typedef struct LeaveGlyphGhost { double fade_time; int x; int y; } LeaveGlyphGhost;
 extern ECS_COMPONENT_DECLARE(LeaveGlyphGhost);
 typedef struct GhostWhenMoving { int fade_time; } GhostWhenMoving;
 extern ECS_COMPONENT_DECLARE(GhostWhenMoving);
@@ -128,6 +128,7 @@ void handler_turncounter_increment(ecs_world_t *world);
 void handler_draw_health_ui(ecs_world_t *world);
 void handler_process_traps(ecs_world_t *world);
 void handler_process_triggerareas(ecs_world_t *world);
+void handler_process_visionareas(ecs_world_t *world);
 void handler_process_hurt(ecs_world_t *world);
 void handler_process_death(ecs_world_t *world);
 

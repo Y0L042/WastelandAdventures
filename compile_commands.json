@@ -1,0 +1,482 @@
+[
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/components.c",
+   "-o",
+   "bin-int/components.o"
+  ],
+  "file": "src/components.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/cvec.c",
+   "-o",
+   "bin-int/cvec.o"
+  ],
+  "file": "src/cvec.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/dray.c",
+   "-o",
+   "bin-int/dray.o"
+  ],
+  "file": "src/dray.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/entities.c",
+   "-o",
+   "bin-int/entities.o"
+  ],
+  "file": "src/entities.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/flecs.c",
+   "-o",
+   "bin-int/flecs.o"
+  ],
+  "file": "src/flecs.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/glyph.c",
+   "-o",
+   "bin-int/glyph.o"
+  ],
+  "file": "src/glyph.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/grid.c",
+   "-o",
+   "bin-int/grid.o"
+  ],
+  "file": "src/grid.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/log.c",
+   "-o",
+   "bin-int/log.o"
+  ],
+  "file": "src/log.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/main.c",
+   "-o",
+   "bin-int/main.o"
+  ],
+  "file": "src/main.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/map_generator.c",
+   "-o",
+   "bin-int/map_generator.o"
+  ],
+  "file": "src/map_generator.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/maths.c",
+   "-o",
+   "bin-int/maths.o"
+  ],
+  "file": "src/maths.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/memory.c",
+   "-o",
+   "bin-int/memory.o"
+  ],
+  "file": "src/memory.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/mt19937-64.c",
+   "-o",
+   "bin-int/mt19937-64.o"
+  ],
+  "file": "src/mt19937-64.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/pathfinding.c",
+   "-o",
+   "bin-int/pathfinding.o"
+  ],
+  "file": "src/pathfinding.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/state_gameover_death.c",
+   "-o",
+   "bin-int/state_gameover_death.o"
+  ],
+  "file": "src/state_gameover_death.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/state_gameplayloop.c",
+   "-o",
+   "bin-int/state_gameplayloop.o"
+  ],
+  "file": "src/state_gameplayloop.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/state_mainmenu.c",
+   "-o",
+   "bin-int/state_mainmenu.o"
+  ],
+  "file": "src/state_mainmenu.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/state_pausemenu.c",
+   "-o",
+   "bin-int/state_pausemenu.o"
+  ],
+  "file": "src/state_pausemenu.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/statemachine.c",
+   "-o",
+   "bin-int/statemachine.o"
+  ],
+  "file": "src/statemachine.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/tileset.c",
+   "-o",
+   "bin-int/tileset.o"
+  ],
+  "file": "src/tileset.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/timer.c",
+   "-o",
+   "bin-int/timer.o"
+  ],
+  "file": "src/timer.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/turnbasedsystem.c",
+   "-o",
+   "bin-int/turnbasedsystem.o"
+  ],
+  "file": "src/turnbasedsystem.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/tween.c",
+   "-o",
+   "bin-int/tween.o"
+  ],
+  "file": "src/tween.c"
+ },
+ {
+  "directory": "C:/Projects/C_Projects/WastelandAdventures",
+  "arguments": [
+   "gcc",
+   "-O2",
+   "-g",
+   "-s",
+   "-fno-asynchronous-unwind-tables",
+   "-I./vendor/raylib5/include",
+   "-I./vendor/cjson/include",
+   "-I./vendor/fmt/include",
+   "-std=gnu99",
+   "-DDEBUG",
+   "-c",
+   "src/uuid.c",
+   "-o",
+   "bin-int/uuid.o"
+  ],
+  "file": "src/uuid.c"
+ }
+]

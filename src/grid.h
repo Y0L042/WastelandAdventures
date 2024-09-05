@@ -35,11 +35,13 @@ typedef struct GridPosition {
 	int coll_layer, coll_mask;
 } GridPosition;
 
+typedef struct GridArea GridArea;
 typedef struct GridArea {
+	ecs_entity_t gridarea_ent;
 	int rad;
 	int mode;
 	int area_mask;
-	void (*callback)(ecs_world_t *world, DRay *entities);
+	void (*callback)(GridArea *ga, ecs_world_t *world, DRay *entities);
 } GridArea, VisionArea, TriggerArea;
 
 void grid_initialize(
