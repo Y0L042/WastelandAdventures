@@ -115,7 +115,8 @@ void create_components(ecs_world_t *world);
 /* 
  * Handlers 
  */
-void create_queries(ecs_world_t *world); // Unused (for now)
+void create_queries(ecs_world_t *world); 
+void free_queries(ecs_world_t *world);
 
 void handler_glyph_draw(ecs_world_t *world);
 void handler_glyph_ghost_spawn(ecs_world_t *world);

@@ -193,6 +193,7 @@ void create_ecs_gameplay_world(void)
 
 void clear_ecs_gameplay_world(void)
 {
+	free_queries(gameplay_world);
 	ecs_fini(gameplay_world);
 	is_ecs_gameplay_world_created = 0;
 	gameplay_world = NULL;

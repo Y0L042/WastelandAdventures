@@ -59,10 +59,12 @@ void state_gameplayloop_register()
 
 void _state_gameplayloop_initialize()
 {
+	gameplayloop_initialized = 1;
+
 	create_ecs_gameplay_world();
+	create_queries(gameplay_world);
 	cc_ref = ecs_ref_init(gameplay_world, g_ent_camera, CameraComponent);
 
-	gameplayloop_initialized = 1;
 
 	tileset_initialize(&tileset, "./assets/RDE_8x8.png", 8, 8, TILE_SIZE_X, TILE_SIZE_Y, RAYWHITE);
 	tileset_initialize(
@@ -97,7 +99,7 @@ void _state_gameplayloop_initialize()
 		);
 
 	create_traps(gameplay_world, &turnmanager, &grid_worldspace, &cool_tileset);
-	// create_enemies(gameplay_world, &turnmanager, &grid_worldspace, &cool_tileset);
+	create_enemies(gameplay_world, &turnmanager, &grid_worldspace, &cool_tileset);
 
 	CameraComponent *cc = ecs_get_mut(gameplay_world, g_ent_camera, CameraComponent);
 	cc->target_entity = g_ent_player;

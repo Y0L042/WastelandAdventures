@@ -73,15 +73,25 @@ void create_components(ecs_world_t *world)
 
 
 
+static ecs_query_t *query_glyph_draw = NULL;
+static ecs_query_t *query_glyph_ghowst_spawn = NULL;
+static ecs_query_t *query_glyph_fade = NULL;
+static ecs_query_t *query_camera_move = NULL;
+static ecs_query_t *query_grid_move = NULL;
+static ecs_query_t *query_player_input = NULL;
+static ecs_query_t *query_pathfinding = NULL;
+static ecs_query_t *query_turncounter_increment = NULL;
+static ecs_query_t *query_draw_health_ui = NULL;
+static ecs_query_t *query_process_traps = NULL;
+static ecs_query_t *query_process_triggerareas = NULL;
+static ecs_query_t *query_process_visionareas = NULL;
+static ecs_query_t *query_process_hurt = NULL;
+static ecs_query_t *query_process_death = NULL;
+static ecs_query_t *query_process_entity_delection = NULL;
+
 void create_queries(ecs_world_t *world)
 {
-}
-
-
-
-void handler_glyph_draw(ecs_world_t *world)
-{
-    ecs_query_t *query_glyph_draw = ecs_query(world, {
+    query_glyph_draw = ecs_query(world, {
         .terms = {
             { ecs_id(Glyph) },
             { ecs_id(Position) }
@@ -89,6 +99,168 @@ void handler_glyph_draw(ecs_world_t *world)
 		.cache_kind = EcsQueryCacheAuto,
 		.flags = EcsQueryMatchEmptyTables
     }); 
+
+    query_glyph_ghowst_spawn = ecs_query(world, {
+        .terms = {
+            { ecs_id(LeaveGlyphGhost) },
+            { ecs_id(Glyph) },
+            { ecs_id(Position) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_glyph_fade = ecs_query(world, {
+        .terms = {
+            { ecs_id(Glyph) },
+			{ ecs_id(GlyphFade) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_camera_move = ecs_query(world, {
+        .terms = {
+            { ecs_id(CameraComponent) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_grid_move = ecs_query(world, {
+        .terms = {
+            { ecs_id(GridPosition) },
+            { ecs_id(GridVelocity) },
+            { ecs_id(Position) },
+			{ ecs_id(TAG_TCEnable) },
+            { ecs_id(TurnComponent) },
+			{ ecs_id(GhostWhenMoving), .oper = EcsOptional }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_player_input = ecs_query(world, {
+        .terms = {
+			{ ecs_id(TurnComponent) },
+            { ecs_id(TAG_Player) },
+			{ ecs_id(TAG_TurnActive) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_pathfinding = ecs_query(world, {
+        .terms = {
+			{ ecs_id(TurnComponent) },
+			{ ecs_id(TAG_TurnActive) },
+			{ ecs_id(PathComponent) },
+			{ ecs_id(GridPosition) },
+			{ ecs_id(NPCTarget) },
+			{ ecs_id(GridVelocity), .oper = EcsNot }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_turncounter_increment = ecs_query(world, {
+        .terms = {
+            { ecs_id(TurnCountComponent) },
+			{ ecs_id(TurnComponent) },
+			{ ecs_id(TAG_TurnActive) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_draw_health_ui = ecs_query(world, {
+        .terms = {
+			{ ecs_id(TAG_Player) },
+            { ecs_id(HealthComponent) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_process_traps = ecs_query(world, {
+        .terms = {
+			{ ecs_id(TAG_Player) },
+            { ecs_id(HealthComponent) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_process_triggerareas = ecs_query(world, {
+        .terms = {
+            { ecs_id(TriggerArea) },
+			{ ecs_id(GridPosition) },
+			{ ecs_id(TurnComponent) },
+			{ ecs_id(TAG_TurnActive) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_process_visionareas = ecs_query(world, {
+        .terms = {
+            { ecs_id(VisionArea) },
+			{ ecs_id(GridPosition) },
+			{ ecs_id(TurnComponent) },
+			{ ecs_id(TAG_TurnActive) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_process_hurt = ecs_query(world, {
+        .terms = {
+            { ecs_id(HealthComponent) },
+			{ ecs_id(HurtComponent) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_process_death = ecs_query(world, {
+        .terms = {
+            { ecs_id(HealthComponent) },
+            { ecs_id(DeathComponent) }
+        },
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+    }); 
+
+    query_process_entity_delection = ecs_query(world, {
+        .terms = {
+            { ecs_id(EntDeletionQueued) }
+        },
+    }); 
+}
+
+void free_queries(ecs_world_t *world)
+{
+	ecs_query_fini(query_glyph_draw);
+	ecs_query_fini(query_glyph_ghowst_spawn);
+	ecs_query_fini(query_glyph_fade);
+	ecs_query_fini(query_camera_move);
+	ecs_query_fini(query_grid_move);
+	ecs_query_fini(query_player_input);
+	ecs_query_fini(query_pathfinding);
+	ecs_query_fini(query_turncounter_increment);
+	ecs_query_fini(query_draw_health_ui);
+	ecs_query_fini(query_process_traps);
+	ecs_query_fini(query_process_triggerareas);
+	ecs_query_fini(query_process_visionareas);
+	ecs_query_fini(query_process_hurt);
+	ecs_query_fini(query_process_death);
+	ecs_query_fini(query_process_entity_delection);
+}
+
+
+
+void handler_glyph_draw(ecs_world_t *world)
+{
     ecs_iter_t it = ecs_query_iter(world, query_glyph_draw);
     while (ecs_query_next(&it))
     {
@@ -101,7 +273,6 @@ void handler_glyph_draw(ecs_world_t *world)
             glyph_draw(&glyph, p[i].x, p[i].y);
         }
     }
-	ecs_query_fini(query_glyph_draw);
 }
 
 
@@ -115,15 +286,6 @@ void ent_glyph_ghost_create(
 	);
 void handler_glyph_ghost_spawn(ecs_world_t *world)
 {
-    ecs_query_t *query_glyph_ghowst_spawn = ecs_query(world, {
-        .terms = {
-            { ecs_id(LeaveGlyphGhost) },
-            { ecs_id(Glyph) },
-            { ecs_id(Position) }
-        },
-		.cache_kind = EcsQueryCacheAuto,
-		.flags = EcsQueryMatchEmptyTables
-    }); 
     ecs_iter_t it = ecs_query_iter(world, query_glyph_ghowst_spawn);
     while (ecs_query_next(&it))
     {
@@ -138,21 +300,12 @@ void handler_glyph_ghost_spawn(ecs_world_t *world)
 			ecs_remove(it.world, it.entities[i], LeaveGlyphGhost);
         }
     }
-	ecs_query_fini(query_glyph_ghowst_spawn);
 }
 
 
 
 void handler_glyph_fade(ecs_world_t *world, double delta)
 {
-    ecs_query_t *query_glyph_fade = ecs_query(world, {
-        .terms = {
-            { ecs_id(Glyph) },
-			{ ecs_id(GlyphFade) }
-        },
-		.cache_kind = EcsQueryCacheAuto,
-		.flags = EcsQueryMatchEmptyTables
-    }); 
     ecs_iter_t it = ecs_query_iter(world, query_glyph_fade);
     while (ecs_query_next(&it))
     {
@@ -172,19 +325,12 @@ void handler_glyph_fade(ecs_world_t *world, double delta)
 			}
         }
     }
-	ecs_query_fini(query_glyph_fade);
 }
 
 
 
 void handler_camera_move(ecs_world_t *world)
 {
-    ecs_query_t *query_camera_move = ecs_query(world, {
-        .terms = {
-            { ecs_id(CameraComponent) }
-        },
-		.cache_kind = EcsQueryCacheAuto
-    }); 
     ecs_iter_t it = ecs_query_iter(world, query_camera_move);
 	while (ecs_query_next(&it))
 	{
@@ -214,25 +360,12 @@ void handler_camera_move(ecs_world_t *world)
 			}
 		}	
 	}
-	ecs_query_fini(query_camera_move);
 }
 
 
 
 void handler_grid_move(ecs_world_t *world)
 {
-    ecs_query_t *query_grid_move = ecs_query(world, {
-        .terms = {
-            { ecs_id(GridPosition) },
-            { ecs_id(GridVelocity) },
-            { ecs_id(Position) },
-			{ ecs_id(TAG_TCEnable) },
-            { ecs_id(TurnComponent) },
-			{ ecs_id(GhostWhenMoving), .oper = EcsOptional }
-        },
-		.cache_kind = EcsQueryCacheAuto,
-		.flags = EcsQueryMatchEmptyTables
-    }); 
     ecs_iter_t it = ecs_query_iter(world, query_grid_move);
 	while (ecs_query_next(&it))
 	{
@@ -289,21 +422,12 @@ void handler_grid_move(ecs_world_t *world)
 			}
 		}
 	}
-	ecs_query_fini(query_grid_move);
 }
 
 
 
 void handler_player_input(ecs_world_t *world)
 {
-    ecs_query_t *query_player_input = ecs_query(world, {
-        .terms = {
-			{ ecs_id(TurnComponent) },
-            { ecs_id(TAG_Player) },
-			{ ecs_id(TAG_TurnActive) }
-        },
-		.cache_kind = EcsQueryCacheAuto
-    }); 
     ecs_iter_t it = ecs_query_iter(world, query_player_input);
 	while (ecs_query_next(&it))
 	{
@@ -355,25 +479,12 @@ void handler_player_input(ecs_world_t *world)
 			}
 		}
 	}
-	ecs_query_fini(query_player_input);
 }
 
 
 
 void handler_pathfinding(ecs_world_t *world)
 {
-    ecs_query_t *query_pathfinding = ecs_query(world, {
-        .terms = {
-			{ ecs_id(TurnComponent) },
-			{ ecs_id(TAG_TurnActive) },
-			{ ecs_id(PathComponent) },
-			{ ecs_id(GridPosition) },
-			{ ecs_id(NPCTarget) },
-			{ ecs_id(GridVelocity), .oper = EcsNot }
-        },
-		.cache_kind = EcsQueryCacheAuto,
-		.flags = EcsQueryMatchEmptyTables
-    }); 
 	ecs_iter_t it = ecs_query_iter(world, query_pathfinding);
 	while(ecs_query_next(&it))
 	{
@@ -426,21 +537,12 @@ void handler_pathfinding(ecs_world_t *world)
 			}
 		}
 	}
-	ecs_query_fini(query_pathfinding);
 }
 
 
 
 void handler_turncounter_increment(ecs_world_t *world)
 {
-    ecs_query_t *query_turncounter_increment = ecs_query(world, {
-        .terms = {
-            { ecs_id(TurnCountComponent) },
-			{ ecs_id(TurnComponent) },
-			{ ecs_id(TAG_TurnActive) }
-        },
-		.cache_kind = EcsQueryCacheAuto
-    }); 
 	//log_debug("DEBUG");
     ecs_iter_t it = ecs_query_iter(world, query_turncounter_increment);
 	while (ecs_query_next(&it))
@@ -457,19 +559,12 @@ void handler_turncounter_increment(ecs_world_t *world)
 			// turnmanager_print_turn_queue(tm);
 		}
 	}
-	ecs_query_fini(query_turncounter_increment);
 }
 
 
 
 void handler_draw_health_ui(ecs_world_t *world)
 {
-    ecs_query_t *query_draw_health_ui = ecs_query(world, {
-        .terms = {
-			{ ecs_id(TAG_Player) },
-            { ecs_id(HealthComponent) }
-        },
-    }); 
 
     ecs_iter_t it = ecs_query_iter(world, query_draw_health_ui);
 	while (ecs_query_next(&it))
@@ -483,20 +578,12 @@ void handler_draw_health_ui(ecs_world_t *world)
 			DrawText(healthText, 20, 40, 22, RED);
 		}
 	}
-	ecs_query_fini(query_draw_health_ui);
 }
 
 
 
 void handler_process_traps(ecs_world_t *world)
 {
-    ecs_query_t *query_process_traps = ecs_query(world, {
-        .terms = {
-			{ ecs_id(TAG_Player) },
-            { ecs_id(HealthComponent) }
-        },
-		.cache_kind = EcsQueryCacheAuto
-    }); 
 
     ecs_iter_t it = ecs_query_iter(world, query_process_traps);
 	while (ecs_query_next(&it))
@@ -510,23 +597,12 @@ void handler_process_traps(ecs_world_t *world)
 			DrawText(healthText, 20, 40, 22, RED);
 		}
 	}
-	ecs_query_fini(query_process_traps);
 }
 
 
 
 void handler_process_triggerareas(ecs_world_t *world)
 {
-    ecs_query_t *query_process_triggerareas = ecs_query(world, {
-        .terms = {
-            { ecs_id(TriggerArea) },
-			{ ecs_id(GridPosition) },
-			{ ecs_id(TurnComponent) },
-			{ ecs_id(TAG_TurnActive) }
-        },
-		.cache_kind = EcsQueryCacheAuto,
-		.flags = EcsQueryMatchEmptyTables
-    }); 
 
     ecs_iter_t it = ecs_query_iter(world, query_process_triggerareas);
 	while (ecs_query_next(&it))
@@ -555,23 +631,12 @@ void handler_process_triggerareas(ecs_world_t *world)
 			turnmanager_end_turn(tm, 100);
 		}
 	}
-	ecs_query_fini(query_process_triggerareas);
 }
 
 
 
 void handler_process_visionareas(ecs_world_t *world)
 {
-    ecs_query_t *query_process_visionareas = ecs_query(world, {
-        .terms = {
-            { ecs_id(VisionArea) },
-			{ ecs_id(GridPosition) },
-			{ ecs_id(TurnComponent) },
-			{ ecs_id(TAG_TurnActive) }
-        },
-		.cache_kind = EcsQueryCacheAuto,
-		.flags = EcsQueryMatchEmptyTables
-    }); 
 
     ecs_iter_t it = ecs_query_iter(world, query_process_visionareas);
 	while (ecs_query_next(&it))
@@ -601,19 +666,12 @@ void handler_process_visionareas(ecs_world_t *world)
 			turnmanager_end_turn(tm, 75);
 		}
 	}
-	ecs_query_fini(query_process_visionareas);
 }
 
 
 
 void handler_process_hurt(ecs_world_t *world)
 {
-    ecs_query_t *query_process_hurt = ecs_query(world, {
-        .terms = {
-            { ecs_id(HealthComponent) },
-			{ ecs_id(HurtComponent) }
-        },
-    }); 
 
     ecs_iter_t it = ecs_query_iter(world, query_process_hurt);
 	while (ecs_query_next(&it))
@@ -637,19 +695,12 @@ void handler_process_hurt(ecs_world_t *world)
 			}
 		}
 	}
-	ecs_query_fini(query_process_hurt);
 }
 
 
 
 void handler_process_death(ecs_world_t *world)
 {
-    ecs_query_t *query_process_death = ecs_query(world, {
-        .terms = {
-            { ecs_id(HealthComponent) },
-            { ecs_id(DeathComponent) }
-        },
-    }); 
 
     ecs_iter_t it = ecs_query_iter(world, query_process_death);
 	while (ecs_query_next(&it))
@@ -666,18 +717,12 @@ void handler_process_death(ecs_world_t *world)
 			ecs_add(it.world, it.entities[i], EntDeletionQueued);
 		}
 	}
-	ecs_query_fini(query_process_death);
 }
 
 
 
 void handler_process_entity_deletion(ecs_world_t *world)
 {
-    ecs_query_t *query_process_entity_delection = ecs_query(world, {
-        .terms = {
-            { ecs_id(EntDeletionQueued) }
-        },
-    }); 
 
     ecs_iter_t it = ecs_query_iter(world, query_process_entity_delection);
 	while (ecs_query_next(&it))
@@ -688,7 +733,6 @@ void handler_process_entity_deletion(ecs_world_t *world)
 			ecs_delete(it.world, it.entities[i]);
 		}
 	}
-	ecs_query_fini(query_process_entity_delection);
 }
 
 
