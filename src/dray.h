@@ -86,7 +86,11 @@ static inline void _dray_add_pointer(DRay *dray, void *pointer)
 
 static inline void *_dray_get_value(DRay *dray, int idx, size_t type_size)
 {
-	if (idx >= dray->count) { return NULL; }
+	if (idx >= dray->count) 
+	{ 
+		fprintf(stderr, "DRay idx out of bounds: idx: %d, dray size: %d\n", idx, dray->count);
+		return NULL; 
+	}
     void *idx_ptr = dray_get_idx_ptr(dray, idx);
     if ( *((char *)idx_ptr) == DRAY_EMPTY_VALUE)
     {

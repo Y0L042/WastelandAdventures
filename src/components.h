@@ -10,6 +10,7 @@
 #include "turnbasedsystem.h"
 #include "pathfinding.h"
 #include "tween.h"
+#include "timer.h"
 
 /* Adds World position & velocity */
 typedef Vector2 Position;
@@ -62,8 +63,8 @@ extern ECS_COMPONENT_DECLARE(NPCTarget);
 typedef struct HealthComponent {
 	int health;
 	int _initial_health;
-	void (*callback_onhurt)(int hurt);
-	void (*callback_ondeath)(int hurt);
+	void (*callback_onhurt)(ecs_world_t *world, ecs_entity_t entity, int value);
+	void (*callback_ondeath)(ecs_world_t *world, ecs_entity_t entity, int value);
 } HealthComponent;
 extern ECS_COMPONENT_DECLARE(HealthComponent);
 typedef struct DamageComponent {
@@ -100,6 +101,8 @@ extern ECS_COMPONENT_DECLARE(EntDeletionQueued);
 /* Tween Components */
 extern ECS_COMPONENT_DECLARE(TweenComponent);
 extern ECS_COMPONENT_DECLARE(TweenPropertyComponent);
+
+extern ECS_COMPONENT_DECLARE(TimerActiveComponent);
 
 /* Defines components with the active ecs_world_t. Must run just after creating
  * world

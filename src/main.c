@@ -22,7 +22,10 @@
 #include "pathfinding.h"
 #include "map_generator.h"
 #include "tween.h"
+#include "timer.h"
 
+
+ecs_world_t *global_world;
 
 const int g_SCREEN_WIDTH = 1280;
 const int g_SCREEN_HEIGHT = 720;
@@ -35,8 +38,8 @@ SM_State state_pausemenu;
 SM_State state_gameplayloop;
 SM_State state_gameover_death;
 
-static int is_ecs_world_created = 0;
-ecs_world_t *g_world;
+static int is_ecs_gameplay_world_created = 0;
+ecs_world_t *gameplay_world;
 ecs_entity_t ent_screen_center;
 
 int game_should_quit = 0;
@@ -73,9 +76,9 @@ void quit();
 		BeginDrawing();
 			ClearBackground(g_BG_COLOR);
 
-			if (is_ecs_world_created)
+			if (is_ecs_gameplay_world_created)
 			{
-				const CameraComponent *cc = ecs_ref_get(g_world, &cc_ref, CameraComponent);
+				const CameraComponent *cc = ecs_ref_get(gameplay_world, &cc_ref, CameraComponent);
 				if (cc != NULL)
 				{
 					Camera2D c = cc->camera;
@@ -100,6 +103,9 @@ void quit();
 
 void initialize()
 {	
+	global_world = ecs_init();
+	create_components(global_world);
+
 	sm_create_state_machine(&game_fsm, "MAIN_FSM");	
 
 	sm_register_state(&game_fsm, &state_mainmenu, "STATE_MAINMENU");
@@ -145,6 +151,7 @@ void update(double delta)
 void physics_update(double delta)
 {
 	sm_execute_state_physics_update(&game_fsm, delta);
+	handler_process_timers(global_world, delta);
 }
 
 void handle_ui(double delta)
@@ -169,26 +176,26 @@ void quit_game(void)
 
 void create_ecs_world(void)
 {
-	if (is_ecs_world_created) { return; }
-	is_ecs_world_created = 1;
-	g_world = ecs_init();
-	create_components(g_world);
+	if (is_ecs_gameplay_world_created) { return; }
+	is_ecs_gameplay_world_created = 1;
+	gameplay_world = ecs_init();
+	create_components(gameplay_world);
 
-	ent_screen_center = ecs_new(g_world);
-	ecs_set(g_world, ent_screen_center, Position, { .x = g_SCREEN_WIDTH/2, .y = g_SCREEN_HEIGHT/2 });
+	ent_screen_center = ecs_new(gameplay_world);
+	ecs_set(gameplay_world, ent_screen_center, Position, { .x = g_SCREEN_WIDTH/2, .y = g_SCREEN_HEIGHT/2 });
 
 	ent_camera_create(
 			&g_ent_camera, 
-			g_world,
+			gameplay_world,
 			ent_screen_center
 		);
 }
 
 void clear_ecs_world(void)
 {
-	ecs_fini(g_world);
-	is_ecs_world_created = 0;
-	g_world = NULL;
+	ecs_fini(gameplay_world);
+	is_ecs_gameplay_world_created = 0;
+	gameplay_world = NULL;
 }
 
 void restart_ecs_world(void)

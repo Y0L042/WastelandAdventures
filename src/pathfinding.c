@@ -135,7 +135,7 @@ void pathfind_astar(DRay *path, Grid *grid, int from_x, int from_y, int to_x, in
 	
 	if (path_found)
 	{
-		log_info("TARGET_AQUIRED");
+//		log_info("TARGET_AQUIRED");
 
 		/* Add target_node pos to path */
 		AStarNode *iter_node = target_node;
@@ -153,7 +153,7 @@ void pathfind_astar(DRay *path, Grid *grid, int from_x, int from_y, int to_x, in
 			{
 				dray_add_value(path, pos, Vector2);
 			}
-			log_info("PATHFIND PATH POS: { %.f, %.f }", pos.x, pos.y);
+//			log_info("PATHFIND PATH POS: { %.f, %.f }", pos.x, pos.y);
 		} 
 		GRID_FREE_2D(nodemap);	
 
@@ -161,7 +161,7 @@ void pathfind_astar(DRay *path, Grid *grid, int from_x, int from_y, int to_x, in
 	}
 	else
 	{
-		log_info("TARGET_NOT_FOUND");
+//		log_info("TARGET_NOT_FOUND");
 		GRID_FREE_2D(nodemap);
 
 		return;

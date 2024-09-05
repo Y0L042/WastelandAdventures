@@ -1,6 +1,10 @@
 #include "maths.h"
+#include "math.h"
 #include "stdlib.h"
 #include "time.h"
+
+#define FLT_EPSILON 0.0001f
+#define DBL_EPSILON 0.00001
 
 static int _maths_initialized = 0;
 
@@ -8,6 +12,20 @@ void _maths_initialize()
 {
     srand(time(NULL));
     _maths_initialized = 1;
+}
+
+int maths_cmpf(float a, float b)
+{
+	int result = (fabs(a - b) < (FLT_EPSILON * fabs(a + b)));
+
+	return result;
+}
+
+int maths_cmpd(double a, double b)
+{
+	int result = (fabs(a - b) < (DBL_EPSILON * fabs(a + b)));
+
+	return result;
 }
 
 int maths_randbetween_int(int min, int max)

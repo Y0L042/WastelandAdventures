@@ -2,6 +2,8 @@
 
 #include "maths.h"
 #include "state_gameplayloop.h"
+#include "tween.h"
+#include "timer.h"
 
 ecs_entity_t g_ent_player;
 ecs_entity_t g_ent_camera;
@@ -62,9 +64,31 @@ void ent_camera_create(
 		});
 }
 
-void callback_player_ondeath(int health)
+void callback_player_ondeath(ecs_world_t *world, ecs_entity_t entity, int value)
 {
 	state_gameplayloop_queue_gameover();
+}
+
+static ecs_entity_t ent = 0;
+void callback_player_reset_onhurt()
+{
+	log_info("Reset ouch");
+	if ((gameplay_world != NULL)  && ecs_is_alive(gameplay_world, ent))
+	{
+		Glyph *g = ecs_get_mut(gameplay_world, ent, Glyph);
+		g->color = RAYWHITE;
+	}	
+}
+
+void callback_player_onhurt(ecs_world_t *world, ecs_entity_t entity, int value)
+{
+	log_info("OUCH!");
+	ent = entity;
+
+	Glyph *g = ecs_get_mut(world, entity, Glyph);
+	g->color = RED;
+	Timer *timer = timer_create(global_world);
+	timer_start(timer, 0.15, callback_player_reset_onhurt);
 }
 
 void ent_player_create(
@@ -104,7 +128,8 @@ void ent_player_create(
 	ecs_set(world, *ent_player, HealthComponent, { 
 			.health = 100, 
 			._initial_health = 100,
-			.callback_ondeath = callback_player_ondeath
+			.callback_ondeath = callback_player_ondeath,
+			.callback_onhurt = callback_player_onhurt
 		});
     
 //    log_debug("ent_player_create END");

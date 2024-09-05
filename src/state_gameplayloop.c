@@ -58,7 +58,7 @@ void state_gameplayloop_register()
 void _state_gameplayloop_initialize()
 {
 	create_ecs_world();
-	cc_ref = ecs_ref_init(g_world, g_ent_camera, CameraComponent);
+	cc_ref = ecs_ref_init(gameplay_world, g_ent_camera, CameraComponent);
 
 	gameplayloop_initialized = 1;
 
@@ -71,36 +71,36 @@ void _state_gameplayloop_initialize()
 			RAYWHITE
 		);
 
-	turnmanager_initialize(&turnmanager, g_world);
+	turnmanager_initialize(&turnmanager, gameplay_world);
 
 	grid_initialize(
             &grid_worldspace, 
-            g_world,
+            gameplay_world,
             WORLDSPACE_SIZE_X, 
             WORLDSPACE_SIZE_Y, 
             TILE_SIZE_X, 
             TILE_SIZE_Y
         );
 
-    create_walls(g_world, &grid_worldspace, &cool_tileset);
+    create_walls(gameplay_world, &grid_worldspace, &cool_tileset);
 
 	ent_player_create(
 			&g_ent_player, 
-			g_world, 
+			gameplay_world, 
 			&turnmanager, 
 			&grid_worldspace, 
 			&cool_tileset,
             spawn_x, spawn_y
 		);
 
-	create_traps(g_world, &turnmanager, &grid_worldspace, &cool_tileset);
+	create_traps(gameplay_world, &turnmanager, &grid_worldspace, &cool_tileset);
 
-	CameraComponent *cc = ecs_get_mut(g_world, g_ent_camera, CameraComponent);
+	CameraComponent *cc = ecs_get_mut(gameplay_world, g_ent_camera, CameraComponent);
 	cc->target_entity = g_ent_player;
 
 	ent_dog_create(
 			&g_ent_dog,
-			g_world,
+			gameplay_world,
 			&turnmanager,
 			&grid_worldspace,
 			&cool_tileset,
@@ -128,39 +128,20 @@ void _state_gameplayloop_update(double delta)
 	}
 }
 
-Tween test = 0;
-static int test_source = 0;
-TweenValueType value_type = TWEEN_VALUE_INT;
 void _state_gameplayloop_physics_update(double delta)
 {
 //	log_debug("physics_update() - start");
-	if (test == 0) 
-	{ 
-		test = tween_create(g_world);
-		tween_add_property(g_world, test, &test_source, 11, value_type, 2);
-	}
-	switch (value_type) {
-		case TWEEN_VALUE_INT:
-			if ( test_source < 11.0) { log_info("Test Tween Source: %d", test_source); }	
-			break;
-		case TWEEN_VALUE_FLOAT:
-			if ( test_source < 11.0) { log_info("Test Tween Source: %.1f", test_source); }	
-			break;
-		case TWEEN_VALUE_DOUBLE:
-			if ( test_source < 11.0) { log_info("Test Tween Source: %.2f", test_source); }	
-			break;
-	}
 
-    handler_player_input(g_world);
-	handler_glyph_ghost_spawn(g_world);
-	handler_grid_move(g_world);
-	handler_pathfinding(g_world);
-	handler_process_hurt(g_world);
-	handler_process_death(g_world);
-	handler_camera_move(g_world);
-	handler_turncounter_increment(g_world);
+    handler_player_input(gameplay_world);
+	handler_glyph_ghost_spawn(gameplay_world);
+	handler_grid_move(gameplay_world);
+	handler_pathfinding(gameplay_world);
+	handler_process_hurt(gameplay_world);
+	handler_process_death(gameplay_world);
+	handler_camera_move(gameplay_world);
+	handler_turncounter_increment(gameplay_world);
 
-	handler_tween_add_property(g_world, delta);
+	handler_tween_add_property(gameplay_world, delta);
 
 	if (gameover_queued) { state_gameplayloop_goto_gameover_death(); }
 //	log_debug("physics_update() - end");
@@ -168,15 +149,15 @@ void _state_gameplayloop_physics_update(double delta)
 
 void _state_gameplayloop_handle_ui(double delta)
 {
-	handler_draw_health_ui(g_world);
+	handler_draw_health_ui(gameplay_world);
 }
 
 void _state_gameplayloop_draw(double delta)
 {
-	handler_process_triggerareas(g_world);
+	handler_process_triggerareas(gameplay_world);
 	grid_draw(&grid_worldspace);
-	handler_glyph_fade(g_world, delta);
- 	handler_glyph_draw(g_world);
+	handler_glyph_fade(gameplay_world, delta);
+ 	handler_glyph_draw(gameplay_world);
 
 	/*
 	static int rad = 5;
@@ -185,9 +166,9 @@ void _state_gameplayloop_draw(double delta)
 	if (IsKeyPressed(KEY_S)) { rad--; }
 	if (IsKeyPressed(KEY_SPACE)) { mode = mode == 's' ? 'c' : 's'; }
 
-	if (ecs_is_alive(g_world, g_ent_player))
+	if (ecs_is_alive(gameplay_world, g_ent_player))
 	{
-		const GridPosition *gp = ecs_get(g_world, g_ent_player, GridPosition);
+		const GridPosition *gp = ecs_get(gameplay_world, g_ent_player, GridPosition);
 		int x = gp->x;
 		int y = gp->y;
 		float h_tile_size = (TILE_SIZE_X / 2) + 1;
@@ -210,7 +191,7 @@ void _state_gameplayloop_draw(double delta)
 	*/	
 	/*
 	Color color;
-	const TurnComponent *player_tc = ecs_get(g_world, g_ent_player, TurnComponent);
+	const TurnComponent *player_tc = ecs_get(gameplay_world, g_ent_player, TurnComponent);
 	TurnComponentData *player_tc_d = player_tc->tc_d;
 	int active = (player_tc_d->current_turn_state == TURNSTATE_ACTIVE) ? 1 : 0;
 	if (active == 0)
@@ -223,7 +204,7 @@ void _state_gameplayloop_draw(double delta)
 	}
 
 	float h_tile_size = (TILE_SIZE_X / 2) + 1;
-	const Position *p = ecs_get(g_world, g_ent_player, Position);
+	const Position *p = ecs_get(gameplay_world, g_ent_player, Position);
 	DrawCircleLines(p->x + h_tile_size, p->y + h_tile_size, h_tile_size * 1.25f, color);
 	*/
 }
@@ -324,9 +305,9 @@ void create_traps(ecs_world_t *world, TurnManager *tm, Grid *grid, Tileset *tile
 	int spawn_count = maths_randbetween_int(4, 8);
 	for (int _i = 0; _i < spawn_count; _i++)
 	{
-		int rand_idx = maths_randbetween_int(0, walkable_tiles.count);
+		int rand_idx = maths_randbetween_int(0, walkable_tiles.count - 1);
 		Vector2 spawnpos = dray_get_value(&walkable_tiles, rand_idx, Vector2);
-		log_info("TRAP SPAWNED AT { %.0f, %.0f }, opt %d", spawnpos.x, spawnpos.y, walkable_tiles.count);
+	//	log_info("TRAP SPAWNED AT { %.0f, %.0f }, opt %d", spawnpos.x, spawnpos.y, walkable_tiles.count);
 		ecs_entity_t trap;
 		ent_floor_trap_basic_create(
 				&trap,

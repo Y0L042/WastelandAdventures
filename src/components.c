@@ -32,6 +32,7 @@ ECS_COMPONENT_DECLARE(DeathComponent);
 ECS_COMPONENT_DECLARE(EntDeletionQueued);
 ECS_COMPONENT_DECLARE(TweenComponent);
 ECS_COMPONENT_DECLARE(TweenPropertyComponent);
+ECS_COMPONENT_DECLARE(TimerActiveComponent);
 
 void create_components(ecs_world_t *world)
 {
@@ -67,13 +68,13 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, EntDeletionQueued);
 	ECS_COMPONENT_DEFINE(world, TweenComponent);
 	ECS_COMPONENT_DEFINE(world, TweenPropertyComponent);
+	ECS_COMPONENT_DEFINE(world, TimerActiveComponent);
 }
 
 
 
 void create_queries(ecs_world_t *world)
 {
-
 }
 
 
@@ -128,7 +129,7 @@ void handler_glyph_ghost_spawn(ecs_world_t *world)
 
         for (int i = 0; i < it.count; i++)
         {
-			log_info("Ghost created");
+			//log_info("Ghost created");
 			ent_glyph_ghost_create(it.world, &g[i], gg[i].fade_time, gg[i].x, gg[i].y);
 			ecs_remove(it.world, it.entities[i], LeaveGlyphGhost);
         }
@@ -275,7 +276,7 @@ void handler_grid_move(ecs_world_t *world)
 			if (ecs_field_is_set(&it, 5) && !(vel_x ==0 && vel_y == 0)) 
 			{
 				printf("%d %d\n", vel_x, vel_y);
-				log_info("has ghosting");
+			//	log_info("has ghosting");
 //				GhostWhenMoving *g = ecs_field(&it, GhostWhenMoving, 5);
 				ecs_set(it.world, it.entities[i], LeaveGlyphGhost, { 
 						.fade_time = 1.5, .x = old_x, .y = old_y });
@@ -403,18 +404,18 @@ void handler_pathfinding(ecs_world_t *world)
 				continue; 
 			}
 			
-			log_info("PATHFIND TARGET  : { %d, %d }", gp_target->x, gp_target->y);
+		//	log_info("PATHFIND TARGET  : { %d, %d }", gp_target->x, gp_target->y);
 			Vector2 next_pos = dray_pop_value(&path, Vector2);
-			log_info("PATHFIND NEXT_POS: { %.f, %.f }", next_pos.x, next_pos.y);
+		//	log_info("PATHFIND NEXT_POS: { %.f, %.f }", next_pos.x, next_pos.y);
 			Vector2 vel = { next_pos.x - gp[i].x, next_pos.y - gp[i].y };
-			log_info("POS: { %d, %d }", gp[i].x, gp[i].y);
-			log_info("VEL: { %.f, %.f }", vel.x, vel.y);
+		//	log_info("POS: { %d, %d }", gp[i].x, gp[i].y);
+		//	log_info("VEL: { %.f, %.f }", vel.x, vel.y);
 			ecs_set(it.world, it.entities[i], GridVelocity, { .x = vel.x, .y = vel.y });
 			
 			for (int i = 0; i < path.count; i++)
 			{
 				Vector2 p = dray_get_value(&path, i, Vector2);
-				log_info("PATH { %d, %d }", p.x, p.y);
+		//		log_info("PATH { %d, %d }", p.x, p.y);
 			}
 		}
 	}
@@ -559,7 +560,6 @@ void handler_process_triggerareas(ecs_world_t *world)
 			DRay entities;
 			dray_init_values(&entities, ecs_entity_t);
 			int success = grid_get_entities_in_area(grid, &ta[i], &entities) == 0;
-			printf("Success %d\n", success);
 			if (success)
 			{
 				log_info("enemy found!");
@@ -604,7 +604,7 @@ void handler_process_hurt(ecs_world_t *world)
 
 			if (healthc[i].callback_onhurt != NULL)
 			{
-				(*healthc[i].callback_onhurt)(hurtc[i].hurt);
+				(*healthc[i].callback_onhurt)(it.world, it.entities[i], hurtc[i].hurt);
 			}
 		}
 	}
@@ -631,7 +631,7 @@ void handler_process_death(ecs_world_t *world)
 		{
 			if (healthc[i].callback_ondeath != NULL)
 			{
-				(*healthc[i].callback_ondeath)(healthc[i].health);
+				(*healthc[i].callback_ondeath)(it.world, it.entities[i], healthc[i].health);
 			}
 			
 			ecs_add(it.world, it.entities[i], EntDeletionQueued);
