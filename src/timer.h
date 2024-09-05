@@ -13,6 +13,7 @@ typedef struct Timer {
 	int running;
 	int stopped;
 	int valid;
+	int auto_free;
 } Timer;
 
 typedef struct TimerActiveComponent { Timer *timer_ptr; } TimerActiveComponent;
@@ -20,6 +21,7 @@ typedef struct TimerActiveComponent { Timer *timer_ptr; } TimerActiveComponent;
 Timer *timer_create(ecs_world_t *world);
 void timer_free(Timer *timer);
 void timer_start(Timer *timer, double target, void (*callback)(void));
+Timer *timer_oneshot(ecs_world_t *world, double target, void (*callback)(void));
 
 void handler_process_timers(ecs_world_t *world, double delta);
 

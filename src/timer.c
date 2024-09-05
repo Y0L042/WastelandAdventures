@@ -10,6 +10,7 @@ Timer *timer_create(ecs_world_t *world)
 	timer->valid = 1;
 	timer->current_time = 0.0;
 	timer->target_time = 0.0;
+	timer->auto_free = 0;
 	
 	return timer;
 }
@@ -38,6 +39,16 @@ void timer_start(Timer *timer, double target, void (*callback)(void))
 		});
 }
 
+Timer *timer_oneshot(ecs_world_t *world, double target, void (*callback)(void))
+{
+	Timer *timer = timer_create(world);
+	timer->auto_free = 1;
+	timer_start(timer, target, callback);
+
+	return timer;
+}
+
+
 
 void handler_process_timers(ecs_world_t *world, double delta)
 {
@@ -62,6 +73,8 @@ void handler_process_timers(ecs_world_t *world, double delta)
 			if ((maths_cmpd(timer->current_time, timer->target_time)) 
 					|| (timer->current_time > timer->target_time))
 			{
+				ecs_remove(it.world, it.entities[i], TimerActiveComponent);
+
 				timer->running = 0;
 				timer->stopped = 1;
 				timer->valid = 0;
@@ -69,8 +82,10 @@ void handler_process_timers(ecs_world_t *world, double delta)
 				{
 					(timer->callback)();
 				} 
-				timer_free(timer);
-				ecs_delete(it.world, it.entities[i]);
+				if (timer->auto_free)
+				{
+					timer_free(timer);
+				}
 				continue;
 			}
 		}

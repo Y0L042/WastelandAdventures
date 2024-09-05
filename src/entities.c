@@ -87,8 +87,7 @@ void callback_player_onhurt(ecs_world_t *world, ecs_entity_t entity, int value)
 
 	Glyph *g = ecs_get_mut(world, entity, Glyph);
 	g->color = RED;
-	Timer *timer = timer_create(global_world);
-	timer_start(timer, 0.15, callback_player_reset_onhurt);
+	timer_oneshot(global_world, 0.15, callback_player_reset_onhurt);
 }
 
 void ent_player_create(
