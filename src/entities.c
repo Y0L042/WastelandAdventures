@@ -2,8 +2,10 @@
 
 #include "maths.h"
 #include "state_gameplayloop.h"
+#include "ai.h"
 #include "tween.h"
 #include "timer.h"
+#include "debugdraw.h"
 
 ecs_entity_t g_ent_player;
 ecs_entity_t g_ent_camera;
@@ -46,6 +48,7 @@ const int ENT_FLOORTRAP_BASIC_COLL_MASK = 	COLL_LAYER_PLAYER
 const int ENT_ENEMY_GROUND_COLL_LAYER = 	COLL_LAYER_ENEMIES;
 const int ENT_ENEMY_D_GROUND_COLL_MASK = 	COLL_LAYER_WORLD
 											| COLL_LAYER_PLAYER
+											| COLL_LAYER_ENEMIES
 											| COLL_LAYER_FRIENDLIES;
 const int ENT_ENEMY_S_GROUND_COLL_MASK = 	COLL_LAYER_WORLD
 											| COLL_LAYER_PLAYER
@@ -288,6 +291,7 @@ void ent_floor_trap_basic_create(
 
 void ent_kobold_set_target(VisionArea *va, ecs_world_t *world, DRay *targets)
 {
+	ecs_entity_t owner = va->gridarea_ent;
 	for (int i = 0; i < targets->count; i++)
 	{
 		ecs_entity_t ent = dray_get_value(targets, i, ecs_entity_t);
@@ -295,8 +299,25 @@ void ent_kobold_set_target(VisionArea *va, ecs_world_t *world, DRay *targets)
 		if (ecs_get(world, ent, HealthComponent))
 		{
 			ecs_set(world, va->gridarea_ent, NPCTarget, { .target = ent });
+
+			const Position *target_p = ecs_get(world, ent, Position);
+			if (target_p == NULL) { return; }
+			const Position *owner_p = ecs_get(world, owner, Position);
+			if (owner_p == NULL) { return; }
+
+			// DrawLine(owner_p->x, owner_p->y, target_p->x, target_p->y, GREEN);
+			debugdraw_add_line(owner_p->x+(float)TILE_SIZE_X/2,
+					owner_p->y+(float)TILE_SIZE_Y/2,
+					target_p->x+(float)TILE_SIZE_X/2,
+					target_p->y+(float)TILE_SIZE_Y/2,
+					GREEN, 2.5, DBG_DRAW);
 		}
 	}
+}
+
+int ent_kobold_ai(AIComponent *ai)
+{
+	log_info("KOBOLD AI");
 }
 
 void ent_kobold_create(
@@ -347,6 +368,12 @@ void ent_kobold_create(
 			._initial_health = 100,
 			.callback_ondeath = callback_player_ondeath,
 			.callback_onhurt = callback_player_onhurt
+		});
+
+	ecs_set(world, *ent_kobold, AIComponent, {
+			.world = world,
+			.entity = *ent_kobold,
+			.ai_main = ent_kobold_ai
 		});
 }
 

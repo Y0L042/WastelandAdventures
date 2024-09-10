@@ -1,8 +1,6 @@
 CompileFlags:
-  Remove: -W*
-  Add: [-ferror-limit=0]
+  Add: [-ferror-limit=100]
 Diagnostics:
   UnusedIncludes: Strict
-  Suppress: '*'
   ClangTidy:
     FastCheckFilter: Loose

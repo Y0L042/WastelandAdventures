@@ -38,6 +38,7 @@ void _state_gameover_death_initialize()
 void _state_gameover_death_enter()
 {
 	state_gameplayloop_reset();
+	free_queries(gameplay_world);
 	clear_ecs_gameplay_world();
 }
 

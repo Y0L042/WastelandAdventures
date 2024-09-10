@@ -33,6 +33,7 @@ ECS_COMPONENT_DECLARE(EntDeletionQueued);
 ECS_COMPONENT_DECLARE(TweenComponent);
 ECS_COMPONENT_DECLARE(TweenPropertyComponent);
 ECS_COMPONENT_DECLARE(TimerActiveComponent);
+ECS_COMPONENT_DECLARE(AIComponent);
 
 void create_components(ecs_world_t *world)
 {
@@ -69,6 +70,7 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, TweenComponent);
 	ECS_COMPONENT_DEFINE(world, TweenPropertyComponent);
 	ECS_COMPONENT_DEFINE(world, TimerActiveComponent);
+	ECS_COMPONENT_DEFINE(world, AIComponent);
 }
 
 
@@ -88,6 +90,7 @@ static ecs_query_t *query_process_visionareas = NULL;
 static ecs_query_t *query_process_hurt = NULL;
 static ecs_query_t *query_process_death = NULL;
 static ecs_query_t *query_process_entity_delection = NULL;
+static ecs_query_t *query_process_ai = NULL;
 
 void create_queries(ecs_world_t *world)
 {
@@ -236,6 +239,15 @@ void create_queries(ecs_world_t *world)
             { ecs_id(EntDeletionQueued) }
         },
     }); 
+
+	query_process_ai = ecs_query(world, {
+		.terms = {
+			{ ecs_id(AIComponent) },
+			{ ecs_id(TAG_TurnActive) }
+		},
+		.cache_kind = EcsQueryCacheAuto,
+		.flags = EcsQueryMatchEmptyTables
+	});
 }
 
 void free_queries(ecs_world_t *world)
@@ -255,6 +267,7 @@ void free_queries(ecs_world_t *world)
 	ecs_query_fini(query_process_hurt);
 	ecs_query_fini(query_process_death);
 	ecs_query_fini(query_process_entity_delection);
+	ecs_query_fini(query_process_ai);
 }
 
 
@@ -316,7 +329,7 @@ void handler_glyph_fade(ecs_world_t *world, double delta)
         {
 			double fade_perc = gf[i].time_left / gf[i].initial_time;
 			//g[i].color.a = ((double)g[i]._init_color.a) * fade_perc;
-			g[i].color.a = (255 / 2.5) * fade_perc;
+			g[i].color.a = (215 / 2.25) * fade_perc;
 			gf[i].time_left -= delta;
 
 			if ((fade_perc * 100.0) < 0.25) 
@@ -401,8 +414,7 @@ void handler_grid_move(ecs_world_t *world)
 				old_y = p[i].y;
 				p[i].x = gp[i].x * grid->tile_width;
 				p[i].y = gp[i].y * grid->tile_height;
-			}
-            else
+			} else
             {
                 log_warn("Grid not found.");
             }
@@ -418,7 +430,7 @@ void handler_grid_move(ecs_world_t *world)
 			if (ecs_field_is_set(&it, 5) && !(vel_x ==0 && vel_y == 0)) 
 			{
 				ecs_set(it.world, it.entities[i], LeaveGlyphGhost, { 
-						.fade_time = 1.5, .x = old_x, .y = old_y });
+						.fade_time = 1.2, .x = old_x, .y = old_y });
 			}
 		}
 	}
@@ -515,7 +527,7 @@ void handler_pathfinding(ecs_world_t *world)
 					gp_target->y, 
 					gp[i].coll_mask
 				);
-			if ((path.count == 0)) 
+			if (path.count == 0) 
 			{ 
 				//ecs_remove(it.world, it.entities[i], PathComponent);
 				ecs_set(it.world, it.entities[i], GridVelocity, { .x = 0, .y = 0 });
@@ -637,7 +649,6 @@ void handler_process_triggerareas(ecs_world_t *world)
 
 void handler_process_visionareas(ecs_world_t *world)
 {
-
     ecs_iter_t it = ecs_query_iter(world, query_process_visionareas);
 	while (ecs_query_next(&it))
 	{
@@ -661,6 +672,8 @@ void handler_process_visionareas(ecs_world_t *world)
 			{
 				(*va[i].callback)(&va[i], it.world, &entities);
 			}
+
+			//dray_free(entities);
 
 			TurnManager *tm = tc[i].tc_d->turn_manager;
 			turnmanager_end_turn(tm, 75);
@@ -735,4 +748,17 @@ void handler_process_entity_deletion(ecs_world_t *world)
 	}
 }
 
+void handler_process_ai(ecs_world_t *world)
+{
+    ecs_iter_t it = ecs_query_iter(world, query_process_ai);
+    while (ecs_query_next(&it))
+    {
+        AIComponent *ai = ecs_field(&it, AIComponent, 0);
+
+        for (int i = 0; i < it.count; i++)
+        {
+			(*ai[i].ai_main)(&ai[i]);
+        }
+    }
+}
 

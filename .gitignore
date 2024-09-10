@@ -9,6 +9,7 @@ bin-int/*
 bin/*
 vendor/*
 builds/*
+build/*
 .vs/*
 
 !vendor/raylib5/*

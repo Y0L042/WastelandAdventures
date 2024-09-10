@@ -136,28 +136,30 @@ void _state_gameplayloop_update(double delta)
 
 void _state_gameplayloop_physics_update(double delta)
 {
-//	log_debug("physics_update() - start");
-
+	/* Pre-Action Systems */
 	handler_glyph_ghost_spawn(gameplay_world);
 
+	/* Input Gathering */
     handler_player_input(gameplay_world);
-	handler_pathfinding(gameplay_world);
-
-	handler_grid_move(gameplay_world);
-	handler_camera_move(gameplay_world);
-
 	handler_process_triggerareas(gameplay_world);
 	handler_process_visionareas(gameplay_world);
 
+	/* Decision Making */
+	handler_process_ai(gameplay_world);
+
+	/* Processing */
+	handler_pathfinding(gameplay_world);
+	handler_grid_move(gameplay_world);
 	handler_process_hurt(gameplay_world);
 	handler_process_death(gameplay_world);
 
+	/* Post-Action Systems */
+	handler_camera_move(gameplay_world);
 	handler_turncounter_increment(gameplay_world);
-
 	handler_tween_add_property(gameplay_world, delta);
 
+	/* GameplayLoop Exit */
 	if (gameover_queued) { state_gameplayloop_goto_gameover_death(); }
-//	log_debug("physics_update() - end");
 }
 
 void _state_gameplayloop_handle_ui(double delta)

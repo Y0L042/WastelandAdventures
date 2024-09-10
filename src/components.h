@@ -11,6 +11,7 @@
 #include "pathfinding.h"
 #include "tween.h"
 #include "timer.h"
+#include "ai.h"
 
 /* Adds World position & velocity */
 typedef Vector2 Position;
@@ -104,6 +105,8 @@ extern ECS_COMPONENT_DECLARE(TweenPropertyComponent);
 
 extern ECS_COMPONENT_DECLARE(TimerActiveComponent);
 
+extern ECS_COMPONENT_DECLARE(AIComponent);
+
 /* Defines components with the active ecs_world_t. Must run just after creating
  * world
  */
@@ -132,6 +135,7 @@ void handler_process_triggerareas(ecs_world_t *world);
 void handler_process_visionareas(ecs_world_t *world);
 void handler_process_hurt(ecs_world_t *world);
 void handler_process_death(ecs_world_t *world);
+void handler_process_ai(ecs_world_t *world);
 
 void handler_process_entity_deletion(ecs_world_t *world);
 

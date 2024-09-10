@@ -4,7 +4,7 @@
 #include <raylib.h>
 #include "grid.h"
 #include "flecs.h"
-#include "DRay.h"
+#include "dray.h"
 
 extern ECS_COMPONENT_DECLARE(PathComponent);
 

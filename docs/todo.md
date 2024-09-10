@@ -2,21 +2,15 @@
 
 # LightBulbs
 
-- Add a callback var to GridAreas that gets called when they are triggered, 
-  passing the entities along @20:23 Sat, 31 Aug 2024
-  DONE @15:33 Sun, 01 Sep 2024
-- Add callbacks to HealthComponent for what to do when hurt and when dead @18:44
-  Sun, 01 Sep 2024
-
 ## InProgress
 
-- [ ] ADD enemy
-
+- [ ] ADD WastelandAdventures cool title
+- [ ] ADD some kind of AI structure for npc
+- [ ] FIX fix enemy targeting and pathing
 
 
 ## ToDo
 
-- [ ] ADD WastelandAdventures cool title
 - [ ] FIX Pathfinding getting softlocked fix 
 - [ ] FIX free DRays that gets created in structs X( (see if it fixes memleaks
   when restarting game)
@@ -50,6 +44,7 @@
  @12:59 Thu, 05 Sep 2024
 
 - [x] ADD timer and timer callbacks
+- [x] ADD enemy
 
 ## Roadmap
 

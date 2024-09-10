@@ -8,6 +8,7 @@
 #include "flecs.h"
 #include "dray.h"
 #include "maths.h"
+#include "debugdraw.h"
 
 #include "components.h"
 #include "entities.h"
@@ -69,6 +70,7 @@ void quit();
 	while (!game_should_quit)    
 	{
 		frame_time = GetFrameTime();
+
 		handle_input();
 		update(frame_time);
 		physics_update(frame_time);
@@ -157,11 +159,13 @@ void physics_update(double delta)
 void handle_ui(double delta)
 {
 	sm_execute_state_handle_ui(&game_fsm, delta);
+	debugdraw_handle_ui(delta);
 };
 
 void draw(double delta)
 {
 	sm_execute_state_draw(&game_fsm, delta);
+	debugdraw_draw(delta);
 }
 
 void quit()
