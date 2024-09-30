@@ -11,6 +11,7 @@ vendor/*
 builds/*
 build/*
 .vs/*
+.cache/*
 
 !vendor/raylib5/*
 !vendor/STC/include/*
