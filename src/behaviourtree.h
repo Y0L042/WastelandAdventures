@@ -1,6 +1,4 @@
 #ifndef BEHAVIOURTREE_H
 #define BEHAVIOURTREE_H
 
-
-
 #endif // BEHAVIOURTREE_H

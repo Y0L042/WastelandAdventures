@@ -305,7 +305,6 @@ void ent_kobold_set_target(VisionArea *va, ecs_world_t *world, DRay *targets)
 			const Position *owner_p = ecs_get(world, owner, Position);
 			if (owner_p == NULL) { return; }
 
-			// DrawLine(owner_p->x, owner_p->y, target_p->x, target_p->y, GREEN);
 			debugdraw_add_line(owner_p->x+(float)TILE_SIZE_X/2,
 					owner_p->y+(float)TILE_SIZE_Y/2,
 					target_p->x+(float)TILE_SIZE_X/2,
@@ -318,6 +317,22 @@ void ent_kobold_set_target(VisionArea *va, ecs_world_t *world, DRay *targets)
 int ent_kobold_ai(AIComponent *ai)
 {
 	log_info("KOBOLD AI");
+	/*
+	 * An entity can only take ONE action per turn. The AI's job is to choose
+	 * what action must be taken. Must they attack, move, heal... They decide by
+	 * adding the correct component to themselves, which will be executed next
+	 * (the same turn).
+	 */
+
+	// Read targets in sight from blackboard. 
+	// If enemy spotted,
+	// 		if enemy close, attack enemy
+	// 		else move closer to enemy
+	// 	else
+	// 		randomly
+	// 			patrol
+	// 			or wait
+	// cmp_add_PathComponent(world, *ent_kobold, grid);
 }
 
 void ent_kobold_create(
@@ -349,7 +364,6 @@ void ent_kobold_create(
 			.tileset = tileset,
 			.color = GREEN
 		}); 
-	cmp_add_PathComponent(world, *ent_kobold, grid);
 	ecs_set(world, *ent_kobold, GhostWhenMoving, { .fade_time = 5 });
 	turnmanager_create_turncomponent(tm, *ent_kobold);
 	turnmanager_set_component_alias(tm, *ent_kobold, "KOBOLD\0");
@@ -357,7 +371,7 @@ void ent_kobold_create(
 
 	ecs_set(world, *ent_kobold, VisionArea, {
 			.gridarea_ent = *ent_kobold,
-			.rad = 3,
+			.rad = 5,
 			.mode = 'c',
 			.area_mask = ENT_ENEMY_S_GROUND_COLL_MASK,
 			.callback = ent_kobold_set_target

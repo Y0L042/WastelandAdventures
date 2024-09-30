@@ -17,12 +17,14 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/vendor/raylib5/include
     ${CMAKE_SOURCE_DIR}/vendor/cjson/include
     ${CMAKE_SOURCE_DIR}/vendor/fmt/include
+	${CMAKE_SOURCE_DIR}/vendor/flecs/include
 )
 
 # Library paths
 link_directories(
     ${CMAKE_SOURCE_DIR}/vendor/raylib5/lib/${PLATFORM}
     ${CMAKE_SOURCE_DIR}/vendor/cjson/lib/${PLATFORM}
+	${CMAKE_SOURCE_DIR}/vendor/flecs/lib
 )
 
 # Binary directory
@@ -45,6 +47,7 @@ add_executable(${TARGET_NAME} ${SRC_C})
 target_link_libraries(${TARGET_NAME}
     raylib.a
     cjson.a
+	flecs_static.a
     gdi32
     winmm
     Ws2_32

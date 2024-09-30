@@ -3,6 +3,7 @@
 *.swn
 *.vs
 *-workspace
+compile_commands.json
 
 asm/*
 bin-int/*
