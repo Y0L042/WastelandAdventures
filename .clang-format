@@ -1,0 +1,52 @@
+---
+Language: Cpp
+# Start with the LLVM style as a base, which is similar to K&R
+BasedOnStyle: LLVM
+
+# Indentation settings
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+
+# Brace style: Attach opening braces to control statements or function declarations
+BreakBeforeBraces: Allman
+
+# Control statement formatting
+SpaceBeforeParens: ControlStatements
+SpacesBeforeTrailingComments: 1
+
+# Pointer alignment: Align asterisks to the right (e.g., int* ptr)
+PointerAlignment: Right
+
+# Function and variable declarations
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# Line length
+ColumnLimit: 80
+
+# Disable deriving pointer alignment from context
+DerivePointerAlignment: false
+
+# Control the alignment of consecutive assignments
+AlignConsecutiveAssignments: false
+
+# Other formatting options
+SpaceAfterCStyleCast: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Control the alignment of comments
+CommentPragmas: '^ IWYU pragma:'
+
+# Disable breaking before binary operators
+BreakBeforeBinaryOperators: None
+
+# Sort includes
+SortIncludes: false
+
+# Disable wrapping of lines
+AllowAllParametersOfDeclarationOnNextLine: false
+...

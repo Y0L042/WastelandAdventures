@@ -87,7 +87,6 @@ void callback_player_ondeath(ecs_world_t *world, ecs_entity_t entity, int value)
 static ecs_entity_t ent = 0;
 void callback_player_reset_onhurt()
 {
-	log_info("Reset ouch");
 	if ((gameplay_world != NULL)  && ecs_is_alive(gameplay_world, ent))
 	{
 		Glyph *g = ecs_get_mut(gameplay_world, ent, Glyph);
@@ -97,7 +96,6 @@ void callback_player_reset_onhurt()
 
 void callback_player_onhurt(ecs_world_t *world, ecs_entity_t entity, int value)
 {
-	log_info("OUCH!");
 	ent = entity;
 
 	Glyph *g = ecs_get_mut(world, entity, Glyph);
@@ -114,7 +112,6 @@ void ent_player_create(
         int grid_x, int grid_y
 	)
 {
-//    log_debug("ent_player_create START");
 	
     *ent_player = ecs_new(world);
 	ecs_add(world, *ent_player, TAG_EntEnabled);
@@ -146,8 +143,6 @@ void ent_player_create(
 			.callback_ondeath = callback_player_ondeath,
 			.callback_onhurt = callback_player_onhurt
 		});
-    
-//    log_debug("ent_player_create END");
 }
 
 void ent_dog_create(

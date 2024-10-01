@@ -110,10 +110,6 @@ void handler_tween_add_property(ecs_world_t *world, double delta)
 						break;
 				}
 
-				log_info("SRCi: %.5f", tpc[i]._source_inc);
-				log_info("SRC : %.5f", *(double *)tpc[i].source);
-				log_info("TRG : %.5f", tpc[i].target);
-				log_info("TIM : %.1f", tween->passed_time);
 
 				ecs_remove(it.world, it.entities[i], TweenPropertyComponent);
 				tween->running = 0;

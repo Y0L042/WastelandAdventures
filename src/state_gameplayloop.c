@@ -272,7 +272,6 @@ void create_traps(ecs_world_t *world, TurnManager *tm, Grid *grid, Tileset *tile
 	{
 		int rand_idx = maths_randbetween_int(0, walkable_tiles.count - 1);
 		Vector2 spawnpos = dray_get_value(&walkable_tiles, rand_idx, Vector2);
-	//	log_info("TRAP SPAWNED AT { %.0f, %.0f }, opt %d", spawnpos.x, spawnpos.y, walkable_tiles.count);
 		ecs_entity_t trap;
 		ent_floor_trap_basic_create(
 				&trap,

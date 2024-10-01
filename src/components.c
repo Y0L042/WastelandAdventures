@@ -308,7 +308,6 @@ void handler_glyph_ghost_spawn(ecs_world_t *world)
 
         for (int i = 0; i < it.count; i++)
         {
-			//log_info("Ghost created");
 			ent_glyph_ghost_create(it.world, &g[i], gg[i].fade_time, gg[i].x, gg[i].y);
 			ecs_remove(it.world, it.entities[i], LeaveGlyphGhost);
         }
@@ -420,7 +419,6 @@ void handler_grid_move(ecs_world_t *world)
             }
 
 			TurnComponentData *tc_d = tc[i].tc_d;
-			log_info("%s is moving", tc_d->alias);
             turnmanager_end_turn(tc[i].tc_d->turn_manager, 50);
 
 			gv[i].x = 0;
@@ -534,18 +532,13 @@ void handler_pathfinding(ecs_world_t *world)
 				continue; 
 			}
 			
-		//	log_info("PATHFIND TARGET  : { %d, %d }", gp_target->x, gp_target->y);
 			Vector2 next_pos = dray_pop_value(&path, Vector2);
-		//	log_info("PATHFIND NEXT_POS: { %.f, %.f }", next_pos.x, next_pos.y);
 			Vector2 vel = { next_pos.x - gp[i].x, next_pos.y - gp[i].y };
-		//	log_info("POS: { %d, %d }", gp[i].x, gp[i].y);
-		//	log_info("VEL: { %.f, %.f }", vel.x, vel.y);
 			ecs_set(it.world, it.entities[i], GridVelocity, { .x = vel.x, .y = vel.y });
 			
 			for (int i = 0; i < path.count; i++)
 			{
 				Vector2 p = dray_get_value(&path, i, Vector2);
-		//		log_info("PATH { %d, %d }", p.x, p.y);
 			}
 		}
 	}
@@ -555,7 +548,6 @@ void handler_pathfinding(ecs_world_t *world)
 
 void handler_turncounter_increment(ecs_world_t *world)
 {
-	//log_debug("DEBUG");
     ecs_iter_t it = ecs_query_iter(world, query_turncounter_increment);
 	while (ecs_query_next(&it))
 	{
@@ -631,7 +623,6 @@ void handler_process_triggerareas(ecs_world_t *world)
 			int success = grid_get_entities_in_area(&gpt[i], &ta[i], &entities) == 0;
 			if (success)
 			{
-				// log_info("TriggerArea: enemy found!");
 			}
 
 			if (success && (ta[i].callback != NULL))
@@ -665,7 +656,6 @@ void handler_process_visionareas(ecs_world_t *world)
 			int success = grid_get_entities_in_area(&gpt[i], &va[i], &entities) == 0;
 			if (success)
 			{
-				// log_info("VisionArea: enemy spotted!");
 			}
 
 			if (success && (va[i].callback != NULL))

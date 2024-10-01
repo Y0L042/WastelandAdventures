@@ -61,6 +61,12 @@
 },
 {
   "directory": "C:/Projects/C_Projects/WastelandAdventures/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -IC:/Projects/C_Projects/WastelandAdventures/vendor/raylib5/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/cjson/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/fmt/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/flecs/include  -O2 -g -fno-asynchronous-unwind-tables -std=gnu99  -O2 -g -fno-asynchronous-unwind-tables -std=gnu99 -DDEBUG -o CMakeFiles\\main.dir\\src\\hashtable.c.obj -c C:\\Projects\\C_Projects\\WastelandAdventures\\src\\hashtable.c",
+  "file": "C:\\Projects\\C_Projects\\WastelandAdventures\\src\\hashtable.c",
+  "output": "CMakeFiles\\main.dir\\src\\hashtable.c.obj"
+},
+{
+  "directory": "C:/Projects/C_Projects/WastelandAdventures/build",
   "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -IC:/Projects/C_Projects/WastelandAdventures/vendor/raylib5/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/cjson/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/fmt/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/flecs/include  -O2 -g -fno-asynchronous-unwind-tables -std=gnu99  -O2 -g -fno-asynchronous-unwind-tables -std=gnu99 -DDEBUG -o CMakeFiles\\main.dir\\src\\log.c.obj -c C:\\Projects\\C_Projects\\WastelandAdventures\\src\\log.c",
   "file": "C:\\Projects\\C_Projects\\WastelandAdventures\\src\\log.c",
   "output": "CMakeFiles\\main.dir\\src\\log.c.obj"
@@ -130,12 +136,6 @@
   "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -IC:/Projects/C_Projects/WastelandAdventures/vendor/raylib5/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/cjson/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/fmt/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/flecs/include  -O2 -g -fno-asynchronous-unwind-tables -std=gnu99  -O2 -g -fno-asynchronous-unwind-tables -std=gnu99 -DDEBUG -o CMakeFiles\\main.dir\\src\\statemachine.c.obj -c C:\\Projects\\C_Projects\\WastelandAdventures\\src\\statemachine.c",
   "file": "C:\\Projects\\C_Projects\\WastelandAdventures\\src\\statemachine.c",
   "output": "CMakeFiles\\main.dir\\src\\statemachine.c.obj"
-},
-{
-  "directory": "C:/Projects/C_Projects/WastelandAdventures/build",
-  "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -IC:/Projects/C_Projects/WastelandAdventures/vendor/raylib5/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/cjson/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/fmt/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/flecs/include  -O2 -g -fno-asynchronous-unwind-tables -std=gnu99  -O2 -g -fno-asynchronous-unwind-tables -std=gnu99 -DDEBUG -o CMakeFiles\\main.dir\\src\\tileset.c.obj -c C:\\Projects\\C_Projects\\WastelandAdventures\\src\\tileset.c",
-  "file": "C:\\Projects\\C_Projects\\WastelandAdventures\\src\\tileset.c",
-  "output": "CMakeFiles\\main.dir\\src\\tileset.c.obj"
 },
 {
   "directory": "C:/Projects/C_Projects/WastelandAdventures/build",
