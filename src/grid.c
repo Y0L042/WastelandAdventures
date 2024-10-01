@@ -169,12 +169,6 @@ int grid_get_entities_in_area(GridPosition *gps, GridArea *ga, DRay *entities)
 	DRay coords;
 	dray_init_values(&coords, Vector2);
 	grid_get_coords_in_radius(grid, gps->x, gps->y, ga->rad, ga->mode, &coords);
-	for (int i = 0; i < coords.count; i++)
-	{
-		Vector2 coord = dray_get_value(&coords, i, Vector2);
-		const int _x = (int)coord.x;
-		const int _y = (int)coord.y;
-	}
 
 	for (int i = 0; i < coords.count; i++)
 	{

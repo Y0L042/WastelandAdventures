@@ -5,13 +5,14 @@
 #include <raygui.h>	
 #include "log.h"
 
-#include "flecs.h"
+#include <flecs.h>
 #include "dray.h"
 #include "maths.h"
 #include "debugdraw.h"
 
 #include "components.h"
 #include "entities.h"
+#include "input.h"
 
 #include "state_mainmenu.h"
 #include "state_pausemenu.h"
@@ -93,6 +94,8 @@ void quit();
 			handle_ui(frame_time);
 			DrawFPS(10, 10);
 		EndDrawing();
+
+        consume_key_buffer();
 	}
 	CloseWindow();
 	quit();
@@ -138,11 +141,12 @@ void handle_input()
 #ifdef RELEASE 
 	_quit_game = IsKeyPressed(KEY_LEFT_ALT) && IsKeyPressed(KEY_F4);
 #endif
-
 	if (_quit_game)
 	{
 		quit_game();
 	}
+
+    process_key_buffer();
 }
 
 void update(double delta)
@@ -170,7 +174,6 @@ void draw(double delta)
 
 void quit()
 {
-
 }
 
 void quit_game(void)

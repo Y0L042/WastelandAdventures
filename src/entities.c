@@ -311,7 +311,6 @@ void ent_kobold_set_target(VisionArea *va, ecs_world_t *world, DRay *targets)
 
 int ent_kobold_ai(AIComponent *ai)
 {
-	log_info("KOBOLD AI");
 	/*
 	 * An entity can only take ONE action per turn. The AI's job is to choose
 	 * what action must be taken. Must they attack, move, heal... They decide by

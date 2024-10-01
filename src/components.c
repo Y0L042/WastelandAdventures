@@ -1,4 +1,5 @@
 #include "components.h"
+#include "input.h"
 
 ECS_COMPONENT_DECLARE(Position);
 ECS_COMPONENT_DECLARE(Velocity);
@@ -456,27 +457,27 @@ void handler_player_input(ecs_world_t *world)
 			{
 				mult = 2;
 			}
-			if (IsKeyPressed(KEY_KP_7) || IsKeyPressed(KEY_KP_8) || IsKeyPressed(KEY_KP_9))
+			if (is_key_buffered(KEY_KP_7) || is_key_buffered(KEY_KP_8) || is_key_buffered(KEY_KP_9))
 			{
 				g_y -= 1 * mult; // UP
 				moved = 1;
 			}
-			if (IsKeyPressed(KEY_KP_1) || IsKeyPressed(KEY_KP_2) || IsKeyPressed(KEY_KP_3))
+			if (is_key_buffered(KEY_KP_1) || is_key_buffered(KEY_KP_2) || is_key_buffered(KEY_KP_3))
 			{
 				g_y += 1 * mult; // DOWN
 				moved = 1;
 			}
-			if (IsKeyPressed(KEY_KP_1) || IsKeyPressed(KEY_KP_4) || IsKeyPressed(KEY_KP_7))
+			if (is_key_buffered(KEY_KP_1) || is_key_buffered(KEY_KP_4) || is_key_buffered(KEY_KP_7))
 			{
 				g_x -= 1 * mult; // LEFT
 				moved = 1;
 			}
-			if (IsKeyPressed(KEY_KP_3) || IsKeyPressed(KEY_KP_6) || IsKeyPressed(KEY_KP_9))
+			if (is_key_buffered(KEY_KP_3) || is_key_buffered(KEY_KP_6) || is_key_buffered(KEY_KP_9))
 			{
 				g_x += 1 * mult; // RIGHT
 				moved = 1;
 			}
-			if (IsKeyPressed(KEY_KP_5))
+			if (is_key_buffered(KEY_KP_5))
 			{
 				moved = 1;
 			}
@@ -662,8 +663,6 @@ void handler_process_visionareas(ecs_world_t *world)
 			{
 				(*va[i].callback)(&va[i], it.world, &entities);
 			}
-
-			//dray_free(entities);
 
 			TurnManager *tm = tc[i].tc_d->turn_manager;
 			turnmanager_end_turn(tm, 75);

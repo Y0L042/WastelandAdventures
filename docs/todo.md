@@ -3,10 +3,7 @@
 # LightBulbs
 
 ## InProgress
-
-- [ ] ADD WastelandAdventures cool title
-- [ ] ADD some kind of AI structure for npc
-- [ ] FIX fix enemy targeting and pathing
+- [ ] ADD input buffering and consuming
 
 
 ## ToDo
@@ -20,6 +17,9 @@
 - [ ] ADD multiple Tween easing methods
 - [ ] ADD stairs to new level
 - [ ] IMP damage, hurt, and health to be more versatile
+- [ ] ADD WastelandAdventures cool title
+- [ ] ADD some kind of AI structure for npc
+- [ ] FIX fix enemy targeting and pathing
 
 
 
