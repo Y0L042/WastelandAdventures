@@ -2,6 +2,7 @@
 
 #include "maths.h"
 #include "state_gameplayloop.h"
+#include "blackboard.h"
 #include "ai.h"
 #include "tween.h"
 #include "timer.h"
@@ -327,6 +328,7 @@ int ent_kobold_ai(AIComponent *ai)
 	// 			patrol
 	// 			or wait
 	// cmp_add_PathComponent(world, *ent_kobold, grid);
+    return 0;
 }
 
 void ent_kobold_create(
@@ -383,5 +385,10 @@ void ent_kobold_create(
 			.entity = *ent_kobold,
 			.ai_main = ent_kobold_ai
 		});
+    
+    Blackboard *bb = blackboard_create();
+    ecs_set(world, *ent_kobold, EntityBlackboardComponent, {
+        .blackboard = bb
+    });
 }
 

@@ -3,7 +3,6 @@
 # LightBulbs
 
 ## InProgress
-- [ ] ADD input buffering and consuming
 
 
 ## ToDo
@@ -45,6 +44,12 @@
 
 - [x] ADD timer and timer callbacks
 - [x] ADD enemy
+
+ @13:25 Tue, 01 Oct 2024
+
+ - [x] ADD input buffering and consuming
+
+
 
 ## Roadmap
 

@@ -1,5 +1,6 @@
 #include "components.h"
 #include "input.h"
+#include "turnbasedsystem.h"
 
 ECS_COMPONENT_DECLARE(Position);
 ECS_COMPONENT_DECLARE(Velocity);
@@ -35,6 +36,8 @@ ECS_COMPONENT_DECLARE(TweenComponent);
 ECS_COMPONENT_DECLARE(TweenPropertyComponent);
 ECS_COMPONENT_DECLARE(TimerActiveComponent);
 ECS_COMPONENT_DECLARE(AIComponent);
+ECS_COMPONENT_DECLARE(EntityBlackboardComponent);
+ECS_COMPONENT_DECLARE(GroupBlackboardComponent);
 
 void create_components(ecs_world_t *world)
 {
@@ -72,6 +75,8 @@ void create_components(ecs_world_t *world)
 	ECS_COMPONENT_DEFINE(world, TweenPropertyComponent);
 	ECS_COMPONENT_DEFINE(world, TimerActiveComponent);
 	ECS_COMPONENT_DEFINE(world, AIComponent);
+    ECS_COMPONENT_DEFINE(world, EntityBlackboardComponent);
+    ECS_COMPONENT_DEFINE(world, GroupBlackboardComponent);
 }
 
 

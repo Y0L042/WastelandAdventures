@@ -81,6 +81,50 @@ int hashtable_insert(HashTable *ht, void *key, void *value)
 
 	entry->key = key;
 	entry->value = value;
+    entry->freekey = free; /* use default free */
+    entry->freeval = free; /* use default free */
+
+	insert_tail(ht, entry, hashidx);
+	ht->entry_count++;
+
+	return 0;
+}
+
+int hashtable_insert_pro(HashTable *ht, void *key, void *value,
+                         void (*freekey)(void *k), void (*freeval)(void *val))
+{
+	if (!(ht && key && value)) {
+		return -1;
+	}
+
+	float current_loadfactor = (float)ht->entry_count / (float)ht->size;
+	if (current_loadfactor > ht->max_loadfactor) {
+		rehash(ht);
+	}
+
+	size_t hashidx = ht->hash(key, ht->size);
+	if (hashidx >= ht->size) {
+		printf("HashIdx %d larger than hashtable size %d!", hashidx, ht->size);
+		return -2;
+	}
+
+	HTEntry *entry = ht->table[hashidx];
+	while (entry != NULL) {
+		if (ht->cmp(key, entry->key) == 0) {
+			return -2;
+		}
+		entry = entry->next_ptr;
+	}
+
+	entry = (HTEntry *)malloc(sizeof(HTEntry));
+	if (entry == NULL) {
+		return -1;
+	}
+
+	entry->key = key;
+	entry->value = value;
+    entry->freekey = freekey;
+    entry->freeval = freeval;
 
 	insert_tail(ht, entry, hashidx);
 	ht->entry_count++;
@@ -105,9 +149,53 @@ void *hashtable_search(HashTable *ht, void *key)
 	return NULL;
 }
 
-int hashtable_free(HashTable *ht, void (*freekey)(void *k), void (*freeval)(void *v))
+int hashtable_remove(HashTable *ht, void *key)
 {
-	if (!(ht && freekey && freeval)) {
+    if (!(ht && key)) {
+        return -1; // Invalid parameters
+    }
+
+    // Compute the hash index for the given key
+    size_t hashidx = ht->hash(key, ht->size);
+    HTEntry *entry = ht->table[hashidx];
+    HTEntry *prev = NULL;
+
+    // Traverse the linked list to find the entry
+    while (entry != NULL) {
+        if (ht->cmp(key, entry->key) == 0) {
+            // Entry found; remove it from the list
+            if (prev == NULL) {
+                // Entry is the first in the list
+                ht->table[hashidx] = entry->next_ptr;
+            } else {
+                // Entry is in the middle or end
+                prev->next_ptr = entry->next_ptr;
+            }
+
+            // Optionally free the key and value
+            if (entry->freekey) {
+                entry->freekey(entry->key);
+            }
+            if (entry->freeval) {
+                entry->freeval(entry->value);
+            }
+
+            // Free the entry itself
+            free(entry);
+            ht->entry_count--;
+
+            return 0; // Success
+        }
+        prev = entry;
+        entry = entry->next_ptr;
+    }
+
+    return -1; // Key not found
+}
+
+int hashtable_free(HashTable *ht)
+{
+	if (!(ht)) {
 		return -1;
 	}
 
@@ -116,11 +204,11 @@ int hashtable_free(HashTable *ht, void (*freekey)(void *k), void (*freeval)(void
 		p = ht->table[i];
 		while (p != NULL) {
 			q = p->next_ptr;
-			if (p->key) {
-				freekey(p->key);
+			if (p->key && p->freekey) {
+				p->freekey(p->key);
 			}
-			if (p->value) {
-				freeval(p->value);
+			if (p->value && p->freeval) {
+				p->freeval(p->value);
 			}
 			free(p);
 			p = q;

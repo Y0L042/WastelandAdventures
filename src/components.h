@@ -5,9 +5,9 @@
 #include <raymath.h>
 #include "log.h"
 #include "flecs.h"
+#include "blackboard.h"
 #include "grid.h"
 #include "glyph.h"
-#include "turnbasedsystem.h"
 #include "pathfinding.h"
 #include "tween.h"
 #include "timer.h"
@@ -106,6 +106,11 @@ extern ECS_COMPONENT_DECLARE(TweenPropertyComponent);
 extern ECS_COMPONENT_DECLARE(TimerActiveComponent);
 
 extern ECS_COMPONENT_DECLARE(AIComponent);
+typedef struct BlackboardComponent {
+    Blackboard *blackboard;
+} EntityBlackboardComponent, GroupBlackboardComponent;
+extern ECS_COMPONENT_DECLARE(EntityBlackboardComponent);
+extern ECS_COMPONENT_DECLARE(GroupBlackboardComponent);
 
 /* Defines components with the active ecs_world_t. Must run just after creating
  * world
