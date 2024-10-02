@@ -1,5 +1,6 @@
 #include "turnbasedsystem.h"
 #include <math.h>
+#include "log.h"
 
 void turncomponentdata_initialize(
 		TurnComponentData *tc_d, 

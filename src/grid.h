@@ -7,6 +7,11 @@
 #include "log.h"
 #include "dray.h"
 
+#define GRIDX2WORLDX(_grid, _grid_x)     (_grid_x * _grid->tile_width)
+#define GRIDY2WORLDY(_grid, _grid_y)     (_grid_y * _grid->tile_height)
+#define WORLDX2GRIDX(_grid, _world_x)     ((int)(_world_x / _grid->tile_width))
+#define WORLDY2GRIDY(_grid, _world_y)     ((int)(_world_y / _grid->tile_height))
+
 #define GRID_CREATE_2D(_grid_width, _grid_height, _grid_type) \
 	((_grid_type **)_grid_create_2d(_grid_width, _grid_height, sizeof(_grid_type)))
 

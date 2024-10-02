@@ -2,7 +2,6 @@
 #define TURNBASEDSYSTEM_H
 
 #include <raylib.h>
-#include "log.h"
 
 #include "cvec.h"
 #include "flecs.h"
@@ -24,15 +23,18 @@ typedef struct TurnExit { int empty; } TurnExit;
 
 struct TurnManager; // Forward Declaration
 typedef struct TurnComponentData {
+    /* Known at compile-time */
 	int enable;
 	int initiative;	
+	char alias[TURNCOMP_ALIAS_LEN];
+     
+    /* Known at runtime */
 	double last_turn_time;
 	enum TurnState current_turn_state;
 	struct TurnManager *turn_manager;
     ecs_world_t *world;
     ecs_entity_t entity_id;
 	ecs_ref_t *tc_ref;
-	char alias[TURNCOMP_ALIAS_LEN];
 } TurnComponentData;
 
 typedef struct TurnComponent {
@@ -73,7 +75,6 @@ void turncomponentdata_disable(TurnComponentData *tc_d);
 
 void turnmanager_initialize(TurnManager *tm, ecs_world_t *world);
 TurnComponentData* turnmanager_create_turncomponent(TurnManager *tm, ecs_entity_t entity);
-//void turnmanager_remove_turncomponent(TurnManager *tm, TurnComponent *tc);
 void turnmanager_end_turn(TurnManager *tm, int inc);
 void turnmanager_print_turn_queue(TurnManager *tm);
 void turnmanager_enable_tc(TurnManager *tm, ecs_entity_t entity);

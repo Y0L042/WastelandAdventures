@@ -113,6 +113,8 @@ void _state_gameplayloop_initialize()
 			g_ent_player,
 			spawn_x_dog, spawn_y_dog
 		);
+
+    handler_init_gridposition(gameplay_world);
 }
 
 void _state_gameplayloop_enter()

@@ -115,19 +115,21 @@ void ent_player_create(
 {
 	
     *ent_player = ecs_new(world);
-	ecs_add(world, *ent_player, TAG_EntEnabled);
 
+	ecs_add(world, *ent_player, TAG_EntEnabled);
     ecs_add(world, *ent_player, TAG_Player);
-    int world_x, world_y;
-    grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
-    ecs_set(world, *ent_player, Position, { .x = world_x, .y = world_y });
-	grid_create_gridposition(
-			grid_x, grid_y,
-			grid, 
-			*ent_player,
-			ENT_PLAYER_COLL_LAYER,
-			ENT_PLAYER_COLL_MASK
-		);
+
+    ecs_set(world, *ent_player, Position, { 
+            .x = GRIDX2WORLDX(grid, grid_x), .y = GRIDY2WORLDY(grid, grid_y) 
+        });
+    ecs_set(world, *ent_player, GridPosition, {
+        .x = grid_x,
+        .y = grid_y,
+        .grid = grid,
+        .entity = *ent_player,
+        .coll_layer = ENT_PLAYER_COLL_LAYER,
+        .coll_mask = ENT_PLAYER_COLL_MASK
+    });
 
     ecs_set(world, *ent_player, Glyph, { 
 			.source_tile_x = 27,//0, 
@@ -156,6 +158,7 @@ void ent_dog_create(
 		int grid_x, int grid_y
 	)
 {
+#if 0
 	*ent_dog = ecs_new(world);
 	ecs_add(world, *ent_dog, TAG_EntEnabled);
     int world_x, world_y;
@@ -180,6 +183,7 @@ void ent_dog_create(
 	cmp_add_PathComponent(world, *ent_dog, grid);
     ecs_set(world, *ent_dog, NPCTarget, { .target = entity_target });
 	ecs_set(world, *ent_dog, GhostWhenMoving, { .fade_time = 5 });
+#endif
 }
 
 void ent_wall_perm_create(
@@ -190,6 +194,7 @@ void ent_wall_perm_create(
         int grid_x, int grid_y
     )
 {
+#if 0
    *ent_wall_perm = ecs_new(world);
    int world_x, world_y;
    grid_pos_to_world_pos(grid, grid_x, grid_y, &world_x, &world_y);
@@ -208,6 +213,7 @@ void ent_wall_perm_create(
            .tileset = tileset,
 		   .color = LIGHTGRAY
         });
+#endif
 }
 
 void ent_glyph_ghost_create(
@@ -217,6 +223,7 @@ void ent_glyph_ghost_create(
 		int world_x, int world_y
 	)
 {
+#if 0
 	ecs_entity_t ent_glyph_ghost = ecs_new(world);
 	ecs_add(world, ent_glyph_ghost, TAG_EntEnabled);
 	ecs_set(world, ent_glyph_ghost, Position, { .x = world_x, .y = world_y });
@@ -230,6 +237,7 @@ void ent_glyph_ghost_create(
 			.initial_time = time, 
 			.time_left = time 
 		});
+#endif
 }
 
 void callback_floor_trap_basic_damage(TriggerArea *ta, ecs_world_t *world, DRay *entities)
@@ -254,6 +262,7 @@ void ent_floor_trap_basic_create(
 		int grid_x, int grid_y
 	)
 {
+#if 0
     *ent_floortrap_basic = ecs_new(world);
 	ecs_add(world, *ent_floortrap_basic, TAG_EntEnabled);
     int world_x, world_y;
@@ -283,6 +292,7 @@ void ent_floor_trap_basic_create(
 
 	turnmanager_create_turncomponent(tm, *ent_floortrap_basic);
 	turnmanager_set_component_alias(tm, *ent_floortrap_basic, "FLRTRAP_B\0");
+#endif
 }
 
 void ent_kobold_set_target(VisionArea *va, ecs_world_t *world, DRay *targets)
@@ -340,6 +350,7 @@ void ent_kobold_create(
 		int grid_x, int grid_y
 	)
 {
+#if 0
 	*ent_kobold = ecs_new(world);
 	ecs_add(world, *ent_kobold, TAG_EntEnabled);
 
@@ -390,5 +401,6 @@ void ent_kobold_create(
     ecs_set(world, *ent_kobold, EntityBlackboardComponent, {
         .blackboard = bb
     });
+#endif
 }
 

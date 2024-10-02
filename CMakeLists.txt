@@ -37,7 +37,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 file(GLOB SRC_C ${CMAKE_SOURCE_DIR}/src/*.c)
 
 # Set CFLAGS and LDFLAGS for Windows
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g -fno-asynchronous-unwind-tables -std=gnu99")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fno-asynchronous-unwind-tables -std=gnu99")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
 
 # Create the executable
