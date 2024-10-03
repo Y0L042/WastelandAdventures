@@ -11,6 +11,7 @@ bin/*
 vendor/*
 builds/*
 build/*
+src_bak/*
 .vs/*
 .cache/*
 

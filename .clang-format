@@ -1,5 +1,5 @@
 ---
-Language: Cpp
+Language: C
 # Start with the LLVM style as a base, which is similar to K&R
 BasedOnStyle: LLVM
 
@@ -10,13 +10,24 @@ UseTab: Never
 ContinuationIndentWidth: 4
 
 # Brace style: Attach opening braces to control statements or function declarations
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Custom         # Enable custom brace wrapping
+
+BraceWrapping:
+  AfterFunction: true              # Place opening brace of functions on the next line (Allman)
+  AfterControlStatement: false     # Place opening brace of control statements on the same line (K&R)
+  AfterStruct: false               # Keep struct braces on the same line
+  AfterClass: false                # Keep class braces on the same line
+  AfterEnum: false                 # Keep enum braces on the same line
+  AfterNamespace: false            # Keep namespace braces on the same line
+  AfterUnion: false                # Keep union braces on the same line
+  BeforeCatch: false               # Do not place catch braces on the next line
+  BeforeElse: false                # Do not place else braces on the next line
 
 # Control statement formatting
 SpaceBeforeParens: ControlStatements
 SpacesBeforeTrailingComments: 1
 
-# Pointer alignment: Align asterisks to the right (e.g., int* ptr)
+# Pointer alignment: Align asterisks to the right (e.g., int *ptr)
 PointerAlignment: Right
 
 # Function and variable declarations
@@ -27,9 +38,6 @@ AllowShortLoopsOnASingleLine: false
 # Line length
 ColumnLimit: 80
 
-# Disable deriving pointer alignment from context
-DerivePointerAlignment: false
-
 # Control the alignment of consecutive assignments
 AlignConsecutiveAssignments: false
 
@@ -38,8 +46,11 @@ SpaceAfterCStyleCast: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 
-# Control the alignment of comments
-CommentPragmas: '^ IWYU pragma:'
+# Disable certain alignments
+AlignConsecutiveAssignments: false
+AlignAfterOpenBracket: Align
+AlignOperands: false
+AlignTrailingComments: false
 
 # Disable breaking before binary operators
 BreakBeforeBinaryOperators: None
@@ -47,6 +58,21 @@ BreakBeforeBinaryOperators: None
 # Sort includes
 SortIncludes: false
 
+# Disable some LLVM-specific options
+DerivePointerAlignment: false
+SpaceBeforeAssignmentOperators: false
+SpaceBeforeCpp11BracedList: false
+
+# Comment pragmas
+CommentPragmas: '^ IWYU pragma:'
+
+# Binary operator formatting
+BreakBeforeBinaryOperators: None
+
 # Disable wrapping of lines
 AllowAllParametersOfDeclarationOnNextLine: false
+
+# 11. Spaces Inside Braces for Container Literals
+SpacesInContainerLiterals: true         # Add spaces inside braces of container literals (e.g., struct initializations)
+SpacesInBraces: true                   # Do not add spaces inside braces globally
 ...

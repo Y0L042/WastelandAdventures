@@ -76,6 +76,7 @@ clean() {
 	rm -rf bin
 	rm -rf bin-int
     rm -f compile_commands.json
+    ninja clean
 	echo "Cleaning complete."
 }
 
