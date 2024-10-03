@@ -15,6 +15,9 @@
 /* --- Utilities --- */
 #include "log.h"
 
+/* --- Systems --- */
+#include "states.h"
+
 /* --- Game Settings --- */
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -24,6 +27,13 @@ const char *GAME_TITLE = "Wasteland Adventures\0";
 
 /* --- Extern Variables --- */
 ecs_world_t *global_world;
+
+/* Game States */
+SM_Machine game_statemachine;
+SM_State state_mainmenu;
+SM_State state_pausemenu;
+SM_State state_gameplayloop;
+SM_State state_gameover_death;
 
 /* --- Local Variables --- */
 static int game_should_quit = 0;
@@ -86,12 +96,14 @@ int main()
 
 static void initialize()
 {
-
+    /* Register StateMachine and States */
+	sm_create_state_machine(&game_statemachine, "GAME_STATEMACHINE");	
+	state_mainmenu_register();
 }
 
 static void ready()
 {
-
+    sm_switch_state_pointer(&game_statemachine, &state_mainmenu);
 }
 
 static void handle_input()
@@ -101,22 +113,22 @@ static void handle_input()
 
 static void update(double delta)
 {
-
+    sm_execute_state_update(&game_statemachine, delta);
 }
 
 static void physics_update(double delta)
 {
-
+    sm_execute_state_physics_update(&game_statemachine, delta);
 }
 
 static void draw(double delta)
 {
-
+    sm_execute_state_draw(&game_statemachine, delta);
 }
 
 static void handle_ui(double delta)
 {
-
+    sm_execute_state_handle_ui(&game_statemachine, delta);
 }
 
 static void quit()
