@@ -135,3 +135,8 @@ static void quit()
 {
 
 }
+
+void force_terminate_game()
+{
+    game_should_quit = 1;
+}
