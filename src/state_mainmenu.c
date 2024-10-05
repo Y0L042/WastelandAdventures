@@ -18,16 +18,16 @@ static void handle_ui(double delta);
 static void draw(double delta);
 static void exit_state(void);
 
-void state_mainmenu_register()
+void state_mainmenu_register(SM_Machine *sm, SM_State *state)
 {
-    state_mainmenu.state_enter = enter_state;
-    state_mainmenu.state_update = update;
-    state_mainmenu.state_physics_update = physics_update;
-    state_mainmenu.state_handle_ui = handle_ui;
-    state_mainmenu.state_draw = draw;
-    state_mainmenu.state_exit = exit_state;
+    state->state_enter = enter_state;
+    state->state_update = update;
+    state->state_physics_update = physics_update;
+    state->state_handle_ui = handle_ui;
+    state->state_draw = draw;
+    state->state_exit = exit_state;
 
-    sm_register_state(&game_statemachine, &state_mainmenu, "STATE_MAINMENU");
+    sm_register_state(sm, state, "STATE_MAINMENU");
 }
 
 /* --- SM Functions --- */

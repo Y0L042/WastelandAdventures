@@ -1,5 +1,7 @@
 #include "main.h"
 
+#define FLECS_JSON
+
 /* --- C Libraries --- */
 #include <stdlib.h>
 #include <stdio.h>
@@ -98,7 +100,8 @@ static void initialize()
 {
     /* Register StateMachine and States */
 	sm_create_state_machine(&game_statemachine, "GAME_STATEMACHINE");	
-	state_mainmenu_register();
+	state_mainmenu_register(&game_statemachine, &state_mainmenu);
+    state_gameplayloop_register(&game_statemachine, &state_gameplayloop);
 }
 
 static void ready()

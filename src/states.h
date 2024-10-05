@@ -5,6 +5,7 @@
 
 /* --- State Headers (for registration) --- */
 #include "state_mainmenu.h"
+#include "state_gameplayloop.h"
 
 /* --- StateMachine --- */
 extern SM_Machine game_statemachine;
