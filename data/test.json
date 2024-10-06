@@ -1,1 +1,11 @@
-{"name":"#517", "components":{"Position":{"x":15, "y":25}}}
+{
+    "name":"DOG",
+    "components":
+    {
+        "Position2D":
+        {
+            "x":17,
+            "y":27
+        }
+    }
+}
