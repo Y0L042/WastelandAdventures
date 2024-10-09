@@ -1,10 +1,13 @@
 #ifndef ECS_COMPONENTS_H
 #define ECS_COMPONENTS_H
 
-#include <raylib.h>
 #include <flecs.h>
+#include <raylib.h>
 
+/* --- Component Sources --- */
 #include "components_gameplay.h"
+
+/* ------------------------- */
 
 /* --- Component Forward Declarations --- */
 /* --- Serializable Components --- */

@@ -30,6 +30,9 @@ static HashTable *entity_table;
 /* --- Private Function Prototypes --- */
 static size_t hash(void *key, unsigned int size);
 static int cmp(void *key_a, void *key_b);
+/* ----------------------------------- */
+
+
 
 void entity_table_initialize()
 {
@@ -94,6 +97,7 @@ EntityErrorCodes load_entity_definitions_from_file(const char *path)
             continue;
         }
 
+        /* Add entity data to hashtable */
         static int i = 0;
         char *key_name_str = cJSON_GetStringValue(key_name_json);
         char *ecs_data_json_str = cJSON_Print(ecs_data_json);

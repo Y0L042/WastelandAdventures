@@ -13,6 +13,7 @@
 #include "states.h"
 #include "main.h"
 #include "ecs_components.h"
+#include "ecs_gameplay_handlers.h"
 #include "serialization.h"
 #include "entities.h"
 
@@ -114,7 +115,7 @@ static int create_gameplay_world()
         return GAMEPLAYWORLD_CREATION_FAILED;
     }
     ecs_define_components(gameplay_world);
-    /* TODO create gameplay_world queries */
+    create_gameplay_queries(gameplay_world);
 
     return GAMEPLAYWORLD_CREATION_SUCCEEDED;
 }
@@ -124,11 +125,12 @@ static int free_gameplay_world()
     if (gameplay_world == NULL) {
         return GAMEPLAYWORLD_FREE_FAILED;
     }
+    
+    free_gameplay_queries(gameplay_world);
+    /* TODO free gameplay_world components */
+
     ecs_fini(gameplay_world);
     gameplay_world = NULL;
-
     
-    /* TODO free gameplay_world components */
-    /* TODO free gameplay_world queries */
     return GAMEPLAYWORLD_FREE_SUCCEEDED;
 }
