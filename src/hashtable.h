@@ -31,8 +31,8 @@ typedef struct HashTable
 } HashTable;
 
 HashTable *hashtable_create(float loadfactor,
-                            size_t (*hash)(void *, unsigned int),
-                            int (*cmp)(void *, void *));
+                            size_t (*hash)(void *key, unsigned int size),
+                            int (*cmp)(void *key_a, void *key_b));
 int hashtable_free(HashTable *ht);
 
 int hashtable_insert(HashTable *ht, void *key, void *value);

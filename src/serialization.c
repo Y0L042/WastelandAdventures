@@ -59,11 +59,10 @@ int serialize_entity_to_json_file(ecs_world_t *world, ecs_entity_t entity, const
     return SERIALIZATION_SUCCESS;
 }
 
-ecs_entity_t deserialize_entity_from_json_file(ecs_world_t *world, const char *path)
+ecs_entity_t deserialize_entity_from_json(ecs_world_t *world, const char *json_chars)
 {
     log_info("ENTITY_FROM_JSON_FILE START\n");
 
-    char *json_chars = read_chars_from_file(path);
     if (json_chars == NULL) {
         return SERIALIZATION_ENTITY_FROM_JSON_FAILED;
     }
@@ -72,8 +71,6 @@ ecs_entity_t deserialize_entity_from_json_file(ecs_world_t *world, const char *p
     ecs_entity_t e = ecs_new(world);
     ecs_entity_from_json(world, e, json_chars, NULL);
 
-    free(json_chars);
-
     log_info("ENTITY_FROM_JSON_FILE END\n");
 
     return e;
@@ -81,3 +78,80 @@ ecs_entity_t deserialize_entity_from_json_file(ecs_world_t *world, const char *p
 
 
 
+void DEP_load_entity_definitions_from_file(ecs_world_t *world, const char *path)
+{
+    /* read json from file */
+    char *file_json_str = read_chars_from_file(path);
+    log_info("json_chars:\n%s\n", file_json_str);
+    cJSON *file_json = cJSON_Parse(file_json_str);
+    free(file_json_str);
+
+    if (file_json == NULL) {
+        log_error("Error parsing JSON file!");
+        return;
+    }
+
+    /* array of entities */
+    cJSON *entities_json = cJSON_GetObjectItem(file_json, "entities");
+    if (!cJSON_IsArray(entities_json)) {
+        log_error("Entities not an array!");
+        cJSON_Delete(file_json);
+        return;
+    }
+
+    int num_entities = cJSON_GetArraySize(entities_json);
+    for (int i = 0; i < num_entities; i++) {
+
+        /* get current entity */
+        cJSON *entity_json = cJSON_GetArrayItem(entities_json, i);
+        if (entity_json == NULL) {
+            log_error("Error parsing entity from JSON array!");
+            continue;
+        }
+
+        /* extract "ecs_data" from current entity */
+        cJSON *ecs_data_json = cJSON_GetObjectItem(entity_json, "ecs_data");
+        if (!ecs_data_json) {
+            log_error("ecs_data not found in entity!");
+            continue;
+        }
+
+        char *ecs_data_json_str = cJSON_Print(ecs_data_json);
+        log_info("ecs_data JSON:\n%s\n", ecs_data_json_str);
+
+        deserialize_entity_from_json(world, ecs_data_json_str);
+
+        free(ecs_data_json_str);
+    }
+
+    cJSON_Delete(file_json);
+}
+
+
+
+void deserialize_entities_from_json_file(ecs_world_t *world, const char *path)
+{
+    char *json_chars = read_chars_from_file(path);
+    log_info("json_chars:\n%s\n", json_chars);
+    cJSON *json = cJSON_Parse(json_chars);
+    if (json == NULL) {
+        log_error("Error parsing JSON!");
+        return;
+    }
+
+    cJSON *entities = cJSON_GetObjectItem(json, "entities");
+    if (!cJSON_IsArray(entities)) {
+        log_error("Entities not an array!");
+        cJSON_Delete(json);
+        return;
+    }
+
+    int num_entities = cJSON_GetArraySize(entities);
+    for (int i = 0; i < num_entities; i++) {
+        cJSON *entity = cJSON_GetArrayItem(entities, i);
+        char *entity_str = cJSON_Print(entity);
+        log_info("Entity JSON:\n%s\n", entity_str);
+        deserialize_entity_from_json(world, entity_str);
+        free(entity_str);
+    }
+}

@@ -14,6 +14,7 @@
 #include "main.h"
 #include "ecs_components.h"
 #include "serialization.h"
+#include "entities.h"
 
 /* --- Constants --- */
 static const char *STATE_NAME = "STATE_GAMEPLAYLOOP\0";
@@ -59,6 +60,16 @@ static void initialize()
     is_gameplayloop_initialized = 1;
     create_gameplay_world();
 
+    entity_table_initialize();
+    load_entity_definitions_from_file(TEST_JSON_FILE);
+
+    ecs_entity_t player = create_entity_from_table(gameplay_world, "Player");
+    if (player < 10) {
+        print_entity_error(player);
+    } else {
+        const Position2D *p = ecs_get(gameplay_world, player, Position2D);
+        log_info("Player: %llu, Position{ %.1f, %.1f }", player, p->x, p->y);
+    }
 }
 
 static void enter_state(void)
@@ -69,13 +80,6 @@ static void enter_state(void)
         initialize();
     }
 
-    player = ecs_new(gameplay_world);
-    ecs_set(gameplay_world, player, Position2D, { .x = 10.0f, .y = 20.0f });
-    serialize_entity_to_json_file(gameplay_world, player, ENTITY_JSON_FILE);
-
-    ecs_entity_t dog = deserialize_entity_from_json_file(gameplay_world, TEST_JSON_FILE);
-    const Position2D *p = ecs_get(gameplay_world, dog, Position2D);
-    log_info("DOG: .id %llu Position{ %.1f, %.1f }\n", dog, p->x, p->y);
 }
 
 static void update(double delta)
