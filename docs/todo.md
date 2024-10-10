@@ -4,8 +4,18 @@
 
 ## InProgress
 
+- [ ] REF Add Camera2D
+- [ ] REF Add Asset and Sprite and Glyph code
 
 ## ToDo
+
+- [ ] REF Add Sprite/Glyph Components and Handlers
+- [ ] REF Add Grid code
+- [ ] REF Add Grid Component, initialization, handler. See how to store
+  GridComponentData separate from Component.
+- [ ] REF Add Player input, and movement
+- [ ] REF Add TurnBasedSystem code
+- [ ] REF Add TurnBasedSystem Components, ComponentData, and Handlers
 
 - [ ] FIX Pathfinding getting softlocked fix 
 - [ ] FIX free DRays that gets created in structs X( (see if it fixes memleaks
@@ -47,7 +57,12 @@
 
  @13:25 Tue, 01 Oct 2024
 
- - [x] ADD input buffering and consuming
+- [x] ADD input buffering and consuming
+
+ @15:30 Wed, 09 Oct 2024
+
+- [x] REF added JSON system (for entity definitions), Component sytem, and
+   Handler system.
 
 
 

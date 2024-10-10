@@ -4,6 +4,7 @@
 ECS_COMPONENT_DECLARE(Position2D);
 
 /* --- Other Components --- */
+ECS_COMPONENT_DECLARE(Camera2DComponent);
 
 void ecs_define_components(ecs_world_t *world)
 {
@@ -18,4 +19,5 @@ void ecs_define_components(ecs_world_t *world)
     });
 
     /* --- Other Components --- */
+    ECS_COMPONENT_DEFINE(world, Camera2DComponent);
 }

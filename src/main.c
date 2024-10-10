@@ -19,6 +19,9 @@
 
 /* --- Systems --- */
 #include "states.h"
+#define CAMERA2D
+#include "camera.h"
+#include "ecs_components.h"
 
 /* --- Game Settings --- */
 const int SCREEN_WIDTH = 1280;
@@ -69,16 +72,23 @@ int main()
 		BeginDrawing();
 			ClearBackground(BG_COLOR);
 
-#ifdef CAMERA2D_H
-            CameraComponent *cc = ecs_ref_get(gameplay_world, &cc_ref, CameraComponent);
-            if (cc != NULL)
-            {
+#ifdef CAMERA2D
+            if (is_active_camera2d_set()) {
+                log_info("Active Camera2D is set.");
+                Camera2DComponent *cc = ecs_ref_get(active_camera_world, 
+                                                    active_camera2d_ref, Camera2DComponent);
                 Camera2D c = cc->camera;
                 BeginMode2D(c);
                     draw(frame_time);
                 EndMode2D();
+            } else {
+                log_info("No Camera2D is set!");
+                draw(frame_time);
             }
-#endif /* CAMERA2D_H */        
+#endif /* CAMERA2D */        
+#ifndef CAMERA2D
+            draw(frame_time);
+#endif /* NOT CAMERA2D */
 
 			handle_ui(frame_time);
 			DrawFPS(10, 10);
@@ -98,14 +108,19 @@ int main()
 
 static void initialize()
 {
-    /* Register StateMachine and States */
-	sm_create_state_machine(&game_statemachine, "GAME_STATEMACHINE");	
-	state_mainmenu_register(&game_statemachine, &state_mainmenu);
-    state_gameplayloop_register(&game_statemachine, &state_gameplayloop);
+    /* Only for stuff that NEEDS to run before window is initialized */
 }
 
 static void ready()
 {
+    /* Initialize AssetManager */
+    assetmanager_initialize();
+    assetmanager_load_texture("./assets/RDE_8x8.png");
+
+    /* Register StateMachine and States */
+	sm_create_state_machine(&game_statemachine, "GAME_STATEMACHINE");	
+	state_mainmenu_register(&game_statemachine, &state_mainmenu);
+    state_gameplayloop_register(&game_statemachine, &state_gameplayloop);
     sm_switch_state_pointer(&game_statemachine, &state_mainmenu);
 }
 
@@ -143,3 +158,5 @@ void force_terminate_game()
 {
     game_should_quit = 1;
 }
+
+

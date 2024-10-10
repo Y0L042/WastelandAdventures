@@ -16,6 +16,7 @@
 #include "ecs_gameplay_handlers.h"
 #include "serialization.h"
 #include "entities.h"
+#include "glyph.h"
 
 /* --- Constants --- */
 static const char *STATE_NAME = "STATE_GAMEPLAYLOOP\0";
@@ -25,11 +26,14 @@ const char *TEST_JSON_FILE = "C:\\Projects\\C_Projects\\WastelandAdventures\\dat
 const char *ENTITY_JSON_FILE = "C:\\Projects\\C_Projects\\WastelandAdventures\\data\\entities.json";
 ecs_world_t *gameplay_world;
 ecs_entity_t gameplay_camera2d;
+Tileset gameplay_tileset;
 
 static int is_gameplayloop_initialized = 0;
 
 /* --- TESTING --- */
 ecs_entity_t player;
+Glyph test_glyph;
+ecs_ref_t *camera;
 
 /* --- SM Function Prototypes --- */
 static void enter_state(void);
@@ -61,10 +65,21 @@ static void initialize()
     is_gameplayloop_initialized = 1;
     create_gameplay_world();
 
+    tileset_initialize(&gameplay_tileset, 
+                       "./assets/RDE_8x8.png",
+                       8, 8,
+                       20, 20,
+                       WHITE);
+    glyph_initialize(&test_glyph, &gameplay_tileset, 8, 8, WHITE);
+
+
+    camera = create_camera2d(gameplay_world);
+    set_active_camera2d(gameplay_world, camera);
+
     entity_table_initialize();
     load_entity_definitions_from_file(TEST_JSON_FILE);
 
-    ecs_entity_t player = create_entity_from_table(gameplay_world, "Player");
+    player = create_entity_from_table(gameplay_world, "Player");
     if (player < 10) {
         print_entity_error(player);
     } else {
@@ -100,7 +115,7 @@ static void handle_ui(double delta)
 
 static void draw(double delta)
 {
-
+    glyph_draw(&test_glyph, 5, 5);
 }
 
 static void exit_state(void)

@@ -6,6 +6,7 @@
 
 /* --- Component Sources --- */
 #include "components_gameplay.h"
+#include "camera.h"
 
 /* ------------------------- */
 
@@ -14,6 +15,7 @@
 extern ECS_COMPONENT_DECLARE(Position2D);
 
 /* --- Other Components --- */
+extern ECS_COMPONENT_DECLARE(Camera2DComponent);
 
 
 
