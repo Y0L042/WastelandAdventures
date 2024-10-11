@@ -33,7 +33,7 @@ static int is_gameplayloop_initialized = 0;
 /* --- TESTING --- */
 ecs_entity_t player;
 Glyph test_glyph;
-ecs_ref_t *camera;
+ecs_ref_t *camera_ref;
 
 /* --- SM Function Prototypes --- */
 static void enter_state(void);
@@ -73,8 +73,11 @@ static void initialize()
     glyph_initialize(&test_glyph, &gameplay_tileset, 8, 8, WHITE);
 
 
-    camera = create_camera2d(gameplay_world);
-    set_active_camera2d(gameplay_world, camera);
+    camera_ref = create_camera2d_pro(gameplay_world, (Camera2D){ 
+        .offset = { SCREEN_WIDTH/2.0f, SCREEN_HEIGHT/2.0f }, 
+        .zoom = 1.0f 
+    });
+    set_active_camera2d(gameplay_world, camera_ref);
 
     entity_table_initialize();
     load_entity_definitions_from_file(TEST_JSON_FILE);

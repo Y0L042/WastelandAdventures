@@ -17,7 +17,7 @@ void create_gameplay_queries(ecs_world_t *world)
 
     query_initialize_camera2dcomponent = 
         ecs_query(world, { .terms = {
-            {ecs_id(Camera2DComponent)}
+            {ecs_id(Camera2D)}
         }});
 }
 
@@ -46,7 +46,7 @@ void handler_initialize_camera2d(ecs_world_t *world)
     ecs_iter_t it = ecs_query_iter(world, query_initialize_camera2dcomponent);
     while (ecs_query_next(&it))
     {
-        Camera2DComponent *cc = ecs_field(&it, Camera2DComponent, 0);
+        Camera2D *cc = ecs_field(&it, Camera2D, 0);
 
         for (int i = 0; i < it.count; i++)
         {

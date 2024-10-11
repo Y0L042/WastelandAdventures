@@ -74,15 +74,12 @@ int main()
 
 #ifdef CAMERA2D
             if (is_active_camera2d_set()) {
-                log_info("Active Camera2D is set.");
-                Camera2DComponent *cc = ecs_ref_get(active_camera_world, 
-                                                    active_camera2d_ref, Camera2DComponent);
-                Camera2D c = cc->camera;
-                BeginMode2D(c);
+                Camera2D *c = ecs_ref_get(active_camera_world, 
+                                                    active_camera2d_ref, Camera2D);
+                BeginMode2D(*c);
                     draw(frame_time);
                 EndMode2D();
             } else {
-                log_info("No Camera2D is set!");
                 draw(frame_time);
             }
 #endif /* CAMERA2D */        

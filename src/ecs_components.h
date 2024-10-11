@@ -13,9 +13,10 @@
 /* --- Component Forward Declarations --- */
 /* --- Serializable Components --- */
 extern ECS_COMPONENT_DECLARE(Position2D);
+extern ECS_COMPONENT_DECLARE(Camera2D);
+extern ECS_COMPONENT_DECLARE(CameraFollowTarget);
 
 /* --- Other Components --- */
-extern ECS_COMPONENT_DECLARE(Camera2DComponent);
 
 
 

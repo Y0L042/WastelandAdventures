@@ -40,6 +40,11 @@ file(GLOB SRC_C ${CMAKE_SOURCE_DIR}/src/*.c)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fno-asynchronous-unwind-tables -std=gnu99")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
 
+# Enable colored diagnostics for GCC and Clang
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(-fdiagnostics-color=always)
+endif()
+
 # Create the executable
 add_executable(${TARGET_NAME} ${SRC_C})
 
