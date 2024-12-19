@@ -4,18 +4,16 @@
 
 ## InProgress
 
-- [ ] REF Add Camera2D
-- [ ] REF Add Asset and Sprite and Glyph code
-
-## ToDo
-
-- [ ] REF Add Sprite/Glyph Components and Handlers
 - [ ] REF Add Grid code
 - [ ] REF Add Grid Component, initialization, handler. See how to store
   GridComponentData separate from Component.
+
+## ToDo
+
 - [ ] REF Add Player input, and movement
 - [ ] REF Add TurnBasedSystem code
 - [ ] REF Add TurnBasedSystem Components, ComponentData, and Handlers
+- [ ] REF Add Sprite code
 
 - [ ] FIX Pathfinding getting softlocked fix 
 - [ ] FIX free DRays that gets created in structs X( (see if it fixes memleaks
@@ -63,8 +61,13 @@
 
 - [x] REF added JSON system (for entity definitions), Component sytem, and
    Handler system.
+- [x] REF Add AssetManager code
+- [x] REF Add Glyph code
+- [x] REF Add Sprite/Glyph Components and Handlers
 
+ @09:17 Fri, 11 Oct 2024
 
+- [x] REF Add Camera2D
 
 ## Roadmap
 
