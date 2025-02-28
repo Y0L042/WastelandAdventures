@@ -52,11 +52,12 @@ typedef struct GridRefs {
 
 
 
-Grid *grid_initialize(ecs_world_t *world, 
+Grid *grid_create(ecs_world_t *world, 
                      int width, 
                      int height, 
                      int tile_width, 
                      int tile_height);
+void grid_draw(Grid *grid);
 void grid_print_error(GridErrors error);
 
 #endif /* GRID_H */

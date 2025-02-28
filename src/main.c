@@ -50,6 +50,7 @@ static void handle_input();
 static void update(double delta);
 static void physics_update(double delta);
 static void draw(double delta);
+static void draw_debug(double delta);
 static void handle_ui(double delta);
 static void quit();
 
@@ -89,6 +90,7 @@ int main()
 
 			handle_ui(frame_time);
 			DrawFPS(10, 10);
+            draw_debug(frame_time);
 		EndDrawing();
 
 #ifdef INPUT_H
@@ -123,7 +125,10 @@ static void ready()
 
 static void handle_input()
 {
-
+    if (IsKeyPressed(KEY_F4)) {
+        force_terminate_game();
+    }
+    sm_execute_state_input(&game_statemachine);
 }
 
 static void update(double delta)
@@ -141,6 +146,11 @@ static void draw(double delta)
     sm_execute_state_draw(&game_statemachine, delta);
 }
 
+static void draw_debug(double delta)
+{
+    sm_execute_state_draw_debug(&game_statemachine, delta);
+}
+
 static void handle_ui(double delta)
 {
     sm_execute_state_handle_ui(&game_statemachine, delta);
@@ -153,6 +163,7 @@ static void quit()
 
 void force_terminate_game()
 {
+    log_info("Game force-terminated.");
     game_should_quit = 1;
 }
 

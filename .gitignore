@@ -4,6 +4,7 @@
 *.vs
 *-workspace
 compile_commands.json
+*.vim
 
 asm/*
 bin-int/*

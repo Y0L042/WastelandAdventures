@@ -16,7 +16,15 @@
 #include "ecs_gameplay_handlers.h"
 #include "serialization.h"
 #include "entities.h"
+#include "grid.h"
 #include "glyph.h"
+
+#define PLATFORM_DESKTOP
+#if defined(PLATFORM_DESKTOP)
+    #define GLSL_VERSION            330
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
+    #define GLSL_VERSION            100
+#endif
 
 /* --- Constants --- */
 static const char *STATE_NAME = "STATE_GAMEPLAYLOOP\0";
@@ -34,13 +42,17 @@ static int is_gameplayloop_initialized = 0;
 ecs_entity_t player;
 Glyph test_glyph;
 ecs_ref_t *camera_ref;
+Grid *grid;
+Shader test_shader;
 
 /* --- SM Function Prototypes --- */
 static void enter_state(void);
+static void input();
 static void update(double delta);
 static void physics_update(double delta);
 static void handle_ui(double delta);
 static void draw(double delta);
+static void draw_debug(double delta);
 static void exit_state(void);
 
 /* --- Function Prototypes --- */
@@ -51,10 +63,12 @@ static int free_gameplay_world();
 void state_gameplayloop_register(SM_Machine *sm, SM_State *state)
 {
     state->state_enter = enter_state;
+    state->state_input = input;
     state->state_update = update;
     state->state_physics_update = physics_update;
     state->state_handle_ui = handle_ui;
     state->state_draw = draw;
+    state->state_draw_debug = draw_debug;
     state->state_exit = exit_state;
 
     sm_register_state(sm, state, STATE_NAME);
@@ -64,6 +78,8 @@ static void initialize()
 {
     is_gameplayloop_initialized = 1;
     create_gameplay_world();
+
+    grid = grid_create(gameplay_world, 50, 50, 8, 8);
 
     tileset_initialize(&gameplay_tileset, 
                        "./assets/RDE_8x8.png",
@@ -78,6 +94,7 @@ static void initialize()
         .zoom = 1.0f 
     });
     set_active_camera2d(gameplay_world, camera_ref);
+    camera2dcomponent_set_target(camera_ref, SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f);
 
     entity_table_initialize();
     load_entity_definitions_from_file(TEST_JSON_FILE);
@@ -89,6 +106,11 @@ static void initialize()
         const Position2D *p = ecs_get(gameplay_world, player, Position2D);
         log_info("Player: %llu, Position{ %.1f, %.1f }", player, p->x, p->y);
     }
+
+    test_shader = LoadShader(
+            // TextFormat("resources/shaders/glsl%i/test_shader.vs", GLSL_VERSION), 
+            0,
+            TextFormat("resources/shaders/glsl%i/test_shader.fs", GLSL_VERSION));
 }
 
 static void enter_state(void)
@@ -99,6 +121,14 @@ static void enter_state(void)
         initialize();
     }
 
+}
+
+static void input()
+{
+    static int mousewheel_y = 0;
+    const float ZOOM_FACTOR = 0.1f;
+    // camera2dcomponent_set_zoom(camera_ref, mousewheel_y * ZOOM_FACTOR);
+    // mousewheel_y = GetMouseWheelMove();
 }
 
 static void update(double delta)
@@ -118,7 +148,31 @@ static void handle_ui(double delta)
 
 static void draw(double delta)
 {
+    static Texture2D texture;
+    static int setup = 0;
+    if (!setup) {
+        setup = 1;
+
+        Image plain_img = GenImageColor(SCREEN_WIDTH, SCREEN_HEIGHT, WHITE);
+        texture = LoadTextureFromImage(plain_img);
+    }
+
     glyph_draw(&test_glyph, 5, 5);
+    grid_draw(grid);
+
+    // SetShaderValue(
+    //         test_shader, 
+    //         GetShaderLocation(test_shader, "someUniform"), 
+    //         &value, 
+    //         UNIFORM_FLOAT);
+    BeginShaderMode(test_shader);
+        DrawTexture(texture, 100, 100, WHITE);
+        DrawRectangle(190, 90, 120, 60, PINK);
+    EndShaderMode();
+}
+
+static void draw_debug(double delta)
+{
 }
 
 static void exit_state(void)

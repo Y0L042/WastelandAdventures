@@ -2,6 +2,8 @@
 
 #include "log.h"
 
+#include <raylib.h>
+
 /* --- Private Functions --- */
 static DRay **grid_alloc_arr_entity_refs(
         int x_count,
@@ -30,12 +32,35 @@ Grid *grid_create(ecs_world_t *world,
     data->entity_grid = grid_alloc_arr_entity_refs(width, height);
     data->coll_layers_grid = grid_alloc_arr_coll_layers(width, height);
 
-typedef struct GridData {
-    coll_bits_t **coll_layers_grid; 
-    DRay **entity_grid /* <ecs_entity_t> */;
-} GridData;
 
     return grid;
+}
+
+void grid_draw(Grid *grid)
+{
+    int width, height, tile_width, tile_height;
+    width = grid->sizes.width;
+    height = grid->sizes.height;
+    tile_width = grid->sizes.tile_width;
+    tile_height = grid->sizes.tile_height;
+
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            DrawRectangleLines(
+                    i * tile_width - (tile_width / 2.0), 
+                    j * tile_height - (tile_height / 2.0),
+                    tile_width,
+                    tile_height,
+                    RAYWHITE
+            );
+            DrawCircle(
+                    i * tile_width,
+                    j * tile_height,
+                    1.0f,
+                    GREEN
+            );
+        }
+    }
 }
 
 void grid_print_error(GridErrors error)

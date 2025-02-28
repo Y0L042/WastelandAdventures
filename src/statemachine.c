@@ -68,6 +68,17 @@ void sm_switch_state_pointer(SM_Machine *fsm, SM_State *new_state)
 	}
 }
 
+SM_ERR sm_execute_state_input(SM_Machine *fsm)
+{
+	if (fsm->_sm_current_state != NULL && fsm->_sm_current_state->state_input != NULL)
+	{
+		fsm->_sm_current_state->state_input();
+		return SM_ERR_OK;
+	}
+
+	return SM_ERR_NO_CALLBACK;
+}
+
 SM_ERR sm_execute_state_update(SM_Machine *fsm, double delta)
 {
 	if (fsm->_sm_current_state != NULL && fsm->_sm_current_state->state_update != NULL)
@@ -95,6 +106,17 @@ SM_ERR sm_execute_state_draw(SM_Machine *fsm, double delta)
 	if (fsm->_sm_current_state != NULL && fsm->_sm_current_state->state_draw != NULL)
 	{
 		fsm->_sm_current_state->state_draw(delta);
+		return SM_ERR_OK;
+	}
+
+	return SM_ERR_NO_CALLBACK;
+}
+
+SM_ERR sm_execute_state_draw_debug(SM_Machine *fsm, double delta)
+{
+	if (fsm->_sm_current_state != NULL && fsm->_sm_current_state->state_draw_debug != NULL)
+	{
+		fsm->_sm_current_state->state_draw_debug(delta);
 		return SM_ERR_OK;
 	}
 
