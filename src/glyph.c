@@ -1,5 +1,25 @@
 #include "glyph.h"
 
+Tileset tileset_create(
+		const char* texture_path, 
+		int source_tile_width, 
+		int source_tile_height, 
+		int target_tile_width,
+		int target_tile_height,
+		Color default_color
+    )
+{
+    Tileset tileset;
+    tileset.texture_uuid = assetmanager_request_textureasset_uuid(texture_path);
+	tileset.source_tile_width = source_tile_width;
+	tileset.source_tile_height = source_tile_height;
+	tileset.target_tile_width = target_tile_width;
+	tileset.target_tile_height = target_tile_height;
+	tileset.default_color = default_color;
+
+    return tileset;
+}
+
 void tileset_initialize(
 		Tileset *tileset, 
 		const char* texture_path,
@@ -10,7 +30,7 @@ void tileset_initialize(
 		Color default_color
 	)
 {
-	tileset->texture_asset = assetmanager_request_texture(texture_path);
+    tileset->texture_uuid = assetmanager_request_textureasset_uuid(texture_path);
 	tileset->source_tile_width = source_tile_width;
 	tileset->source_tile_height = source_tile_height;
 	tileset->target_tile_width = target_tile_width;
@@ -20,10 +40,26 @@ void tileset_initialize(
 
 void tileset_free(Tileset *tileset)
 {
-    assetmanager_free_textureasset(tileset->texture_asset->path);
+    assetmanager_free_textureasset(tileset->texture_uuid);
 	free(tileset);
 }
 
+Glyph glyph_create(		
+        Tileset *tileset, 
+		int source_tile_x, 
+		int source_tile_y,
+		Color color
+    )
+{
+    Glyph glyph;
+	glyph.source_tile_x = source_tile_x;
+	glyph.source_tile_y = source_tile_y;
+	glyph.color = color;
+	glyph._init_color = color;
+	glyph.tileset = tileset;
+
+    return glyph;
+}
 
 void glyph_initialize(
 		Glyph *glyph, 
@@ -50,44 +86,51 @@ void glyph_draw(Glyph* glyph, int pos_x, int pos_y)
 	float width = glyph->tileset->target_tile_width;
 	float height = glyph->tileset->target_tile_height;
 
-	DrawTexturePro(
-		glyph->tileset->texture_asset->texture,
-		(Rectangle) {
-				glyph->source_tile_x * glyph->tileset->source_tile_width,
-				glyph->source_tile_y * glyph->tileset->source_tile_height,
-				glyph->tileset->source_tile_width,
-				glyph->tileset->source_tile_height
-			},
-		(Rectangle) {
-				pos_x, 
-				pos_y, 
-				width, 
-				height
-			},
-		(Vector2) {
-				-1, -1
-				//width / 2, height / 2
-			}, // origin
-		0, // rotation
-		glyph->color
-	);
+    TextureAsset *texture_asset = assetmanager_request_textureasset(glyph->tileset->texture_uuid);
+    if (texture_asset) {
+        DrawTexturePro(
+            texture_asset->texture,
+            (Rectangle) {
+                    glyph->source_tile_x * glyph->tileset->source_tile_width,
+                    glyph->source_tile_y * glyph->tileset->source_tile_height,
+                    glyph->tileset->source_tile_width,
+                    glyph->tileset->source_tile_height
+                },
+            (Rectangle) {
+                    pos_x * width, 
+                    pos_y * height, 
+                    width, 
+                    height
+                },
+            (Vector2) {
+                    // -1, -1
+                    width / 2, height / 2
+                    // 0, 0
+                }, // origin
+            0, // rotation
+            glyph->color
+        );
+    }
 }
 
 void glyph_draw_pro(Glyph *glyph, int pos_x, int pos_y, int width, int height, Color color)
 {
-	DrawTexturePro(
-			glyph->tileset->texture_asset->texture,
-			(Rectangle){ 
-					glyph->source_tile_x * glyph->tileset->source_tile_width,
-					glyph->source_tile_y * glyph->tileset->source_tile_height,
-					glyph->tileset->source_tile_width,
-					glyph->tileset->source_tile_height 
-				},
-			(Rectangle){ pos_x, pos_y, width, height },
-			(Vector2){ pos_x + width / 2, pos_y + height / 2 }, // rotation origin
-			0, // rotation
-			color
-		);
+    TextureAsset *texture_asset = assetmanager_request_textureasset(glyph->tileset->texture_uuid);
+    if (texture_asset) {
+        DrawTexturePro(
+            texture_asset->texture,
+            (Rectangle){ 
+            glyph->source_tile_x * glyph->tileset->source_tile_width,
+            glyph->source_tile_y * glyph->tileset->source_tile_height,
+            glyph->tileset->source_tile_width,
+            glyph->tileset->source_tile_height 
+            },
+            (Rectangle){ pos_x, pos_y, width, height },
+            (Vector2){ pos_x + width / 2, pos_y + height / 2 }, // rotation origin
+            0, // rotation
+            color
+        );
+    }
 }
 
 int glyph_get_idx_by_char(char ch) 

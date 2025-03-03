@@ -5,16 +5,18 @@
 #include <raylib.h>
 
 /* --- Component Sources --- */
-#include "components_gameplay.h"
+#include "ecs_components_gameplay.h"
 #include "camera.h"
+#include "glyph.h"
 
 /* ------------------------- */
 
 /* --- Component Forward Declarations --- */
 /* --- Serializable Components --- */
-extern ECS_COMPONENT_DECLARE(Position2D);
+extern ECS_COMPONENT_DECLARE(Position);
 extern ECS_COMPONENT_DECLARE(Camera2D);
 extern ECS_COMPONENT_DECLARE(CameraFollowTarget);
+extern ECS_COMPONENT_DECLARE(Glyph);
 
 /* --- Other Components --- */
 

@@ -6,9 +6,10 @@
 void create_gameplay_queries(ecs_world_t *world);
 void free_gameplay_queries(ecs_world_t *world);
 
-void handler_initialize_position2d(ecs_world_t *world);
+void handler_initialize_position(ecs_world_t *world);
 void handler_initialize_camera2d(ecs_world_t *world);
 
+void handler_draw_glyph(ecs_world_t *world);
 
 
 #endif /* ECS_GAMEPLAY_HANDLERS_H */

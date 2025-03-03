@@ -12,8 +12,11 @@
 // Roguelib - src/glyph.h
 // github.com/leftbones/roguelib
 
+/* 
+ * Copy-Safe - Stable properties
+ */
 typedef struct Tileset {
-    TextureAsset *texture_asset;
+    AssetUUID texture_uuid;
 	int source_tile_width;
 	int source_tile_height;
 	int target_tile_width;
@@ -21,6 +24,14 @@ typedef struct Tileset {
 	Color default_color;
 } Tileset;
 
+Tileset tileset_create(
+		const char* texture_path, 
+		int source_tile_width, 
+		int source_tile_height, 
+		int target_tile_width,
+		int target_tile_height,
+		Color default_color
+    );
 void tileset_initialize(
 		Tileset *tileset,
 		const char* texture_path, 
@@ -32,21 +43,33 @@ void tileset_initialize(
 	);
 void tileset_free(Tileset *tileset);
 
-
-// Glyph - a character from the tileset, stored for convenience
+/*
+ * Glyph - a character from the tileset, stored for convenience
+ * Copy-Safe - Temporary read-only though
+ * source_tile_x, source_tile_y, color can be modified, but infrequently
+ */
 typedef struct Glyph {
     int source_tile_x; // x position in the tileset
     int source_tile_y; // y position in the tileset
-	Tileset *tileset;
 	Color color;
 	Color _init_color;
+	Tileset *tileset;
 } Glyph;
 
+/* 
+ * Not Copy-Safe due to variable nature of properties
+ */
 typedef struct GlyphFade {
 	double initial_time;
 	double time_left;
 } GlyphFade;
 
+Glyph glyph_create(		
+        Tileset *tileset, 
+		int source_tile_x, 
+		int source_tile_y,
+		Color color
+    );
 void glyph_initialize(
 		Glyph *glyph, 
 		Tileset *tileset, 

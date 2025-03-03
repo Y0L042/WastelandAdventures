@@ -94,5 +94,11 @@
   "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -IC:/Projects/C_Projects/WastelandAdventures/vendor/raylib5/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/cjson/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/fmt/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/flecs/include  -g -fno-asynchronous-unwind-tables -std=gnu99  -g -fno-asynchronous-unwind-tables -std=gnu99 -DDEBUG -fdiagnostics-color=always -o CMakeFiles\\main.dir\\src\\statemachine.c.obj -c C:\\Projects\\C_Projects\\WastelandAdventures\\src\\statemachine.c",
   "file": "C:\\Projects\\C_Projects\\WastelandAdventures\\src\\statemachine.c",
   "output": "CMakeFiles\\main.dir\\src\\statemachine.c.obj"
+},
+{
+  "directory": "C:/Projects/C_Projects/WastelandAdventures/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -IC:/Projects/C_Projects/WastelandAdventures/vendor/raylib5/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/cjson/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/fmt/include -IC:/Projects/C_Projects/WastelandAdventures/vendor/flecs/include  -g -fno-asynchronous-unwind-tables -std=gnu99  -g -fno-asynchronous-unwind-tables -std=gnu99 -DDEBUG -fdiagnostics-color=always -o CMakeFiles\\main.dir\\src\\uuid.c.obj -c C:\\Projects\\C_Projects\\WastelandAdventures\\src\\uuid.c",
+  "file": "C:\\Projects\\C_Projects\\WastelandAdventures\\src\\uuid.c",
+  "output": "CMakeFiles\\main.dir\\src\\uuid.c.obj"
 }
 ]

@@ -5,6 +5,7 @@
 *-workspace
 compile_commands.json
 *.vim
+*.zip
 
 asm/*
 bin-int/*
@@ -19,3 +20,4 @@ src_bak/*
 !vendor/raylib5/*
 !vendor/STC/include/*
 !vendor/STC/LICENSE
+

@@ -30,6 +30,7 @@
 static const char *STATE_NAME = "STATE_GAMEPLAYLOOP\0";
 
 /* --- Variables --- */
+int TILE_SCREEN_SIZE = 50;
 const char *TEST_JSON_FILE = "C:\\Projects\\C_Projects\\WastelandAdventures\\data\\test.json";
 const char *ENTITY_JSON_FILE = "C:\\Projects\\C_Projects\\WastelandAdventures\\data\\entities.json";
 ecs_world_t *gameplay_world;
@@ -79,12 +80,11 @@ static void initialize()
     is_gameplayloop_initialized = 1;
     create_gameplay_world();
 
-    grid = grid_create(gameplay_world, 50, 50, 8, 8);
-
+    grid = grid_create(gameplay_world, 25, 25, TILE_SCREEN_SIZE, TILE_SCREEN_SIZE);
     tileset_initialize(&gameplay_tileset, 
                        "./assets/RDE_8x8.png",
                        8, 8,
-                       20, 20,
+                       TILE_SCREEN_SIZE, TILE_SCREEN_SIZE,
                        WHITE);
     glyph_initialize(&test_glyph, &gameplay_tileset, 8, 8, WHITE);
 
@@ -100,15 +100,23 @@ static void initialize()
     load_entity_definitions_from_file(TEST_JSON_FILE);
 
     player = create_entity_from_table(gameplay_world, "Player");
+    Glyph player_glyph = glyph_create(&gameplay_tileset, 8, 8, WHITE);
+    ecs_set(gameplay_world, player, Position, {50, 50});
+    ecs_set(gameplay_world, player, Glyph, {
+            .source_tile_x = player_glyph.source_tile_x,
+            .source_tile_y = player_glyph.source_tile_y,
+            .color = player_glyph.color,
+            ._init_color = player_glyph._init_color,
+            .tileset = player_glyph.tileset
+        });
     if (player < 10) {
         print_entity_error(player);
     } else {
-        const Position2D *p = ecs_get(gameplay_world, player, Position2D);
+        const Position *p = ecs_get(gameplay_world, player, Position);
         log_info("Player: %llu, Position{ %.1f, %.1f }", player, p->x, p->y);
     }
 
     test_shader = LoadShader(
-            // TextFormat("resources/shaders/glsl%i/test_shader.vs", GLSL_VERSION), 
             0,
             TextFormat("resources/shaders/glsl%i/test_shader.fs", GLSL_VERSION));
 }
@@ -157,18 +165,8 @@ static void draw(double delta)
         texture = LoadTextureFromImage(plain_img);
     }
 
-    glyph_draw(&test_glyph, 5, 5);
+    // glyph_draw(&test_glyph, 4, 4);
     grid_draw(grid);
-
-    // SetShaderValue(
-    //         test_shader, 
-    //         GetShaderLocation(test_shader, "someUniform"), 
-    //         &value, 
-    //         UNIFORM_FLOAT);
-    BeginShaderMode(test_shader);
-        DrawTexture(texture, 100, 100, WHITE);
-        DrawRectangle(190, 90, 120, 60, PINK);
-    EndShaderMode();
 }
 
 static void draw_debug(double delta)

@@ -3,8 +3,8 @@
 
 #include <raylib.h>
 
-typedef struct Position2D {
+typedef struct Position {
     float x, y;
-} Position2D;
+} Position;
 
 #endif /* COMPONENTS_GAMEPLAY_H */
